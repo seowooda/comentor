@@ -11,7 +11,7 @@ const Header = () => {
           <span className="font-pretendard text-[32px] leading-[38.19px] font-semibold text-slate-800">
             CoMentor
           </span>
-          <div className="relative flex h-7 w-7 items-center justify-center">
+          <div className="flex h-7 w-7 items-center justify-center">
             <MessageSquareCode className="h-[29px] w-[28px] text-slate-800 outline-slate-600" />
           </div>
         </Link>
