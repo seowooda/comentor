@@ -8,7 +8,7 @@ const Header = () => {
     <header className="flex w-full items-center justify-between border-b border-[#D9D9D9]">
       <div className="flex items-center gap-6">
         <Link href="/" className="flex items-center gap-2.5 px-2.5 py-5">
-          <span className="font-pretendard text-[32px] leading-[38.19px] font-semibold text-slate-800">
+          <span className="text-[32px] leading-[38.19px] font-semibold text-slate-800">
             CoMentor
           </span>
           <div className="flex h-7 w-7 items-center justify-center">
@@ -21,7 +21,7 @@ const Header = () => {
             href="/dashboard"
             className="flex flex-col items-center justify-center gap-2.5 px-2.5"
           >
-            <span className="font-pretendard text-base leading-[19.09px] font-medium text-black">
+            <span className="text-base leading-[19.09px] font-medium text-black">
               대시보드
             </span>
           </Link>
@@ -29,7 +29,7 @@ const Header = () => {
             href="/cs"
             className="flex flex-col items-center justify-center gap-2.5 px-2.5"
           >
-            <span className="font-pretendard text-base leading-[19.09px] font-medium text-black">
+            <span className="text-base leading-[19.09px] font-medium text-black">
               CS
             </span>
           </Link>
@@ -37,7 +37,7 @@ const Header = () => {
             href="/community"
             className="flex items-center justify-center gap-2.5 px-2.5"
           >
-            <span className="font-pretendard text-base leading-[19.09px] font-medium text-black">
+            <span className="text-base leading-[19.09px] font-medium text-black">
               커뮤니티
             </span>
           </Link>
@@ -45,7 +45,7 @@ const Header = () => {
             href="/mypage"
             className="flex flex-col items-center justify-center gap-2.5 px-2.5"
           >
-            <span className="font-pretendard text-base leading-[19.09px] font-medium text-black">
+            <span className="text-base leading-[19.09px] font-medium text-black">
               마이페이지
             </span>
           </Link>
