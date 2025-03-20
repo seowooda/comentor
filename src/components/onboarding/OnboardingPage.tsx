@@ -1,10 +1,10 @@
 'use client'
 
-import { GithubIcon } from 'lucide-react'
+import Image from 'next/image'
 
 export default function OnboardingPage() {
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-white px-[60px] pb-[55px]">
+    <div className="flex h-full w-full flex-col items-start gap-[69px] bg-white px-[60px] pb-[55px]">
       {/* 그라데이션 배경 */}
       <div className="absolute bottom-0 left-0 h-[226px] w-full bg-gradient-to-b from-transparent to-slate-100" />
 
@@ -19,7 +19,12 @@ export default function OnboardingPage() {
           </h2>
         </div>
         <button className="flex h-[73px] w-[420px] items-center justify-center gap-[15px] rounded-[33px] bg-slate-800 px-[31px] py-[20px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-          <GithubIcon className="h-6 w-6 rounded-full bg-white fill-slate-100 text-slate-800" />
+          <Image
+            src="/images/Github.svg"
+            alt="Github Icon"
+            width={24}
+            height={24}
+          />
           <span className="font-pretendard text-center text-[24px] leading-[24px] font-medium text-slate-50">
             Github 연동하기
           </span>
