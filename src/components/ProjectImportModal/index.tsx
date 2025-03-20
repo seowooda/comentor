@@ -54,7 +54,9 @@ export const ProjectImportModal = ({
           onSubmit={handleSubmit}
           className="flex flex-col items-start justify-start gap-[27px] self-stretch"
         >
-          <ProjectTitle />
+          <ProjectTitle
+            onSelect={(title) => setProjectData({ ...projectData, title })}
+          />
           <ProjectContent
             value={projectData.description}
             onChange={(value) =>

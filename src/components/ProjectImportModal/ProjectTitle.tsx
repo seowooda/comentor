@@ -10,11 +10,21 @@ const DEMO_REPOS = [
   { id: 3, name: 'blog', fullName: 'jinu/blog' },
 ]
 
-export const ProjectTitle = () => {
+interface ProjectTitleProps {
+  onSelect: (title: string) => void
+}
+
+export const ProjectTitle = ({ onSelect }: ProjectTitleProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedRepo, setSelectedRepo] = useState<
     (typeof DEMO_REPOS)[0] | null
   >(null)
+
+  const handleSelect = (repo: (typeof DEMO_REPOS)[0]) => {
+    setSelectedRepo(repo)
+    setIsOpen(false)
+    onSelect(repo.fullName)
+  }
 
   return (
     <div className="flex flex-col items-start justify-start gap-2.5 self-stretch">
@@ -44,10 +54,7 @@ export const ProjectTitle = () => {
               <div
                 key={repo.id}
                 className="cursor-pointer px-3 py-2 text-sm hover:bg-slate-50"
-                onClick={() => {
-                  setSelectedRepo(repo)
-                  setIsOpen(false)
-                }}
+                onClick={() => handleSelect(repo)}
               >
                 {repo.fullName}
               </div>
