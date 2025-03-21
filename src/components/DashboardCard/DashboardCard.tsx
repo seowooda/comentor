@@ -1,4 +1,4 @@
-import { Github, Pen, Trash2 } from 'lucide-react'
+import { Pen, Trash2 } from 'lucide-react'
 
 export const DashboardCard = () => {
   const Card = {
@@ -13,36 +13,54 @@ export const DashboardCard = () => {
   const formatDate = (dateString: string) => dateString.replace(/-/g, '. ')
 
   return (
-    <div className="flex w-[306px] rounded-[8px] border border-slate-400 bg-white p-[21px] shadow-md">
+    <article className="flex w-[306px] rounded-[8px] border border-slate-400 bg-white p-[21px] shadow-md">
       <div className="flex flex-col gap-[22px]">
-        <div className="flex justify-between">
-          <p className="text-[20px] font-semibold">{Card.title}</p>
+        {/* Header Section */}
+        <header className="flex justify-between">
+          <h2 className="text-[20px] font-semibold">{Card.title}</h2>
           <div className="flex items-center gap-[6px]">
-            <Pen size={14} className="cursor-pointer" />
-            <Trash2 size={16} className="cursor-pointer" />
+            <button aria-label="Edit">
+              <Pen size={14} className="cursor-pointer" />
+            </button>
+            <button aria-label="Delete">
+              <Trash2 size={16} className="cursor-pointer" />
+            </button>
           </div>
-        </div>
-        <div className="flex gap-[10px]">
+        </header>
+
+        {/* Tech Stack List */}
+        <ul className="flex gap-[10px]">
           {Card.personal_stack.map((stack, index) => (
-            <span key={index} className="rounded-[20px] bg-blue-100 px-2 py-1">
-              <p className="text-[8px] text-blue-500">{stack}</p>
-            </span>
+            <li
+              key={index}
+              className="flex items-center rounded-[20px] bg-blue-100 px-2 py-1"
+            >
+              <span className="text-[8px] text-blue-500">{stack}</span>
+            </li>
           ))}
-        </div>
+        </ul>
+
+        {/* Description */}
         <p className="text-[14px] font-light">{Card.description}</p>
 
-        <div className="flex justify-between text-[10px] font-light">
+        {/* Status & Updated Date */}
+        <footer className="flex justify-between text-[10px] font-light">
           <div className="flex items-center gap-1">
-            <div
+            <span
               className={`h-[7px] w-[7px] rounded-full ${
                 Card.status === 'Progress' ? 'bg-yellow-500' : 'bg-emerald-500'
               }`}
-            ></div>
+              aria-label={
+                Card.status === 'Progress' ? 'In Progress' : 'Completed'
+              }
+            ></span>
             <p>{Card.status}</p>
           </div>
-          <p>Updated {formatDate(Card.updated_At)}</p>
-        </div>
+          <time dateTime={Card.updated_At}>
+            Updated {formatDate(Card.updated_At)}
+          </time>
+        </footer>
       </div>
-    </div>
+    </article>
   )
 }
