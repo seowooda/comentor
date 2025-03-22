@@ -36,6 +36,10 @@ export const ProjectImportModal = ({
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault()
+      if (!projectData.title.trim()) {
+        // 제목이 비어있으면 제출하지 않음
+        return
+      }
       onSubmit(projectData)
       onClose()
     },
@@ -46,6 +50,9 @@ export const ProjectImportModal = ({
     setProjectData(initialProjectData)
     onClose()
   }, [onClose])
+
+  // 제목이 비어있는지 확인
+  const isTitleEmpty = !projectData.title.trim()
 
   return (
     <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
@@ -75,7 +82,11 @@ export const ProjectImportModal = ({
               setProjectData({ ...projectData, status: value })
             }
           />
-          <ModalButtons onClose={handleClose} onSubmit={handleSubmit} />
+          <ModalButtons
+            onClose={handleClose}
+            onSubmit={handleSubmit}
+            isSubmitDisabled={isTitleEmpty}
+          />
         </form>
       </div>
     </div>

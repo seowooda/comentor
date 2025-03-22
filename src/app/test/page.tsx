@@ -13,6 +13,7 @@ const DashboardPage = () => {
     role: string
     status: 'in_progress' | 'completed'
   }) => {
+    //todo 삭제
     console.log('Project Data:', data)
     closeModal()
   }
