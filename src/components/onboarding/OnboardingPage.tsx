@@ -23,14 +23,14 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col items-start gap-[69px] bg-white px-[60px] pb-[55px]">
+    <div className="flex h-full w-full flex-col items-start bg-white px-[60px] pb-[55px]">
       {/* 그라데이션 배경 */}
       <div className="absolute bottom-0 left-0 h-[226px] w-full bg-gradient-to-b from-transparent to-slate-100" />
 
       {/* 메인 컨텐츠 */}
-      <div className="flex h-[689px] w-full flex-col items-center justify-center gap-[35px]">
+      <div className="flex h-[689px] w-full max-w-[1280px] flex-col items-center justify-center gap-[35px]">
         <div className="flex flex-col items-center gap-[17px] py-20">
-          <h1 className="w-[928px] text-center text-[52px] leading-[62.05px] font-semibold tracking-widest text-slate-800">
+          <h1 className="w-full max-w-[928px] text-center text-[52px] leading-[62.05px] font-semibold tracking-widest text-slate-800">
             GitHub 커밋 기반 맞춤 CS 면접 준비,
           </h1>
 

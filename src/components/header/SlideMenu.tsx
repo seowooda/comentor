@@ -95,7 +95,7 @@ const SlideMenu = ({ isOpen, onClose }: SlideMenuProps) => {
     }
   }, [isOpen])
 
-  // selectedMenu가 유효하지 않은 경우 기본값 설정
+  // selectedMenu가 유효하지 않은 경우 기본값 설정 undefined.map()방지
   const currentMenu = menuContents[selectedMenu] ? selectedMenu : 'dashboard'
 
   return (
