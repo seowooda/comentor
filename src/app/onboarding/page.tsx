@@ -1,5 +1,7 @@
 import OnboardingPage from '@/components/onboarding/OnboardingPage'
 
-export default function Page() {
+const Page = () => {
   return <OnboardingPage />
 }
+
+export default Page

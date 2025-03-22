@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
-export default function OnboardingPage() {
+const OnboardingPage = () => {
   const router = useRouter()
 
   const handleGithubConnect = async () => {
@@ -56,3 +56,5 @@ export default function OnboardingPage() {
     </div>
   )
 }
+
+export default OnboardingPage
