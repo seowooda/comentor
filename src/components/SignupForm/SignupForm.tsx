@@ -44,7 +44,9 @@ export default function SignupForm() {
         className="flex h-full w-[400px] flex-col items-center gap-6"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <h1 className="text-4xl font-semibold text-slate-800">회원가입</h1>
+        <h1 className="text-3xl leading-[20px] font-semibold tracking-[1.08px] text-slate-800">
+          회원가입
+        </h1>
 
         <InputField
           control={form.control}
@@ -72,7 +74,7 @@ export default function SignupForm() {
 
         <Button
           type="submit"
-          className="w-full bg-slate-800 text-[14px]"
+          className="w-full cursor-pointer bg-slate-800 text-[14px] leading-6"
           disabled={!form.formState.isValid}
         >
           회원 가입
