@@ -42,7 +42,6 @@ export const ProjectImportModal = ({
   })
 
   const handleSubmit = (data: ProjectFormValues) => {
-    console.log('폼 제출 데이터:', data)
     onSubmit(data)
     onClose()
   }

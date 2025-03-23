@@ -6,7 +6,7 @@ import { useId } from 'react'
 
 // 스타일 상수
 const TEXTAREA_CLASSES =
-  'h-[110px] w-full resize-none rounded-md bg-white px-3 py-2 outline outline-1 outline-offset-[-1px] outline-slate-300 focus:outline-2 focus:outline-slate-400'
+  'h-[110px] w-full resize-none rounded-md bg-white px-3 py-2 '
 
 const CHAR_COUNT_CLASSES = 'mt-1 w-full text-right text-xs text-gray-500'
 

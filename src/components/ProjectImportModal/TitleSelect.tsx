@@ -103,7 +103,6 @@ export const TitleSelect = ({ field }: TitleSelectProps) => {
         <PopoverTrigger asChild>
           <Button
             id={titleInputId}
-            variant="outline"
             role="combobox"
             aria-expanded={open}
             className={TRIGGER_BUTTON_CLASSES}
@@ -114,7 +113,7 @@ export const TitleSelect = ({ field }: TitleSelectProps) => {
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[403px] p-0" align="start">
+        <PopoverContent className="w-[414px] p-0" align="start" sideOffset={4}>
           <Command
             shouldFilter={false}
             filter={(value, search) => {
