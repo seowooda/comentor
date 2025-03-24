@@ -2,22 +2,12 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { TitleSelect, ProjectFormValues, Repository } from './TitleSelect'
 import { TextareaField } from './TextareaField'
 import { StatusRadioGroup, StatusOption } from './StatusRadioGroup'
 import { ModalButtons } from './ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
-
-/**
- * 프로젝트 폼 유효성 검증을 위한 Zod 스키마
- */
-const formSchema = z.object({
-  title: z.string().min(1, '프로젝트 제목을 선택해주세요'),
-  description: z.string().max(100, '최대 100자까지 입력 가능합니다'),
-  role: z.string().max(100, '최대 100자까지 입력 가능합니다'),
-  status: z.enum(['in_progress', 'completed']),
-})
+import { ProjectSchema } from '@/hooks'
 
 /**
  * 프로젝트 목록 데이터
@@ -59,7 +49,7 @@ export const ProjectImportModal = ({
   onSubmit,
 }: ProjectImportModalProps) => {
   const form = useForm<ProjectFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(ProjectSchema),
     defaultValues: {
       title: '',
       description: '',
