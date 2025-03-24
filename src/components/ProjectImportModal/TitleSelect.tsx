@@ -21,25 +21,6 @@ import { FormItem, FormLabel } from '@/components/ui/form'
 import { ControllerRenderProps } from 'react-hook-form'
 
 /**
- * 프로젝트 목록 데이터
- * 차후에 API 연동으로 실제 데이터로 대체될 예정
- */
-export const repositories = [
-  {
-    value: 'commit-mentor',
-    label: 'jinu/commit-mentor',
-  },
-  {
-    value: 'portfolio',
-    label: 'jinu/portfolio',
-  },
-  {
-    value: 'blog',
-    label: 'jinu/blog',
-  },
-]
-
-/**
  * 프로젝트 폼 필드 값 인터페이스
  */
 export interface ProjectFormValues {
@@ -49,20 +30,23 @@ export interface ProjectFormValues {
   status: 'in_progress' | 'completed'
 }
 
-interface TitleSelectProps {
-  field: ControllerRenderProps<ProjectFormValues, 'title'>
+/**
+ * 프로젝트 저장소 타입 정의
+ */
+export interface Repository {
+  value: string
+  label: string
 }
 
-// 스타일 상수
-const TRIGGER_BUTTON_CLASSES =
-  'inline-flex h-10 w-full min-w-[180px] cursor-pointer items-center justify-between rounded-md bg-white px-3 py-2 text-left outline outline-1 outline-offset-[-1px] outline-slate-300 hover:bg-slate-50 focus:outline-2 focus:outline-slate-400'
-
-const COMMAND_ITEM_CLASSES = 'w-full !bg-white px-3 py-2 text-left text-sm'
+interface TitleSelectProps {
+  field: ControllerRenderProps<ProjectFormValues, 'title'>
+  repositories: Repository[]
+}
 
 /**
  * 프로젝트 제목 선택을 위한 드롭다운 컴포넌트
  */
-export const TitleSelect = ({ field }: TitleSelectProps) => {
+export const TitleSelect = ({ field, repositories }: TitleSelectProps) => {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const titleInputId = 'project-title-input'
@@ -103,9 +87,10 @@ export const TitleSelect = ({ field }: TitleSelectProps) => {
         <PopoverTrigger asChild>
           <Button
             id={titleInputId}
+            variant="outline"
             role="combobox"
             aria-expanded={open}
-            className={TRIGGER_BUTTON_CLASSES}
+            className="inline-flex h-10 w-full min-w-[180px] cursor-pointer items-center justify-between rounded-md border border-slate-300 bg-white px-3 py-2 text-left hover:bg-slate-50 focus:outline-2 focus:outline-slate-400"
           >
             <span className="truncate text-sm font-normal text-zinc-950">
               {selectedLabel}
@@ -149,7 +134,7 @@ export const TitleSelect = ({ field }: TitleSelectProps) => {
                         value={repository.value}
                         onSelect={() => handleSelect(repository.value)}
                         className={cn(
-                          COMMAND_ITEM_CLASSES,
+                          'w-full !bg-white px-3 py-2 text-left text-sm',
                           field.value === repository.value &&
                             '!bg-slate-100 font-medium',
                         )}

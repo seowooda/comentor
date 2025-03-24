@@ -4,12 +4,6 @@ import { FormItem, FormLabel } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
 import { useId } from 'react'
 
-// 스타일 상수
-const TEXTAREA_CLASSES =
-  'h-[110px] w-full resize-none rounded-md bg-white px-3 py-2 '
-
-const CHAR_COUNT_CLASSES = 'mt-1 w-full text-right text-xs text-gray-500'
-
 interface TextareaFieldProps {
   field: ControllerRenderProps<ProjectFormValues, 'description' | 'role'>
   label: string
@@ -46,13 +40,13 @@ export const TextareaField = ({
       <div className="flex w-full flex-col">
         <Textarea
           id={inputId}
-          className={TEXTAREA_CLASSES}
+          className="h-[110px] w-full resize-none rounded-md bg-white px-3 py-2"
           placeholder={placeholder}
           maxLength={MAX_LENGTH}
           {...field}
           onChange={handleChange}
         />
-        <div className={CHAR_COUNT_CLASSES}>
+        <div className="mt-1 w-full text-right text-xs text-gray-500">
           {field.value.length}/{MAX_LENGTH}
         </div>
       </div>

@@ -3,9 +3,9 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { TitleSelect, ProjectFormValues } from './TitleSelect'
+import { TitleSelect, ProjectFormValues, Repository } from './TitleSelect'
 import { TextareaField } from './TextareaField'
-import { StatusRadioGroup } from './StatusRadioGroup'
+import { StatusRadioGroup, StatusOption } from './StatusRadioGroup'
 import { ModalButtons } from './ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
 
@@ -18,6 +18,33 @@ const formSchema = z.object({
   role: z.string().max(100, '최대 100자까지 입력 가능합니다'),
   status: z.enum(['in_progress', 'completed']),
 })
+
+/**
+ * 프로젝트 목록 데이터
+ * 차후에 API 연동으로 실제 데이터로 대체될 예정
+ */
+const repositories: Repository[] = [
+  {
+    value: 'commit-mentor',
+    label: 'jinu/commit-mentor',
+  },
+  {
+    value: 'portfolio',
+    label: 'jinu/portfolio',
+  },
+  {
+    value: 'blog',
+    label: 'jinu/blog',
+  },
+]
+
+/**
+ * 진행 상태 옵션 정의
+ */
+const statusOptions: StatusOption[] = [
+  { id: 'in_progress', value: 'in_progress', label: '개발 중' },
+  { id: 'completed', value: 'completed', label: '완료' },
+]
 
 interface ProjectImportModalProps {
   onClose: () => void
@@ -43,6 +70,7 @@ export const ProjectImportModal = ({
 
   const handleSubmit = (data: ProjectFormValues) => {
     onSubmit(data)
+    form.reset()
     onClose()
   }
 
@@ -51,11 +79,11 @@ export const ProjectImportModal = ({
 
   return (
     <div
-      className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black"
+      className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-white"
       aria-modal="true"
       role="dialog"
     >
-      <div className="w-[462px] rounded-[10px] bg-white px-6 py-8 shadow-md outline outline-1 outline-offset-[-1px] outline-slate-300">
+      <div className="w-[462px] rounded-[10px] bg-white px-6 py-8 shadow-md outline-1 outline-offset-[-1px] outline-slate-300">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -65,7 +93,9 @@ export const ProjectImportModal = ({
             <FormField
               control={form.control}
               name="title"
-              render={({ field }) => <TitleSelect field={field} />}
+              render={({ field }) => (
+                <TitleSelect field={field} repositories={repositories} />
+              )}
             />
 
             {/* 프로젝트 내용 필드 */}
@@ -98,7 +128,9 @@ export const ProjectImportModal = ({
             <FormField
               control={form.control}
               name="status"
-              render={({ field }) => <StatusRadioGroup field={field} />}
+              render={({ field }) => (
+                <StatusRadioGroup field={field} options={statusOptions} />
+              )}
             />
 
             {/* 취소/완료 버튼 */}
