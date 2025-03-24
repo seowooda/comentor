@@ -1,15 +1,16 @@
 import { Pen, Trash2 } from 'lucide-react'
 
-export const DashboardCard = () => {
-  const Card = {
-    title: 'seowooda/CoMentor',
-    personal_stack: ['React', 'Node.js'],
-    description: 'Github 커밋 기반으로 개인별 맞춤 CS 질문을 생성해주는 서비스',
-    status: 'Progress',
-    created_At: '2025-03-20',
-    updated_At: '2025-03-21',
-  }
+type CardType = {
+  id: number
+  title: string
+  personal_stack: string[]
+  description: string
+  status: string
+  created_At: string
+  updated_At: string
+}
 
+export const DashboardCard = ({ card }: { card: CardType }) => {
   const formatDate = (dateString: string) => dateString.replace(/-/g, '. ')
 
   return (
@@ -17,7 +18,7 @@ export const DashboardCard = () => {
       <div className="flex flex-col gap-[22px]">
         {/* Header Section */}
         <header className="flex justify-between">
-          <h2 className="text-[20px] font-semibold">{Card.title}</h2>
+          <h2 className="text-[20px] font-semibold">{card.title}</h2>
           <div className="flex items-center gap-[6px]">
             <button aria-label="Edit">
               <Pen size={14} className="cursor-pointer" />
@@ -30,7 +31,7 @@ export const DashboardCard = () => {
 
         {/* Tech Stack List */}
         <ul className="flex gap-[10px]">
-          {Card.personal_stack.map((stack, index) => (
+          {card.personal_stack.map((stack, index) => (
             <li
               key={index}
               className="flex items-center rounded-[20px] bg-blue-100 px-2 py-1"
@@ -41,23 +42,23 @@ export const DashboardCard = () => {
         </ul>
 
         {/* Description */}
-        <p className="text-[14px] font-light">{Card.description}</p>
+        <p className="text-[14px] font-light">{card.description}</p>
 
         {/* Status & Updated Date */}
         <footer className="flex justify-between text-[10px] font-light">
           <div className="flex items-center gap-1">
             <span
               className={`h-[7px] w-[7px] rounded-full ${
-                Card.status === 'Progress' ? 'bg-yellow-500' : 'bg-emerald-500'
+                card.status === 'Progress' ? 'bg-yellow-500' : 'bg-emerald-500'
               }`}
               aria-label={
-                Card.status === 'Progress' ? 'In Progress' : 'Completed'
+                card.status === 'Progress' ? 'In Progress' : 'Completed'
               }
             ></span>
-            <p>{Card.status}</p>
+            <p>{card.status}</p>
           </div>
-          <time dateTime={Card.updated_At}>
-            Updated {formatDate(Card.updated_At)}
+          <time dateTime={card.updated_At}>
+            Updated {formatDate(card.updated_At)}
           </time>
         </footer>
       </div>
