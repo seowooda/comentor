@@ -1,4 +1,4 @@
-import { Plus, PlusCircle } from 'lucide-react'
+import { PlusCircle } from 'lucide-react'
 import { DashboardCard } from '../DashboardCard/DashboardCard'
 
 const Dashboard = ({ filter }: { filter: string }) => {
@@ -80,17 +80,21 @@ const Dashboard = ({ filter }: { filter: string }) => {
     filter === 'all' ? Card : Card.filter((card) => card.status === filter)
 
   return (
-    <div className="flex w-full flex-wrap gap-9">
-      {filteredCards.map((card) => (
-        <DashboardCard key={card.id} card={card} />
-      ))}
+    <div className="flex w-full justify-center">
+      <div className="mx-auto grid grid-cols-1 gap-12 px-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        {filteredCards.map((card) => (
+          <div key={card.id} className="flex justify-center">
+            <DashboardCard card={card} />
+          </div>
+        ))}
 
-      <div className="flex h-52 w-[306px] items-center justify-center">
-        <PlusCircle
-          size={52}
-          className="cursor-pointer text-slate-400"
-          onClick={() => {}}
-        />
+        <div className="flex h-52 items-center justify-center">
+          <PlusCircle
+            size={52}
+            className="cursor-pointer text-slate-400"
+            onClick={() => {}}
+          />
+        </div>
       </div>
     </div>
   )

@@ -5,7 +5,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
@@ -17,8 +16,8 @@ export function DashboardSelect({
 }) {
   return (
     <Select defaultValue="all" onValueChange={(value) => setFilter(value)}>
-      <SelectTrigger className="w-[160px]">
-        <SelectValue placeholder="전체" />
+      <SelectTrigger className="w-fit border-none px-2 text-base shadow-none focus:ring-0 focus-visible:ring-0 [&_svg]:!text-black [&_svg]:!opacity-80">
+        <SelectValue placeholder="전체" className="text-base" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
