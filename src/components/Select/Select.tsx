@@ -10,17 +10,21 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-export function SelectDemo() {
+export function DashboardSelect({
+  setFilter,
+}: {
+  setFilter: (value: string) => void
+}) {
   return (
-    <Select defaultValue="all">
-      <SelectTrigger className="w-[160px] border-none shadow-none">
+    <Select defaultValue="all" onValueChange={(value) => setFilter(value)}>
+      <SelectTrigger className="w-[160px]">
         <SelectValue placeholder="전체" />
       </SelectTrigger>
-      <SelectContent defaultValue="all">
+      <SelectContent>
         <SelectGroup>
           <SelectItem value="all">전체</SelectItem>
-          <SelectItem value="progress">진행 중인 프로젝트</SelectItem>
-          <SelectItem value="done">완료된 프로젝트</SelectItem>
+          <SelectItem value="Progress">진행 중인 프로젝트</SelectItem>
+          <SelectItem value="Done">완료된 프로젝트</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>

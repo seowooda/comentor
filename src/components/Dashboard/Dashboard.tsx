@@ -1,7 +1,7 @@
 import { Plus, PlusCircle } from 'lucide-react'
 import { DashboardCard } from '../DashboardCard/DashboardCard'
 
-const Dashboard = () => {
+const Dashboard = ({ filter }: { filter: string }) => {
   const Card = [
     {
       id: 1,
@@ -75,14 +75,22 @@ const Dashboard = () => {
     },
   ]
 
+  // 필터링된 카드 리스트
+  const filteredCards =
+    filter === 'all' ? Card : Card.filter((card) => card.status === filter)
+
   return (
     <div className="flex w-full flex-wrap gap-9">
-      {Card.map((card) => (
+      {filteredCards.map((card) => (
         <DashboardCard key={card.id} card={card} />
       ))}
 
-      <div className="flex w-[306px] items-center justify-center">
-        <PlusCircle size={52} className="text-slate-400" />
+      <div className="flex h-52 w-[306px] items-center justify-center">
+        <PlusCircle
+          size={52}
+          className="cursor-pointer text-slate-400"
+          onClick={() => {}}
+        />
       </div>
     </div>
   )

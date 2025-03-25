@@ -1,16 +1,19 @@
+'use client'
 import Dashboard from '@/components/Dashboard/Dashboard'
-import { DropdownMenuDemo } from '@/components/DropdownMenu/DropdownMenu'
-import { SelectDemo } from '@/components/Select/Select'
+import { DashboardSelect } from '@/components/Select/Select'
+import React from 'react'
 
 export default function Page() {
+  const [filter, setFilter] = React.useState('all')
+
   return (
-    <main className="flex flex-col gap-1 pt-[70px]">
+    <main className="flex flex-col gap-1 px-[60px] pt-6">
       <div>
-        <SelectDemo />
+        <DashboardSelect setFilter={setFilter} />
       </div>
-      <div className="p-[10px]">
-        <Dashboard />
-      </div>
+      <section className="p-[10px]">
+        <Dashboard filter={filter} />
+      </section>
     </main>
   )
 }
