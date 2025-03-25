@@ -14,8 +14,11 @@ const RootLayout = ({
 }>) => {
   return (
     <html lang="en">
-      <body className="flex min-h-screen flex-col px-[60px] antialiased">
-        <Header />
+      <body className="flex min-h-screen flex-col antialiased">
+        <header className="mx-[60px]">
+          <Header />
+        </header>
+
         {children}
       </body>
     </html>
