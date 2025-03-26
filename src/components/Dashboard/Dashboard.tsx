@@ -1,7 +1,38 @@
 import { PlusCircle } from 'lucide-react'
 import { DashboardCard } from '../DashboardCard/DashboardCard'
+import { useEffect, useState } from 'react'
 
 const Dashboard = ({ filter }: { filter: string }) => {
+  const [columns, setColumns] = useState(1)
+
+  // 화면 크기 변경 감지를 위한 이펙트
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1815) {
+        setColumns(5)
+      } else if (window.innerWidth >= 1474) {
+        setColumns(4)
+      } else if (window.innerWidth >= 1130) {
+        setColumns(3)
+      } else if (window.innerWidth >= 768) {
+        setColumns(2)
+      } else {
+        setColumns(1)
+      }
+    }
+
+    // 초기 로드 시 한번 실행
+    handleResize()
+
+    // 리사이즈 이벤트 리스너 등록
+    window.addEventListener('resize', handleResize)
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
   const Card = [
     {
       id: 1,
@@ -79,9 +110,15 @@ const Dashboard = ({ filter }: { filter: string }) => {
   const filteredCards =
     filter === 'all' ? Card : Card.filter((card) => card.status === filter)
 
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+    gap: '2.25rem',
+  }
+
   return (
-    <div className="flex w-full justify-center">
-      <div className="mx-auto grid grid-cols-1 gap-12 px-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+    <div className="flex w-full flex-wrap items-center justify-center gap-9">
+      <div style={gridStyle}>
         {filteredCards.map((card) => (
           <div key={card.id} className="flex justify-center">
             <DashboardCard card={card} />
