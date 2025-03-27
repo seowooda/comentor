@@ -11,13 +11,7 @@ import {
   RadioGroupField,
 } from '@/components/Form/index'
 import { SignupSchema } from '@/hooks'
-
-const techStackOptions = [
-  { id: 'front', label: '프론트엔드' },
-  { id: 'backend', label: '백엔드' },
-  { id: 'algorithm', label: '알고리즘' },
-  { id: 'database', label: '데이터베이스' },
-]
+import { stackNames, User, joinUser } from '@/api'
 
 const notificationOptions = [
   { value: 'agree', label: '알림 허용' },
@@ -29,13 +23,30 @@ export default function SignupForm() {
     resolver: zodResolver(SignupSchema),
     defaultValues: {
       email: '',
-      stack: [],
+      stackNames: [],
       notification: 'agree',
     },
   })
 
-  const onSubmit = (data: z.infer<typeof SignupSchema>) => {
-    console.log(data)
+  // enum 값을 배열로 변환
+  const techStackOptions = Object.keys(stackNames).map((key) => ({
+    id: stackNames[key as keyof typeof stackNames],
+    label: key,
+  }))
+
+  const onSubmit = async (data: z.infer<typeof SignupSchema>) => {
+    const user: User = {
+      email: data.email,
+      stackNames: data.stackNames,
+      notifications: data.notification === 'agree',
+    }
+
+    try {
+      const response = await joinUser(user)
+      console.log(response)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -58,7 +69,7 @@ export default function SignupForm() {
 
         <CheckboxGroup
           control={form.control}
-          name="stack"
+          name="stackNames"
           label="기술 스택"
           description="선택한 기술을 기반으로 CS 질문을 생성해요"
           options={techStackOptions}

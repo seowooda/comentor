@@ -1,24 +1,18 @@
+import { UserResponse } from '@/api/services/user/model'
 import { HttpResponse, http } from 'msw'
 
 //예시
-export const user = [
-  //회원가입
-  http.post('/api/v1/members/register', async ({ request }) => {
-    const info = await request.json()
-
-    return HttpResponse.json(info, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
+export const userHandlers = [
+  // POST /user/join
+  http.post(`${process.env.NEXT_PUBLIC_API_URL}/user/join`, () => {
+    return HttpResponse.json<UserResponse>({
+      code: 200,
+      message: 'Success',
+      result: {
+        email: 'koeun0409@gmail.com',
+        notifications: true,
+        stackNames: ['FRONTEND', 'BACKEND'],
       },
     })
-  }),
-
-  //테ㅛ스트룔
-  http.get('/users', () => {
-    // Response resolver allows you to react to captured requests,
-    // respond with mock responses or passthrough requests entirely.
-    // For now, let’s just print a message to the console.
-    return HttpResponse.json({})
   }),
 ]
