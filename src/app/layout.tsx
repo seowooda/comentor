@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Header from '@/components/header/header'
+import { MSWComponent } from '@/api/MSWComponent'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -15,11 +16,13 @@ const RootLayout = ({
   return (
     <html lang="en">
       <body className="flex min-h-screen flex-col antialiased">
-        <header className="mx-[60px]">
-          <Header />
-        </header>
+        <MSWComponent>
+          <header className="mx-[60px]">
+            <Header />
+          </header>
 
-        {children}
+          {children}
+        </MSWComponent>
       </body>
     </html>
   )
