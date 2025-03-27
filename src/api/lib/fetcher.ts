@@ -36,13 +36,13 @@ export const fetcher = async <T>(
 
 // ✅ GET 요청 (React Query)
 export const useGetQuery = <T>(
-  key: string[],
+  queryKey: string[],
   url: string,
   auth: boolean = false,
   options?: UseQueryOptions<T, Error>,
 ) => {
   return useQuery<T, Error>({
-    queryKey: key,
+    queryKey: queryKey,
     queryFn: () => fetcher<T>(url, { method: 'GET', auth }),
     ...options,
   })

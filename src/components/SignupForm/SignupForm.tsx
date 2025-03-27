@@ -11,7 +11,8 @@ import {
   RadioGroupField,
 } from '@/components/Form/index'
 import { SignupSchema } from '@/hooks'
-import { stackNames, User, joinUser } from '@/api'
+import { stackNames, User } from '@/api'
+import { usePostMutation } from '@/api/lib/fetcher'
 
 const notificationOptions = [
   { value: 'agree', label: '알림 허용' },
@@ -34,19 +35,18 @@ export default function SignupForm() {
     label: key,
   }))
 
+  const { mutate } = usePostMutation<
+    { message: string },
+    User
+  >('/user/join')
+
   const onSubmit = async (data: z.infer<typeof SignupSchema>) => {
     const user: User = {
-      email: data.email,
-      stackNames: data.stackNames,
-      notifications: data.notification === 'agree',
+      ...data,
+      notification: data.notification === 'agree',
     }
 
-    try {
-      const response = await joinUser(user)
-      console.log(response)
-    } catch (error) {
-      console.error(error)
-    }
+    mutate(user)
   }
 
   return (

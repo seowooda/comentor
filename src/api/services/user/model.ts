@@ -7,7 +7,7 @@ export enum stackNames {
 
 export interface User {
   email: string
-  notifications: boolean
+  notification: boolean
   stackNames: string[]
 }
 

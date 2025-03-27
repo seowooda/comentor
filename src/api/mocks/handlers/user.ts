@@ -10,7 +10,7 @@ export const userHandlers = [
       message: 'Success',
       result: {
         email: 'koeun0409@gmail.com',
-        notifications: true,
+        notification: true,
         stackNames: ['FRONTEND', 'BACKEND'],
       },
     })
