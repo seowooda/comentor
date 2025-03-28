@@ -11,13 +11,10 @@ import {
   RadioGroupField,
 } from '@/components/Form/index'
 import { SignupSchema } from '@/hooks'
-
-const techStackOptions = [
-  { id: 'front', label: '프론트엔드' },
-  { id: 'backend', label: '백엔드' },
-  { id: 'algorithm', label: '알고리즘' },
-  { id: 'database', label: '데이터베이스' },
-]
+import { stackNames, User } from '@/api'
+import { usePostMutation } from '@/api/lib/fetcher'
+import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 
 const notificationOptions = [
   { value: 'agree', label: '알림 허용' },
@@ -25,17 +22,38 @@ const notificationOptions = [
 ]
 
 export default function SignupForm() {
+  const router = useRouter()
   const form = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
     defaultValues: {
       email: '',
-      stack: [],
+      stackNames: [],
       notification: 'agree',
     },
   })
 
-  const onSubmit = (data: z.infer<typeof SignupSchema>) => {
-    console.log(data)
+  // enum 값을 배열로 변환
+  const techStackOptions = Object.keys(stackNames).map((key) => ({
+    id: stackNames[key as keyof typeof stackNames],
+    label: key,
+  }))
+
+  const { mutate, isPending } = usePostMutation<{ message: string }, User>(
+    '/user/join',
+    {
+      onSuccess: () => {
+        router.push('/dashboard')
+      },
+    },
+  )
+
+  const onSubmit = async (data: z.infer<typeof SignupSchema>) => {
+    const user: User = {
+      ...data,
+      notification: data.notification === 'agree',
+    }
+
+    mutate(user)
   }
 
   return (
@@ -58,7 +76,7 @@ export default function SignupForm() {
 
         <CheckboxGroup
           control={form.control}
-          name="stack"
+          name="stackNames"
           label="기술 스택"
           description="선택한 기술을 기반으로 CS 질문을 생성해요"
           options={techStackOptions}
@@ -75,9 +93,9 @@ export default function SignupForm() {
         <Button
           type="submit"
           className="w-full cursor-pointer bg-slate-800 text-[14px] leading-6"
-          disabled={!form.formState.isValid}
+          disabled={!form.formState.isValid || form.formState.isSubmitting}
         >
-          회원 가입
+          {isPending ? <Loader2 className="animate-spin" /> : '회원 가입'}
         </Button>
       </form>
     </Form>
