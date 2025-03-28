@@ -13,6 +13,8 @@ import {
 import { SignupSchema } from '@/hooks'
 import { stackNames, User } from '@/api'
 import { usePostMutation } from '@/api/lib/fetcher'
+import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 
 const notificationOptions = [
   { value: 'agree', label: '알림 허용' },
@@ -20,6 +22,7 @@ const notificationOptions = [
 ]
 
 export default function SignupForm() {
+  const router = useRouter()
   const form = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
     defaultValues: {
@@ -35,10 +38,14 @@ export default function SignupForm() {
     label: key,
   }))
 
-  const { mutate } = usePostMutation<
-    { message: string },
-    User
-  >('/user/join')
+  const { mutate, isPending } = usePostMutation<{ message: string }, User>(
+    '/user/join',
+    {
+      onSuccess: () => {
+        router.push('/dashboard')
+      },
+    },
+  )
 
   const onSubmit = async (data: z.infer<typeof SignupSchema>) => {
     const user: User = {
@@ -86,9 +93,9 @@ export default function SignupForm() {
         <Button
           type="submit"
           className="w-full cursor-pointer bg-slate-800 text-[14px] leading-6"
-          disabled={!form.formState.isValid}
+          disabled={!form.formState.isValid || form.formState.isSubmitting}
         >
-          회원 가입
+          {isPending ? <Loader2 className="animate-spin" /> : '회원 가입'}
         </Button>
       </form>
     </Form>

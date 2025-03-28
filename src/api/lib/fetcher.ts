@@ -36,11 +36,12 @@ export const fetcher = async <T>(
 export const useGetQuery = <T>(
   queryKey: string[],
   url: string,
-  options?: UseQueryOptions<T, Error>,
+  options?: Omit<UseQueryOptions<T, Error>, 'queryKey' | 'queryFn'>,
 ) => {
   return useQuery<T, Error>({
     queryKey,
     queryFn: () => fetcher<T>(url, { method: 'GET' }),
+    staleTime: 1000 * 60 * 5, // ✅ 5분 동안은 fresh 상태 유지
     ...options,
   })
 }
