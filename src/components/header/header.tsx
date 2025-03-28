@@ -25,7 +25,7 @@ const Header = () => {
             <MessageSquareCode className="h-[29px] w-[28px] text-slate-800 outline-slate-600" />
           </Link>
 
-          <nav className="hidden h-[66px] w-[395px] items-center justify-between px-6 md:flex">
+          <nav className="hidden h-[66px] items-center justify-between md:flex lg:w-[395px] lg:px-6">
             <Link
               href="/dashboard"
               className="flex flex-col items-center justify-center gap-2.5 px-2.5"
@@ -61,7 +61,7 @@ const Header = () => {
           </nav>
         </div>
 
-        <div className="flex h-[33px] items-center justify-between">
+        <div className="flex h-[33px] items-center gap-1 md:gap-2">
           <button className="hidden h-8 w-8 items-center justify-center gap-2.5 px-1 md:flex">
             <Bookmark className="h-5 w-5 cursor-pointer text-slate-800" />
           </button>
