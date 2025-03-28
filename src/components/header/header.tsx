@@ -61,7 +61,7 @@ const Header = () => {
           </nav>
         </div>
 
-        <div className="flex h-[33px] items-center gap-1 md:gap-2">
+        <div className="flex h-[33px] items-center justify-between">
           <button className="hidden h-8 w-8 items-center justify-center gap-2.5 px-1 md:flex">
             <Bookmark className="h-5 w-5 cursor-pointer text-slate-800" />
           </button>
