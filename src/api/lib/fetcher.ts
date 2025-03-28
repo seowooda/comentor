@@ -6,7 +6,7 @@ import {
   UseMutationOptions,
 } from '@tanstack/react-query'
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface FetchOptions extends RequestInit {
   auth?: boolean
@@ -14,16 +14,14 @@ interface FetchOptions extends RequestInit {
 
 export const fetcher = async <T>(
   url: string,
-  { auth = false, headers, ...options }: FetchOptions = {},
+  options: FetchOptions = {},
 ): Promise<T> => {
-  const token = auth ? useAuthStore.getState().token : null
-
   const response = await fetch(`${API_URL}${url}`, {
     ...options,
+    credentials: 'include', // ✅ 인증 쿠키 포함
     headers: {
       'Content-Type': 'application/json',
-      ...(auth && token ? { Authorization: `Bearer ${token}` } : {}),
-      ...headers,
+      ...options.headers,
     },
   })
 
@@ -38,12 +36,11 @@ export const fetcher = async <T>(
 export const useGetQuery = <T>(
   queryKey: string[],
   url: string,
-  auth: boolean = false,
   options?: UseQueryOptions<T, Error>,
 ) => {
   return useQuery<T, Error>({
-    queryKey: queryKey,
-    queryFn: () => fetcher<T>(url, { method: 'GET', auth }),
+    queryKey,
+    queryFn: () => fetcher<T>(url, { method: 'GET' }),
     ...options,
   })
 }
@@ -51,12 +48,11 @@ export const useGetQuery = <T>(
 // ✅ POST 요청 (React Query)
 export const usePostMutation = <T, V>(
   url: string,
-  auth: boolean = false,
   options?: UseMutationOptions<T, Error, V>,
 ) => {
   return useMutation<T, Error, V>({
     mutationFn: (data: V) =>
-      fetcher<T>(url, { method: 'POST', body: JSON.stringify(data), auth }),
+      fetcher<T>(url, { method: 'POST', body: JSON.stringify(data) }),
     ...options,
   })
 }
@@ -64,12 +60,11 @@ export const usePostMutation = <T, V>(
 // ✅ PUT 요청 (React Query)
 export const usePutMutation = <T, V>(
   url: string,
-  auth: boolean = false,
   options?: UseMutationOptions<T, Error, V>,
 ) => {
   return useMutation<T, Error, V>({
     mutationFn: (data: V) =>
-      fetcher<T>(url, { method: 'PUT', body: JSON.stringify(data), auth }),
+      fetcher<T>(url, { method: 'PUT', body: JSON.stringify(data) }),
     ...options,
   })
 }
@@ -77,11 +72,10 @@ export const usePutMutation = <T, V>(
 // ✅ DELETE 요청 (React Query)
 export const useDeleteMutation = <T>(
   url: string,
-  auth: boolean = false,
   options?: UseMutationOptions<T, Error, void>,
 ) => {
   return useMutation<T, Error, void>({
-    mutationFn: () => fetcher<T>(url, { method: 'DELETE', auth }),
+    mutationFn: () => fetcher<T>(url, { method: 'DELETE' }),
     ...options,
   })
 }
