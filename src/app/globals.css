@@ -5,6 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --breakpoint-card-grid-2: 768px;
+  --breakpoint-card-grid-3: 1130px;
+  --breakpoint-card-grid-4: 1474px;
+  --breakpoint-card-grid-5: 1815px;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

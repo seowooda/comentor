@@ -1,7 +1,24 @@
 import { PlusCircle } from 'lucide-react'
+import { useState } from 'react'
 import { DashboardCard } from '../DashboardCard/DashboardCard'
+import { ProjectImportModal } from '../ProjectImportModal'
 
 const Dashboard = ({ filter }: { filter: string }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleModalOpen = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleProjectSubmit = (data: any) => {
+    console.log('프로젝트 생성:', data)
+    // 프로젝트 생성 로직 구현 필요
+  }
+
   const Card = [
     {
       id: 1,
@@ -80,8 +97,8 @@ const Dashboard = ({ filter }: { filter: string }) => {
     filter === 'all' ? Card : Card.filter((card) => card.status === filter)
 
   return (
-    <div className="flex w-full justify-center">
-      <div className="mx-auto grid grid-cols-1 gap-12 px-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+    <div className="flex w-full flex-wrap items-center justify-center gap-9">
+      <div className="card-grid-2:grid-cols-2 card-grid-3:grid-cols-3 card-grid-4:grid-cols-4 card-grid-5:grid-cols-5 grid grid-cols-1 gap-9">
         {filteredCards.map((card) => (
           <div key={card.id} className="flex justify-center">
             <DashboardCard card={card} />
@@ -92,10 +109,17 @@ const Dashboard = ({ filter }: { filter: string }) => {
           <PlusCircle
             size={52}
             className="cursor-pointer text-slate-400"
-            onClick={() => {}}
+            onClick={handleModalOpen}
           />
         </div>
       </div>
+
+      {isModalOpen && (
+        <ProjectImportModal
+          onClose={handleModalClose}
+          onSubmit={handleProjectSubmit}
+        />
+      )}
     </div>
   )
 }
