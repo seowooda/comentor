@@ -21,6 +21,6 @@ export const ProjectSchema = z.object({
 
 export const SignupSchema = z.object({
   email: emailField,
-  stack: stacksField,
+  stackNames: stacksField,
   notification: notificationOptions,
 })
