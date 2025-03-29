@@ -1,27 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 const OnboardingPage = () => {
-  const router = useRouter()
-
-  const handleGithubConnect = async () => {
-    try {
-      // GitHub OAuth 연동 로직 구현
-      console.log('GitHub 계정 연동 시작')
-
-      // 서버에 GitHub 연동 요청
-      // 연동 성공 시 다음 페이지로 이동
-
-      // 임시로 바로 대시보드로 이동
-      router.push('/dashboard')
-    } catch (error) {
-      console.error('GitHub 연동 오류:', error)
-      // 에러 처리 로직 추가 가능
-    }
-  }
-
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-white px-4 pb-[55px] md:px-[60px]">
       {/* 그라데이션 배경 */}
@@ -40,18 +22,24 @@ const OnboardingPage = () => {
         </div>
 
         {/* 깃허브 연동 버튼 */}
-        <button
-          onClick={handleGithubConnect}
-          className="flex h-[60px] w-full max-w-[420px] cursor-pointer items-center justify-center gap-[15px] rounded-[33px] bg-slate-800 px-[20px] py-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] transition-colors hover:bg-slate-700 md:h-[65px] md:px-[25px] md:py-[18px] lg:h-[73px] lg:px-[31px] lg:py-[20px]"
+        <Link
+          href={`${process.env.NEXT_PUBLIC_SOCIAL_LOGIN_GITHUB}?redirect_uri=${
+            process.env.VERCEL
+              ? 'https://comentor.vercel.app/auth/token'
+              : 'http://localhost:3000/auth/token'
+          }`}
         >
-          <div className="relative h-5 w-5 md:h-[22px] md:w-[22px] lg:h-6 lg:w-6">
-            <Image src="/images/Github.svg" alt="Github Icon" fill priority />
-          </div>
+          {/* <Link href={'http://localhost:3000/auth/token'}> */}
+          <button className="flex h-[60px] w-full max-w-[420px] cursor-pointer items-center justify-center gap-[15px] rounded-[33px] bg-slate-800 px-[20px] py-[16px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] transition-colors hover:bg-slate-700 md:h-[65px] md:px-[25px] md:py-[18px] lg:h-[73px] lg:px-[31px] lg:py-[20px]">
+            <div className="relative h-5 w-5 md:h-[22px] md:w-[22px] lg:h-6 lg:w-6">
+              <Image src="/images/Github.svg" alt="Github Icon" fill priority />
+            </div>
 
-          <span className="text-center text-lg font-medium text-slate-50 md:text-xl md:leading-[22px] lg:text-[24px] lg:leading-[24px]">
-            Github 연동하기
-          </span>
-        </button>
+            <span className="text-center text-lg font-medium text-slate-50 md:text-xl md:leading-[22px] lg:text-[24px] lg:leading-[24px]">
+              Github 연동하기
+            </span>
+          </button>
+        </Link>
       </div>
     </div>
   )
