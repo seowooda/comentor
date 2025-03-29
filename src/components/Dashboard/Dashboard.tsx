@@ -1,7 +1,24 @@
 import { PlusCircle } from 'lucide-react'
+import { useState } from 'react'
 import { DashboardCard } from '../DashboardCard/DashboardCard'
+import { ProjectImportModal } from '../ProjectImportModal'
 
 const Dashboard = ({ filter }: { filter: string }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleModalOpen = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleProjectSubmit = (data: any) => {
+    console.log('프로젝트 생성:', data)
+    // 프로젝트 생성 로직 구현 필요
+  }
+
   const Card = [
     {
       id: 1,
@@ -92,10 +109,17 @@ const Dashboard = ({ filter }: { filter: string }) => {
           <PlusCircle
             size={52}
             className="cursor-pointer text-slate-400"
-            onClick={() => {}}
+            onClick={handleModalOpen}
           />
         </div>
       </div>
+
+      {isModalOpen && (
+        <ProjectImportModal
+          onClose={handleModalClose}
+          onSubmit={handleProjectSubmit}
+        />
+      )}
     </div>
   )
 }
