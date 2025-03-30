@@ -1,62 +1,56 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
-import Cookies from 'js-cookie'
 
 const AuthCallback = () => {
   const router = useRouter()
-  const { setAccessToken, accessToken } = useAuthStore()
+  const searchParams = useSearchParams()
+  const { setAccessToken, setRole } = useAuthStore()
 
-  // ✅ AccessToken 재발급 요청 함수
+  const access = searchParams.get('accessToken') // ✅ URL에서 accessToken 가져오기
+  const refresh = searchParams.get('refreshToken') // ✅ URL에서 refreshToken 가져오기
+  const role =
+    (searchParams.get('role') as 'GUEST' | 'USER' | 'WITHDRAWN') || 'GUEST' // ✅ 기본값 처리
+
   const refreshAccessToken = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/refresh`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`, // 기존 accessToken (만료 가능)
-          },
-          credentials: 'include', // 🍪 쿠키 포함해서 요청 (필요 시)
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/user/refresh`,
+      {
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${refresh}`, // ✅ refreshToken을 Authorization 헤더에 포함
         },
-      )
+      },
+    )
 
-      if (!response.ok) throw new Error('Failed to refresh token')
-
-      const newAccessToken = response.headers
-        .get('Authorization')
-        ?.replace('Bearer ', '') // 새 accessToken 가져오기
-      if (!newAccessToken) throw new Error('New access token not found')
-
-      setAccessToken(newAccessToken) // Zustand에 저장
-      console.log('🔄 New AccessToken:', newAccessToken)
-    } catch (error) {
-      console.error('🔴 Failed to refresh token:', error)
-      // router.replace('/login') // 토큰 재발급 실패 시 로그인 페이지로 이동
+    if (!response.ok) {
+      console.error('Failed to refresh access token')
+      return
     }
+    const data = await response.json()
+    console.log(data)
   }
-
   useEffect(() => {
-    const saveTokens = () => {
-      // 쿠키에서 accessToken과 refreshToken 가져오기
-      const accessToken = Cookies.get('access')
-      const refreshToken = Cookies.get('refresh')
+    if (access && refresh) {
+      setAccessToken(access)
+      setRole(role)
 
-      if (accessToken) {
-        setAccessToken(accessToken) // Zustand에 저장
+      console.log('Access:', access)
+      console.log('Refresh:', refresh)
+      console.log('Role:', role)
+
+      // ✅ role에 따라 페이지 이동
+      if (role === 'GUEST' || role === 'WITHDRAWN') {
+        router.replace('/signup')
+      } else if (role === 'USER') {
+        // router.replace('/dashboard')
       }
-
-      console.log('AccessToken:', accessToken)
-      console.log('RefreshToken:', refreshToken)
-
-      // router.replace('/') // 로그인 후 메인 페이지로 이동
     }
-
-    saveTokens()
-  }, [router, setAccessToken])
+  }, [access, refresh, role, router, setAccessToken, setRole])
 
   return (
     <div>

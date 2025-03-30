@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/stores/AuthStore'
+import { useAuthStore } from '@/store/authStore'
 import {
   useQuery,
   useMutation,
@@ -8,6 +8,8 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
+const { accessToken } = useAuthStore.getState()
+
 interface FetchOptions extends RequestInit {
   auth?: boolean
 }
@@ -16,11 +18,11 @@ export const fetcher = async <T>(
   url: string,
   options: FetchOptions = {},
 ): Promise<T> => {
-  const response = await fetch(`${API_URL}${url}`, {
+  const response = await fetch(`/api${url}`, {
     ...options,
-    credentials: 'include', // ✅ 인증 쿠키 포함
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`, // ✅ 인증 헤더 설정
       ...options.headers,
     },
   })
