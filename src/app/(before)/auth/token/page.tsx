@@ -3,6 +3,9 @@
 import { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
+import Cookies from 'js-cookie'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 const AuthCallback = () => {
   const router = useRouter()
@@ -15,17 +18,14 @@ const AuthCallback = () => {
     (searchParams.get('role') as 'GUEST' | 'USER' | 'WITHDRAWN') || 'GUEST' // ✅ 기본값 처리
 
   const refreshAccessToken = async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/user/refresh`,
-      {
-        method: 'POST',
+    const response = await fetch(`/api/user/refresh`, {
+      method: 'POST',
 
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${refresh}`, // ✅ refreshToken을 Authorization 헤더에 포함
-        },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${refresh}`,
       },
-    )
+    })
 
     if (!response.ok) {
       console.error('Failed to refresh access token')
@@ -39,11 +39,6 @@ const AuthCallback = () => {
       setAccessToken(access)
       setRole(role)
 
-      console.log('Access:', access)
-      console.log('Refresh:', refresh)
-      console.log('Role:', role)
-
-      // ✅ role에 따라 페이지 이동
       if (role === 'GUEST' || role === 'WITHDRAWN') {
         router.replace('/signup')
       } else if (role === 'USER') {
