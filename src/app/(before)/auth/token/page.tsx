@@ -3,7 +3,6 @@
 import { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
-import Cookies from 'js-cookie'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -12,8 +11,8 @@ const AuthCallback = () => {
   const searchParams = useSearchParams()
   const { setAccessToken, setRole } = useAuthStore()
 
-  const access = searchParams.get('accessToken') // ✅ URL에서 accessToken 가져오기
-  const refresh = searchParams.get('refreshToken') // ✅ URL에서 refreshToken 가져오기
+  const access = searchParams.get('accessToken')
+  const refresh = searchParams.get('refreshToken')
   const role =
     (searchParams.get('role') as 'GUEST' | 'USER' | 'WITHDRAWN') || 'GUEST' // ✅ 기본값 처리
 
@@ -42,7 +41,7 @@ const AuthCallback = () => {
       if (role === 'GUEST' || role === 'WITHDRAWN') {
         router.replace('/signup')
       } else if (role === 'USER') {
-        // router.replace('/dashboard')
+        router.replace('/dashboard')
       }
     }
   }, [access, refresh, role, router, setAccessToken, setRole])
