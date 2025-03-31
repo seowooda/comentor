@@ -8,25 +8,8 @@ import { StatusRadioGroup, StatusOption } from './StatusRadioGroup'
 import { ModalButtons } from './ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
 import { ProjectSchema } from '@/hooks'
-
-/**
- * 프로젝트 목록 데이터
- * 차후에 API 연동으로 실제 데이터로 대체될 예정
- */
-const repositories: Repository[] = [
-  {
-    value: 'commit-mentor',
-    label: 'jinu/commit-mentor',
-  },
-  {
-    value: 'portfolio',
-    label: 'jinu/portfolio',
-  },
-  {
-    value: 'blog',
-    label: 'jinu/blog',
-  },
-]
+import { useGithubRepos, GithubRepo } from '@/api/services/github'
+import { useEffect, useState } from 'react'
 
 /**
  * 진행 상태 옵션 정의
@@ -48,6 +31,20 @@ export const ProjectImportModal = ({
   onClose,
   onSubmit,
 }: ProjectImportModalProps) => {
+  const [repositories, setRepositories] = useState<Repository[]>([])
+  const { data: reposData, isLoading } = useGithubRepos()
+
+  // GitHub 저장소 데이터 로드 시 저장소 목록 업데이트
+  useEffect(() => {
+    if (reposData?.result) {
+      const mappedRepos = reposData.result.map((repo: GithubRepo) => ({
+        value: repo.name,
+        label: repo.name,
+      }))
+      setRepositories(mappedRepos)
+    }
+  }, [reposData])
+
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(ProjectSchema),
     defaultValues: {
@@ -84,7 +81,11 @@ export const ProjectImportModal = ({
               control={form.control}
               name="title"
               render={({ field }) => (
-                <TitleSelect field={field} repositories={repositories} />
+                <TitleSelect
+                  field={field}
+                  repositories={repositories}
+                  isLoading={isLoading}
+                />
               )}
             />
 

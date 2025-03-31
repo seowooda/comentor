@@ -41,12 +41,17 @@ export interface Repository {
 interface TitleSelectProps {
   field: ControllerRenderProps<ProjectFormValues, 'title'>
   repositories: Repository[]
+  isLoading?: boolean
 }
 
 /**
  * 프로젝트 제목 선택을 위한 드롭다운 컴포넌트
  */
-export const TitleSelect = ({ field, repositories }: TitleSelectProps) => {
+export const TitleSelect = ({
+  field,
+  repositories,
+  isLoading = false,
+}: TitleSelectProps) => {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const titleInputId = 'project-title-input'
@@ -73,7 +78,9 @@ export const TitleSelect = ({ field, repositories }: TitleSelectProps) => {
    */
   const selectedLabel = field.value
     ? repositories.find((repo) => repo.value === field.value)?.label
-    : 'Repository 불러오기'
+    : isLoading
+      ? '저장소 목록 로딩 중...'
+      : 'Repository 불러오기'
 
   return (
     <FormItem className="flex flex-col gap-1 self-stretch">
@@ -115,7 +122,9 @@ export const TitleSelect = ({ field, repositories }: TitleSelectProps) => {
               onValueChange={setSearch}
             />
             <CommandList>
-              <CommandEmpty>프로젝트가 없습니다.</CommandEmpty>
+              <CommandEmpty>
+                {isLoading ? '저장소 목록 로딩 중...' : '프로젝트가 없습니다.'}
+              </CommandEmpty>
               <CommandGroup>
                 {repositories
                   .filter(
