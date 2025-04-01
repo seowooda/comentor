@@ -112,6 +112,8 @@ export const ProjectImportModal = ({
         })
         form.reset()
         onClose()
+        // 부모 컴포넌트의 onSubmit 함수 호출하여 대시보드 갱신
+        onSubmit(data)
       },
       onError: (error) => {
         toast({

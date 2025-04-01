@@ -22,8 +22,8 @@ export function DashboardSelect({
       <SelectContent>
         <SelectGroup>
           <SelectItem value="all">전체</SelectItem>
-          <SelectItem value="Progress">진행 중인 프로젝트</SelectItem>
-          <SelectItem value="Done">완료된 프로젝트</SelectItem>
+          <SelectItem value="PROGRESS">진행 중인 프로젝트</SelectItem>
+          <SelectItem value="DONE">완료된 프로젝트</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>

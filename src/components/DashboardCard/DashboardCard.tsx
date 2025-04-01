@@ -11,11 +11,20 @@ type CardType = {
 }
 
 export const DashboardCard = ({ card }: { card: CardType }) => {
-  const formatDate = (dateString: string) => dateString.replace(/-/g, '. ')
+  // 날짜에서 시간을 제외하고 YYYY. MM. DD 형식으로 변환
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return `${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, '0')}. ${String(date.getDate()).padStart(2, '0')}`
+  }
+
+  // 상태값 표시 텍스트 변환
+  const getStatusText = (status: string) => {
+    return status === 'PROGRESS' ? 'Progress' : 'Done'
+  }
 
   return (
     <article className="flex w-[306px] rounded-[8px] border border-slate-400 bg-white p-[21px] shadow-md">
-      <div className="flex flex-col gap-[22px]">
+      <div className="flex w-full flex-col gap-[22px]">
         {/* Header Section */}
         <header className="flex justify-between">
           <h2 className="text-[20px] font-semibold">{card.title}</h2>
@@ -49,13 +58,13 @@ export const DashboardCard = ({ card }: { card: CardType }) => {
           <div className="flex items-center gap-1">
             <span
               className={`h-[7px] w-[7px] rounded-full ${
-                card.status === 'Progress' ? 'bg-yellow-500' : 'bg-emerald-500'
+                card.status === 'PROGRESS' ? 'bg-yellow-500' : 'bg-emerald-500'
               }`}
               aria-label={
-                card.status === 'Progress' ? 'In Progress' : 'Completed'
+                card.status === 'PROGRESS' ? 'In Progress' : 'Completed'
               }
             ></span>
-            <p>{card.status}</p>
+            <p>{getStatusText(card.status)}</p>
           </div>
           <time dateTime={card.updated_At}>
             Updated {formatDate(card.updated_At)}
