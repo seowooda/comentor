@@ -60,7 +60,13 @@ export const TitleSelect = ({
    * 프로젝트 선택 핸들러
    */
   const handleSelect = (currentValue: string) => {
-    field.onChange(currentValue)
+    // value에서 저장소 이름만 추출하여 필드에 설정
+    const selectedRepo = repositories.find(
+      (repo) => repo.value === currentValue,
+    )
+    if (selectedRepo) {
+      field.onChange(selectedRepo.label)
+    }
     setOpen(false)
   }
 
@@ -77,7 +83,7 @@ export const TitleSelect = ({
    * 선택된 프로젝트 라벨 찾기
    */
   const selectedLabel = field.value
-    ? repositories.find((repo) => repo.value === field.value)?.label
+    ? field.value
     : isLoading
       ? '저장소 목록 로딩 중...'
       : 'Repository 불러오기'

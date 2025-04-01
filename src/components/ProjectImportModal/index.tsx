@@ -38,7 +38,7 @@ export const ProjectImportModal = ({
   useEffect(() => {
     if (reposData?.result) {
       const mappedRepos = reposData.result.map((repo: GithubRepo) => ({
-        value: repo.name,
+        value: `${repo.id}-${repo.name}`,
         label: repo.name,
       }))
       setRepositories(mappedRepos)
@@ -56,7 +56,31 @@ export const ProjectImportModal = ({
   })
 
   const handleSubmit = (data: ProjectFormValues) => {
-    onSubmit(data)
+    // 선택된 레포지토리의 ID 추출
+    const selectedRepo = repositories.find((repo) => repo.label === data.title)
+    let repoId = null // 기본값은 null로 설정
+
+    if (selectedRepo && selectedRepo.value) {
+      // value 형식이 'id-name'이므로 ID 부분만 추출
+      const idStr = selectedRepo.value.split('-')[0]
+      repoId = parseInt(idStr)
+    }
+
+    // 상태값 변환: 'in_progress' -> 'PROGRESS', 'completed' -> 'DONE'
+    const statusMap = {
+      in_progress: 'PROGRESS',
+      completed: 'DONE',
+    }
+
+    // 서버에 전송할 데이터 구조로 변환
+    const serverData = {
+      id: repoId, // repo.id를 그대로 사용
+      description: data.description,
+      role: data.role,
+      status: statusMap[data.status as keyof typeof statusMap],
+    }
+
+    onSubmit(serverData as any)
     form.reset()
     onClose()
   }

@@ -18,8 +18,5 @@ export interface GithubRepo {
  * @returns GitHub 저장소 목록 조회 쿼리 결과
  */
 export const useGithubRepos = () => {
-  return useGetQuery<GithubRepoResponse>(
-    ['github', 'repos'],
-    '/api/github/repos',
-  )
+  return useGetQuery<GithubRepoResponse>(['github', 'repos'], '/github/repos')
 }
