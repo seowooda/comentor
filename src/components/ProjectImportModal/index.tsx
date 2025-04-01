@@ -37,8 +37,13 @@ export const ProjectImportModal = ({
     'idle' | 'loading' | 'error'
   >('idle')
   const [errorMessage, setErrorMessage] = useState('')
-  const { data: reposData, isLoading } = useGithubRepos()
+  const { data: reposData, isLoading, refetch } = useGithubRepos()
   const { mutate: createProject } = useProjectCreate()
+
+  // 컴포넌트 마운트 시 GitHub 레포지토리 목록 강제 새로고침
+  useEffect(() => {
+    refetch()
+  }, [refetch])
 
   // GitHub 저장소 데이터 로드 시 저장소 목록 업데이트
   useEffect(() => {
