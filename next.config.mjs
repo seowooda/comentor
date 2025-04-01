@@ -8,6 +8,10 @@ const nextConfig = {
       },
     ]
   },
+
+  images: {
+    domains: ['avatars.githubusercontent.com'],
+  },
   output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,

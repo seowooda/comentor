@@ -22,7 +22,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     Cookies.set('accessToken', token, {
       secure: true,
       sameSite: 'Strict',
-      expires: 1 / 24, // ✅ 1시간 유지
+      expires: 1 / 24,
     })
     set({ accessToken: token })
   },

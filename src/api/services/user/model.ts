@@ -9,6 +9,7 @@ export interface User {
   email: string
   notification: boolean
   stackNames: string[]
+  avatarUrl?: string
 }
 
 export interface UserResponse {
