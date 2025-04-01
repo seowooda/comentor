@@ -3,6 +3,7 @@ import './globals.css'
 import Header from '@/components/header/header'
 import { MSWComponent } from '@/api/MSWComponent'
 import ReactQueryProvider from '@/providers/ReactQueryClient'
+import { Toaster } from '@/components/ui/toaster'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -25,6 +26,7 @@ const RootLayout = ({
               </header>
 
               {children}
+              <Toaster />
             </ReactQueryProvider>
           </MSWComponent>
         ) : (
@@ -34,6 +36,7 @@ const RootLayout = ({
             </header>
 
             {children}
+            <Toaster />
           </ReactQueryProvider>
         )}
       </body>

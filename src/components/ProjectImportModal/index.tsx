@@ -10,6 +10,8 @@ import { Form, FormField } from '@/components/ui/form'
 import { ProjectSchema } from '@/hooks'
 import { useGithubRepos, GithubRepo } from '@/api/services/github'
 import { useEffect, useState } from 'react'
+import { useProjectCreate, ProjectCreateRequest } from '@/api/services/project'
+import { useToast } from '@/components/ui/use-toast'
 
 /**
  * 진행 상태 옵션 정의
@@ -33,6 +35,8 @@ export const ProjectImportModal = ({
 }: ProjectImportModalProps) => {
   const [repositories, setRepositories] = useState<Repository[]>([])
   const { data: reposData, isLoading } = useGithubRepos()
+  const { mutate: createProject, isPending } = useProjectCreate()
+  const { toast } = useToast()
 
   // GitHub 저장소 데이터 로드 시 저장소 목록 업데이트
   useEffect(() => {
@@ -58,12 +62,29 @@ export const ProjectImportModal = ({
   const handleSubmit = (data: ProjectFormValues) => {
     // 선택된 레포지토리의 ID 추출
     const selectedRepo = repositories.find((repo) => repo.label === data.title)
-    let repoId = null // 기본값은 null로 설정
 
-    if (selectedRepo && selectedRepo.value) {
-      // value 형식이 'id-name'이므로 ID 부분만 추출
-      const idStr = selectedRepo.value.split('-')[0]
-      repoId = parseInt(idStr)
+    // 레포지토리가 선택되지 않았다면 토스트 메시지 표시 후 함수 종료
+    if (!selectedRepo || !selectedRepo.value) {
+      toast({
+        title: '프로젝트 생성 실패',
+        description: '유효한 GitHub 레포지토리를 선택해주세요.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    // value 형식이 'id-name'이므로 ID 부분만 추출
+    const idStr = selectedRepo.value.split('-')[0]
+    const repoId = parseInt(idStr)
+
+    // ID 파싱에 실패했다면 토스트 메시지 표시 후 함수 종료
+    if (isNaN(repoId)) {
+      toast({
+        title: '프로젝트 생성 실패',
+        description: '유효한 GitHub 레포지토리 ID를 확인할 수 없습니다.',
+        variant: 'destructive',
+      })
+      return
     }
 
     // 상태값 변환: 'in_progress' -> 'PROGRESS', 'completed' -> 'DONE'
@@ -73,16 +94,33 @@ export const ProjectImportModal = ({
     }
 
     // 서버에 전송할 데이터 구조로 변환
-    const serverData = {
-      id: repoId, // repo.id를 그대로 사용
+    const serverData: ProjectCreateRequest = {
+      id: repoId,
       description: data.description,
       role: data.role,
-      status: statusMap[data.status as keyof typeof statusMap],
+      status: statusMap[data.status as keyof typeof statusMap] as
+        | 'PROGRESS'
+        | 'DONE',
     }
 
-    onSubmit(serverData as any)
-    form.reset()
-    onClose()
+    // API 직접 호출
+    createProject(serverData, {
+      onSuccess: (response) => {
+        toast({
+          title: '프로젝트 생성 성공',
+          description: '프로젝트가 성공적으로 생성되었습니다.',
+        })
+        form.reset()
+        onClose()
+      },
+      onError: (error) => {
+        toast({
+          title: '프로젝트 생성 실패',
+          description: error.message || '프로젝트 생성 중 오류가 발생했습니다.',
+          variant: 'destructive',
+        })
+      },
+    })
   }
 
   // 프로젝트 제목이 비어있는지 확인
