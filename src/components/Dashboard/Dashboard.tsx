@@ -1,15 +1,27 @@
-import { PlusCircle } from 'lucide-react'
+import { PlusCircle, Check } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { DashboardCard } from '../DashboardCard/DashboardCard'
 import { ProjectImportModal } from '../ProjectImportModal'
 import { useProjectList } from '@/api/services/project'
+import { ProjectFormValues } from '../ProjectImportModal/TitleSelect'
 
 const Dashboard = ({ filter }: { filter: string }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [projects, setProjects] = useState<any[]>([])
+  const [createSuccess, setCreateSuccess] = useState(false)
 
   // API에서 프로젝트 목록 조회 (필터링은 프론트엔드에서 처리)
   const { data: projectsData, isLoading, refetch } = useProjectList()
+
+  // 성공 메시지 자동 숨김 타이머
+  useEffect(() => {
+    if (createSuccess) {
+      const timer = setTimeout(() => {
+        setCreateSuccess(false)
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [createSuccess])
 
   // 프로젝트 데이터 변환 및 필터링
   useEffect(() => {
@@ -46,8 +58,16 @@ const Dashboard = ({ filter }: { filter: string }) => {
     setIsModalOpen(false)
   }
 
-  const handleProjectSubmit = async () => {
+  const handleProjectSubmit = async (
+    data?: ProjectFormValues,
+    success?: boolean,
+  ) => {
     await refetch() // 프로젝트 목록 갱신
+
+    // 성공 플래그가 전달되면 성공 상태 설정
+    if (success) {
+      setCreateSuccess(true)
+    }
   }
 
   // 프로젝트 목록 갱신 함수
@@ -64,7 +84,19 @@ const Dashboard = ({ filter }: { filter: string }) => {
   }
 
   return (
-    <div className="flex w-full flex-wrap items-center justify-center gap-9">
+    <div className="relative flex w-full flex-wrap items-center justify-center gap-9">
+      {/* 프로젝트 생성 성공 알림 */}
+      {createSuccess && (
+        <div className="fixed top-5 left-1/2 z-50 -translate-x-1/2 transform">
+          <div className="animate-slideDown flex items-center gap-2 rounded-lg bg-green-100 px-4 py-3 shadow-lg">
+            <Check className="h-5 w-5 text-green-600" />
+            <p className="text-sm font-medium text-green-800">
+              프로젝트가 성공적으로 생성되었습니다.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="card-grid-2:grid-cols-2 card-grid-3:grid-cols-3 card-grid-4:grid-cols-4 card-grid-5:grid-cols-5 grid grid-cols-1 gap-9">
         {projects.length > 0 ? (
           <>

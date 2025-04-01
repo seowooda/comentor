@@ -10,10 +10,9 @@ import {
 import { ModalButtons } from '../ProjectImportModal/ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
 import { z } from 'zod'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useProjectUpdate, ProjectUpdateRequest } from '@/api/services/project'
-import { useToast } from '@/components/ui/use-toast'
-import { ProjectFormValues } from '../ProjectImportModal/TitleSelect'
+import { Loader2 } from 'lucide-react'
 
 // 프로젝트 수정 폼 스키마
 const ProjectEditSchema = z.object({
@@ -54,31 +53,36 @@ export const ProjectEditModal = ({
   onClose,
   onSubmit,
 }: ProjectEditModalProps) => {
-  const { mutate: updateProject, isPending } = useProjectUpdate(projectId)
-  const { toast } = useToast()
+  const [submitStatus, setSubmitStatus] = useState<
+    'idle' | 'loading' | 'error'
+  >('idle')
+  const [errorMessage, setErrorMessage] = useState('')
 
-  // 초기 상태값 변환: 'PROGRESS' -> 'in_progress', 'DONE' -> 'completed'
-  const initialStatus =
-    initialData.status === 'PROGRESS' ? 'in_progress' : 'completed'
+  const { mutate: updateProject } = useProjectUpdate(projectId)
 
-  const form = useForm<ProjectFormValues>({
-    resolver: zodResolver(ProjectEditSchema) as any, // 타입 호환성을 위해 any 사용
+  // 폼 초기화
+  const form = useForm<ProjectEditFormValues>({
+    resolver: zodResolver(ProjectEditSchema),
     defaultValues: {
-      title: '', // 수정 모달에서는 사용하지 않지만 타입 호환성을 위해 필요
-      description: initialData.description,
-      role: initialData.role,
-      status: initialStatus,
+      title: '', // 폼 제출 시 필요하지만 실제로 사용하지 않음
+      description: initialData.description || '',
+      role: initialData.role || '',
+      status: initialData.status === 'PROGRESS' ? 'in_progress' : 'completed',
     },
   })
 
-  const handleSubmit = (data: ProjectFormValues) => {
+  // 폼 제출 핸들러
+  const handleSubmit = (data: ProjectEditFormValues) => {
+    setSubmitStatus('loading')
+    setErrorMessage('')
+
     // 상태값 변환: 'in_progress' -> 'PROGRESS', 'completed' -> 'DONE'
     const statusMap = {
       in_progress: 'PROGRESS',
       completed: 'DONE',
     }
 
-    // 서버에 전송할 데이터 구조로 변환
+    // 서버에 전송할 데이터 구조
     const serverData: ProjectUpdateRequest = {
       description: data.description,
       role: data.role,
@@ -87,25 +91,18 @@ export const ProjectEditModal = ({
         | 'DONE',
     }
 
-    // API 직접 호출
+    // API 호출
     updateProject(serverData, {
       onSuccess: () => {
-        toast({
-          title: '프로젝트 수정 성공',
-          description: '프로젝트가 성공적으로 수정되었습니다.',
-        })
-        setTimeout(() => {
-          form.reset()
-          onClose()
-          onSubmit()
-        }, 2000) // 2초 후에 모달을 닫고 대시보드를 갱신
+        // 성공 시 즉시 모달 닫고 콜백 호출
+        onClose()
+        onSubmit()
       },
       onError: (error) => {
-        toast({
-          title: '프로젝트 수정 실패',
-          description: error.message || '프로젝트 수정 중 오류가 발생했습니다.',
-          variant: 'destructive',
-        })
+        setSubmitStatus('error')
+        setErrorMessage(
+          error.message || '프로젝트 수정 중 오류가 발생했습니다.',
+        )
       },
     })
   }
@@ -116,19 +113,26 @@ export const ProjectEditModal = ({
       aria-modal="true"
       role="dialog"
     >
-      <div className="w-[462px] rounded-[10px] bg-white px-6 py-8 shadow-md outline-1 outline-offset-[-1px] outline-slate-300">
+      <div className="animate-slideIn w-[462px] rounded-[10px] bg-white px-6 py-8 shadow-md outline-1 outline-offset-[-1px] outline-slate-300">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
             className="flex w-full flex-col gap-7"
           >
+            {/* 오류 메시지만 표시 (성공 메시지는 제거) */}
+            {submitStatus === 'error' && (
+              <div className="mb-2 rounded-md bg-red-50 p-3 text-center text-sm text-red-600 transition-all">
+                {errorMessage}
+              </div>
+            )}
+
             {/* 프로젝트 내용 필드 */}
             <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
                 <TextareaField
-                  field={field as any}
+                  field={field}
                   label="프로젝트 내용"
                   placeholder="프로젝트 내용을 입력하세요"
                 />
@@ -141,7 +145,7 @@ export const ProjectEditModal = ({
               name="role"
               render={({ field }) => (
                 <TextareaField
-                  field={field as any}
+                  field={field}
                   label="맡은 역할"
                   placeholder="맡은 역할을 입력하세요"
                 />
@@ -153,10 +157,7 @@ export const ProjectEditModal = ({
               control={form.control}
               name="status"
               render={({ field }) => (
-                <StatusRadioGroup
-                  field={field as any}
-                  options={statusOptions}
-                />
+                <StatusRadioGroup field={field} options={statusOptions} />
               )}
             />
 
@@ -167,6 +168,7 @@ export const ProjectEditModal = ({
                 onClose()
               }}
               isTitleEmpty={false}
+              isSubmitting={submitStatus === 'loading'}
             />
           </form>
         </Form>

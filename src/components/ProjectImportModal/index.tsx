@@ -11,7 +11,6 @@ import { ProjectSchema } from '@/hooks'
 import { useGithubRepos, GithubRepo } from '@/api/services/github'
 import { useEffect, useState } from 'react'
 import { useProjectCreate, ProjectCreateRequest } from '@/api/services/project'
-import { useToast } from '@/components/ui/use-toast'
 
 /**
  * 진행 상태 옵션 정의
@@ -23,7 +22,7 @@ const statusOptions: StatusOption[] = [
 
 interface ProjectImportModalProps {
   onClose: () => void
-  onSubmit: (data: ProjectFormValues) => void
+  onSubmit: (data?: ProjectFormValues, success?: boolean) => void
 }
 
 /**
@@ -34,9 +33,12 @@ export const ProjectImportModal = ({
   onSubmit,
 }: ProjectImportModalProps) => {
   const [repositories, setRepositories] = useState<Repository[]>([])
+  const [submitStatus, setSubmitStatus] = useState<
+    'idle' | 'loading' | 'error'
+  >('idle')
+  const [errorMessage, setErrorMessage] = useState('')
   const { data: reposData, isLoading } = useGithubRepos()
-  const { mutate: createProject, isPending } = useProjectCreate()
-  const { toast } = useToast()
+  const { mutate: createProject } = useProjectCreate()
 
   // GitHub 저장소 데이터 로드 시 저장소 목록 업데이트
   useEffect(() => {
@@ -60,16 +62,17 @@ export const ProjectImportModal = ({
   })
 
   const handleSubmit = (data: ProjectFormValues) => {
+    // 상태 초기화
+    setSubmitStatus('loading')
+    setErrorMessage('')
+
     // 선택된 레포지토리의 ID 추출
     const selectedRepo = repositories.find((repo) => repo.label === data.title)
 
-    // 레포지토리가 선택되지 않았다면 토스트 메시지 표시 후 함수 종료
+    // 레포지토리가 선택되지 않았다면 오류 상태 설정 후 함수 종료
     if (!selectedRepo || !selectedRepo.value) {
-      toast({
-        title: '프로젝트 생성 실패',
-        description: '유효한 GitHub 레포지토리를 선택해주세요.',
-        variant: 'destructive',
-      })
+      setSubmitStatus('error')
+      setErrorMessage('유효한 GitHub 레포지토리를 선택해주세요.')
       return
     }
 
@@ -77,13 +80,10 @@ export const ProjectImportModal = ({
     const idStr = selectedRepo.value.split('-')[0]
     const repoId = parseInt(idStr)
 
-    // ID 파싱에 실패했다면 토스트 메시지 표시 후 함수 종료
+    // ID 파싱에 실패했다면 오류 상태 설정 후 함수 종료
     if (isNaN(repoId)) {
-      toast({
-        title: '프로젝트 생성 실패',
-        description: '유효한 GitHub 레포지토리 ID를 확인할 수 없습니다.',
-        variant: 'destructive',
-      })
+      setSubmitStatus('error')
+      setErrorMessage('유효한 GitHub 레포지토리 ID를 확인할 수 없습니다.')
       return
     }
 
@@ -105,33 +105,35 @@ export const ProjectImportModal = ({
 
     // API 직접 호출
     createProject(serverData, {
-      onSuccess: (response) => {
-        // 백엔드에서 반환된 ID 로그
-        if (response.result && response.result.id) {
-          console.log(`프로젝트 생성 성공: ID=${response.result.id}`)
-        }
-
-        toast({
-          title: '프로젝트 생성 성공',
-          description: '프로젝트가 성공적으로 생성되었습니다.',
-        })
+      onSuccess: () => {
+        // 성공 시 즉시 모달 닫고 콜백 호출 (success 플래그 전달)
         form.reset()
         onClose()
-        // 부모 컴포넌트의 onSubmit 함수 호출하여 대시보드 갱신
-        onSubmit(data)
+        onSubmit(data, true)
       },
       onError: (error) => {
-        toast({
-          title: '프로젝트 생성 실패',
-          description: error.message || '프로젝트 생성 중 오류가 발생했습니다.',
-          variant: 'destructive',
-        })
+        setSubmitStatus('error')
+        setErrorMessage(
+          error.message || '프로젝트 생성 중 오류가 발생했습니다.',
+        )
       },
     })
   }
 
   // 프로젝트 제목이 비어있는지 확인
   const isTitleEmpty = !form.watch('title')
+
+  // 모달 하단 버튼
+  const modalButtons = (
+    <ModalButtons
+      onClose={() => {
+        form.reset()
+        onClose()
+      }}
+      isTitleEmpty={form.getValues('title') === ''}
+      isSubmitting={submitStatus === 'loading'}
+    />
+  )
 
   return (
     <div
@@ -145,6 +147,13 @@ export const ProjectImportModal = ({
             onSubmit={form.handleSubmit(handleSubmit)}
             className="flex w-full flex-col gap-7"
           >
+            {/* 오류 메시지만 표시 (성공 메시지는 제거) */}
+            {submitStatus === 'error' && (
+              <div className="mb-2 rounded-md bg-red-50 p-3 text-center text-sm text-red-600 transition-all">
+                {errorMessage}
+              </div>
+            )}
+
             {/* 프로젝트 제목 필드 */}
             <FormField
               control={form.control}
@@ -194,13 +203,7 @@ export const ProjectImportModal = ({
             />
 
             {/* 취소/완료 버튼 */}
-            <ModalButtons
-              onClose={() => {
-                form.reset()
-                onClose()
-              }}
-              isTitleEmpty={isTitleEmpty}
-            />
+            {modalButtons}
           </form>
         </Form>
       </div>
