@@ -6,35 +6,61 @@ import {
   UseMutationOptions,
 } from '@tanstack/react-query'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
-
-const { accessToken } = useAuthStore.getState()
-
-interface FetchOptions extends RequestInit {
-  auth?: boolean
-}
-
-export const fetcher = async <T>(
+const fetcher = async <T>(
   url: string,
-  options: FetchOptions = {},
+  options: RequestInit = {},
 ): Promise<T> => {
-  const response = await fetch(`/api${url}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`, // ✅ 인증 헤더 설정
-      ...options.headers,
-    },
-  })
+  const { accessToken, refreshToken, setAccessToken, clearAuth } =
+    useAuthStore.getState()
 
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status}`)
+  const fetchRequest = async (token: string | null): Promise<T> => {
+    const response = await fetch(`/api${url}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : '',
+        ...options.headers,
+      },
+    })
+
+    if (response.status === 403) {
+      // ✅ refreshToken이 없으면 바로 로그아웃 처리
+      if (!refreshToken) {
+        clearAuth()
+        throw new Error('토큰이 만료되었습니다. 다시 로그인해 주세요.')
+      }
+
+      // ✅ accessToken 갱신 요청
+      const refreshResponse = await fetch('/api/user/refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${refreshToken}`,
+        },
+      })
+
+      if (!refreshResponse.ok) {
+        clearAuth()
+        throw new Error('토큰이 만료되었습니다. 다시 로그인해 주세요.')
+      }
+
+      const data = await refreshResponse.json()
+      setAccessToken(data.accessToken)
+
+      // ✅ 새로운 accessToken으로 원래 요청 재시도
+      return await fetchRequest(data.accessToken)
+    }
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`)
+    }
+
+    return response.json()
   }
 
-  return response.json()
+  return await fetchRequest(accessToken)
 }
 
-// ✅ GET 요청 (React Query)
 export const useGetQuery = <T>(
   queryKey: string[],
   url: string,
@@ -43,12 +69,11 @@ export const useGetQuery = <T>(
   return useQuery<T, Error>({
     queryKey,
     queryFn: () => fetcher<T>(url, { method: 'GET' }),
-    staleTime: 1000 * 60 * 5, // ✅ 5분 동안은 fresh 상태 유지
+    staleTime: 1000 * 60 * 5,
     ...options,
   })
 }
 
-// ✅ POST 요청 (React Query)
 export const usePostMutation = <T, V>(
   url: string,
   options?: UseMutationOptions<T, Error, V>,
@@ -60,7 +85,6 @@ export const usePostMutation = <T, V>(
   })
 }
 
-// ✅ PUT 요청 (React Query)
 export const usePutMutation = <T, V>(
   url: string,
   options?: UseMutationOptions<T, Error, V>,
@@ -72,7 +96,6 @@ export const usePutMutation = <T, V>(
   })
 }
 
-// ✅ DELETE 요청 (React Query)
 export const useDeleteMutation = <T>(
   url: string,
   options?: UseMutationOptions<T, Error, void>,

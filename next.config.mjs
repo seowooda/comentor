@@ -8,9 +8,6 @@ const nextConfig = {
       },
     ]
   },
-  experimental: {
-    instrumentationHook: true,
-  },
   output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,
