@@ -106,6 +106,11 @@ export const ProjectImportModal = ({
     // API 직접 호출
     createProject(serverData, {
       onSuccess: (response) => {
+        // 백엔드에서 반환된 ID 로그
+        if (response.result && response.result.id) {
+          console.log(`프로젝트 생성 성공: ID=${response.result.id}`)
+        }
+
         toast({
           title: '프로젝트 생성 성공',
           description: '프로젝트가 성공적으로 생성되었습니다.',
