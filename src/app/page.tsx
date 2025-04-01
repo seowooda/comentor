@@ -1,5 +1,7 @@
+import OnboardingPage from '@/components/onboarding/OnboardingPage'
+
 const Home = () => {
-  return <div className="text-2xl">안녕하세요</div>
+  return <OnboardingPage />
 }
 
 export default Home

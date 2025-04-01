@@ -1,0 +1,32 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useAuthStore } from '@/store/authStore'
+
+const AuthCallback = () => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { setAccessToken, setRole, setRefreshToken } = useAuthStore()
+
+  const access = searchParams.get('accessToken')
+  const refresh = searchParams.get('refreshToken')
+  const role =
+    (searchParams.get('role') as 'GUEST' | 'USER' | 'WITHDRAWN') || 'GUEST' // ✅ 기본값 처리
+
+  useEffect(() => {
+    if (access && refresh) {
+      setAccessToken(access)
+      setRefreshToken(refresh)
+      setRole(role)
+
+      if (role === 'GUEST' || role === 'WITHDRAWN') {
+        router.replace('/signup')
+      } else if (role === 'USER') {
+        router.replace('/dashboard')
+      }
+    }
+  }, [access, refresh, role, router, setRefreshToken])
+}
+
+export default AuthCallback
