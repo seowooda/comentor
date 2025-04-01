@@ -125,9 +125,6 @@ export const ProjectImportModal = ({
     })
   }
 
-  // 프로젝트 제목이 비어있는지 확인
-  const isTitleEmpty = !form.watch('title')
-
   // 모달 하단 버튼
   const modalButtons = (
     <ModalButtons
@@ -135,7 +132,7 @@ export const ProjectImportModal = ({
         form.reset()
         onClose()
       }}
-      isTitleEmpty={form.getValues('title') === ''}
+      isTitleEmpty={!form.watch('title')}
       isSubmitting={submitStatus === 'loading'}
     />
   )
