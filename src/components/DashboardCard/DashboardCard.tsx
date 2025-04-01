@@ -12,14 +12,13 @@ import {
 } from '@/components/ui/dialog'
 
 type CardType = {
-  id: number
+  id: number // 프로젝트 고유 ID (API 통신용)
   title: string
   personal_stack: string[]
   description: string
   status: string
   created_At: string
   updated_At: string
-  projectId?: number // 실제 API에서 사용하는 프로젝트 ID
   role?: string // 프로젝트 맡은 역할
 }
 
@@ -47,7 +46,7 @@ export const DashboardCard = ({ card, onRefresh }: DashboardCardProps) => {
     }
   }, [updateStatus])
 
-  // API가 반환하는 실제 프로젝트 ID 사용
+  // 프로젝트 ID 사용
   const projectId = card.id
 
   const { mutate: deleteProject } = useProjectDelete(projectId)
@@ -198,14 +197,20 @@ export const DashboardCard = ({ card, onRefresh }: DashboardCardProps) => {
 
           {/* Tech Stack List */}
           <ul className="flex gap-[10px]">
-            {card.personal_stack.map((stack, index) => (
-              <li
-                key={index}
-                className="flex items-center rounded-[20px] bg-blue-100 px-2 py-1"
-              >
-                <span className="text-[8px] text-blue-500">{stack}</span>
+            {card.personal_stack && card.personal_stack.length > 0 ? (
+              card.personal_stack.map((stack, index) => (
+                <li
+                  key={index}
+                  className="flex items-center rounded-[20px] bg-blue-100 px-2 py-1"
+                >
+                  <span className="text-[8px] text-blue-500">{stack}</span>
+                </li>
+              ))
+            ) : (
+              <li className="flex items-center rounded-[20px] bg-gray-100 px-2 py-1">
+                <span className="text-[8px] text-gray-500">기타</span>
               </li>
-            ))}
+            )}
           </ul>
 
           {/* Description */}
