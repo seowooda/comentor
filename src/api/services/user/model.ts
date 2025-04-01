@@ -10,6 +10,7 @@ export interface User {
   notification: boolean
   stackNames: string[]
   avatarUrl?: string
+  userName?: string
 }
 
 export interface UserResponse {

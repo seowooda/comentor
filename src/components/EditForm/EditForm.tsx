@@ -33,7 +33,6 @@ export const EditForm = () => {
   const { data: user } = useGetQuery<UserResponse>(['user'], '/user/info', {
     refetchOnMount: true,
   })
-
   const form = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
     defaultValues: {
@@ -50,7 +49,6 @@ export const EditForm = () => {
         stackNames: user?.result.stackNames || [],
         notification: user?.result.notification ? 'agree' : 'deny',
       })
-      console.log(user.result.avatarUrl)
     }
   }, [user])
 
@@ -97,7 +95,7 @@ export const EditForm = () => {
           <div className="flex flex-1 flex-col">
             <p className="flex items-center gap-2">
               <Github size={18} />
-              <span>hi</span>
+              <span>{user?.result.userName}</span>
             </p>
             <p className="text-[14px] text-slate-500">
               깃허브 계정으로 로그인됨
