@@ -59,7 +59,7 @@ export interface ProjectUpdateResponse {
 export interface ProjectDeleteResponse {
   code: number
   message: string
-  result: any
+  result: null | { id: number }
 }
 
 /**

@@ -24,9 +24,7 @@ const ProjectEditSchema = z.object({
 // 프로젝트 수정 폼 값 타입
 export type ProjectEditFormValues = z.infer<typeof ProjectEditSchema>
 
-/**
- * 진행 상태 옵션 정의
- */
+//진행 상태 옵션 정의
 const statusOptions: StatusOption[] = [
   { id: 'in_progress', value: 'in_progress', label: '개발 중' },
   { id: 'completed', value: 'completed', label: '완료' },
@@ -75,7 +73,6 @@ export const ProjectEditModal = ({
     setSubmitStatus('loading')
     setErrorMessage('')
 
-    // 상태값 변환: 'in_progress' -> 'PROGRESS', 'completed' -> 'DONE'
     const statusMap = {
       in_progress: 'PROGRESS',
       completed: 'DONE',
@@ -93,7 +90,6 @@ export const ProjectEditModal = ({
     // API 호출
     updateProject(serverData, {
       onSuccess: () => {
-        // 성공 시 즉시 모달 닫고 콜백 호출
         onClose()
         onSubmit()
       },

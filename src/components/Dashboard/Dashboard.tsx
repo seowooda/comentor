@@ -4,13 +4,12 @@ import { DashboardCard } from '../DashboardCard/DashboardCard'
 import { ProjectImportModal } from '../ProjectImportModal'
 import { useProjectList } from '@/api/services/project'
 import { ProjectFormValues } from '../ProjectImportModal/TitleSelect'
+import type { CardType } from '../DashboardCard/DashboardCard'
 
 const Dashboard = ({ filter }: { filter: string }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [projects, setProjects] = useState<any[]>([])
+  const [projects, setProjects] = useState<CardType[]>([])
   const [createSuccess, setCreateSuccess] = useState(false)
-
-  // API에서 프로젝트 목록 조회 (필터링은 프론트엔드에서 처리)
   const { data: projectsData, isLoading, refetch } = useProjectList()
 
   // 성공 메시지 자동 숨김 타이머
@@ -33,13 +32,12 @@ const Dashboard = ({ filter }: { filter: string }) => {
           personal_stack: project.language ? [project.language] : [], // null 값은 빈 배열로 처리 (DashboardCard에서 '기타'로 표시)
           description: project.description,
           status: project.status || 'PROGRESS',
-          created_At: project.updatedAt || new Date().toISOString(),
-          updated_At: project.updatedAt || new Date().toISOString(),
+          createdAt: project.updatedAt || new Date().toISOString(),
+          updatedAt: project.updatedAt || new Date().toISOString(),
           role: project.role,
         }
       })
 
-      // 필터 적용 (필터가 'all'이 아닌 경우에만 적용)
       const filteredProjects =
         filter === 'all'
           ? formattedProjects
@@ -61,16 +59,15 @@ const Dashboard = ({ filter }: { filter: string }) => {
     data?: ProjectFormValues,
     success?: boolean,
   ) => {
-    await refetch() // 프로젝트 목록 갱신
+    await refetch()
 
-    // 성공 플래그가 전달되면 성공 상태 설정
     if (success) {
       setCreateSuccess(true)
     }
   }
 
-  // 프로젝트 목록 갱신 함수
-  const refreshProjects = () => {
+  //대시보드 갱신
+  const refreshDashboardProjects = () => {
     refetch()
   }
 
@@ -101,7 +98,10 @@ const Dashboard = ({ filter }: { filter: string }) => {
           <>
             {projects.map((project) => (
               <div key={project.id} className="flex justify-center">
-                <DashboardCard card={project} onRefresh={refreshProjects} />
+                <DashboardCard
+                  card={project}
+                  onRefresh={refreshDashboardProjects}
+                />
               </div>
             ))}
             <div className="flex h-52 items-center justify-center">
@@ -113,7 +113,6 @@ const Dashboard = ({ filter }: { filter: string }) => {
             </div>
           </>
         ) : (
-          // 프로젝트가 없는 경우 추가 버튼만 중앙에 표시
           <div className="col-span-full flex h-[300px] w-full items-center justify-center">
             <div className="flex flex-col items-center gap-4">
               <p className="text-lg text-slate-500">
