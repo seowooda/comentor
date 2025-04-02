@@ -12,7 +12,6 @@ import { Form, FormField } from '@/components/ui/form'
 import { z } from 'zod'
 import { useState } from 'react'
 import { useProjectUpdate, ProjectUpdateRequest } from '@/api/services/project'
-import { Loader2 } from 'lucide-react'
 
 // 프로젝트 수정 폼 스키마
 const ProjectEditSchema = z.object({
@@ -167,7 +166,6 @@ export const ProjectEditModal = ({
                 form.reset()
                 onClose()
               }}
-              isTitleEmpty={false}
               isSubmitting={submitStatus === 'loading'}
             />
           </form>

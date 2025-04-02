@@ -31,11 +31,11 @@ const Dashboard = ({ filter }: { filter: string }) => {
           id: project.id, // 백엔드에서 제공하는 프로젝트 ID
           title: project.name || '제목 없음',
           personal_stack: project.language ? [project.language] : [], // null 값은 빈 배열로 처리 (DashboardCard에서 '기타'로 표시)
-          description: project.description || '',
+          description: project.description,
           status: project.status || 'PROGRESS',
           created_At: project.updatedAt || new Date().toISOString(),
           updated_At: project.updatedAt || new Date().toISOString(),
-          role: project.role || '', // 백엔드에서 제공하는 role 사용
+          role: project.role,
         }
       })
 

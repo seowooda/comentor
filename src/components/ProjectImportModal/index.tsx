@@ -132,7 +132,6 @@ export const ProjectImportModal = ({
         form.reset()
         onClose()
       }}
-      isTitleEmpty={!form.watch('title')}
       isSubmitting={submitStatus === 'loading'}
     />
   )

@@ -3,7 +3,6 @@ import { Loader2 } from 'lucide-react'
 
 interface ModalButtonsProps {
   onClose: () => void
-  isTitleEmpty: boolean
   isSubmitting?: boolean
 }
 
@@ -13,7 +12,6 @@ interface ModalButtonsProps {
  */
 export const ModalButtons = ({
   onClose,
-  isTitleEmpty,
   isSubmitting = false,
 }: ModalButtonsProps) => {
   return (
@@ -29,9 +27,9 @@ export const ModalButtons = ({
       </Button>
       <Button
         type="submit"
-        disabled={isTitleEmpty || isSubmitting}
+        disabled={isSubmitting}
         className={`flex-1 ${
-          isTitleEmpty || isSubmitting
+          isSubmitting
             ? 'cursor-not-allowed bg-slate-400'
             : 'bg-slate-800 hover:bg-slate-900'
         }`}
