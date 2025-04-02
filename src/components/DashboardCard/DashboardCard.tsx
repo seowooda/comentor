@@ -1,67 +1,154 @@
-import { Pen, Trash2 } from 'lucide-react'
+import { Pen, Trash2, Loader2, Check } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ProjectEditModal } from '../ProjectEditModal'
+import { useProjectDelete } from '@/api/services/project'
+import { DeleteConfirmDialog } from './DeleteConfirmDialog'
+import { ProjectSuccessMessage } from './ProjectSuccessMessage'
+import { CardContent } from './CardContent'
 
-type CardType = {
-  id: number
+export type CardType = {
+  id: number // 프로젝트 고유 ID (API 통신용)
   title: string
   personal_stack: string[]
   description: string
   status: string
-  created_At: string
-  updated_At: string
+  createdAt: string
+  updatedAt: string
+  role: string
 }
 
-export const DashboardCard = ({ card }: { card: CardType }) => {
-  const formatDate = (dateString: string) => dateString.replace(/-/g, '. ')
+interface DashboardCardProps {
+  card: CardType
+  onRefresh: () => void // 대시보드 갱신 함수
+}
+
+/**
+ * 대시보드에 표시되는 프로젝트 카드 컴포넌트
+ */
+export const DashboardCard = ({ card, onRefresh }: DashboardCardProps) => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [deleteStatus, setDeleteStatus] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle')
+  const [updateStatus, setUpdateStatus] = useState<'idle' | 'success'>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  // 성공 메시지 자동 숨김 타이머
+  useEffect(() => {
+    if (updateStatus === 'success') {
+      const timer = setTimeout(() => {
+        setUpdateStatus('idle')
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [updateStatus])
+
+  const projectId = card.id
+  const { mutate: deleteProject } = useProjectDelete(projectId)
+
+  // 날짜에서 시간을 제외하고 YYYY. MM. DD 형식으로 변환
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return `${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, '0')}. ${String(date.getDate()).padStart(2, '0')}`
+  }
+
+  // 상태값 표시 텍스트 변환
+  const getStatusText = (status: string) => {
+    return status === 'PROGRESS' ? 'Progress' : 'Done'
+  }
+
+  // 편집 버튼 클릭 핸들러
+  const handleEditClick = () => {
+    setIsEditModalOpen(true)
+  }
+
+  // 프로젝트 수정 완료 핸들러
+  const handleEditSuccess = () => {
+    setUpdateStatus('success')
+    onRefresh() // 대시보드 갱신
+  }
+
+  // 삭제 버튼 클릭 핸들러
+  const handleDeleteClick = () => {
+    // ID가 없는 경우 처리
+    if (!projectId) {
+      setDeleteStatus('error')
+      setErrorMessage('유효한 프로젝트 ID가 없습니다.')
+      return
+    }
+
+    setIsDeleteDialogOpen(true)
+  }
+
+  // 삭제 확인 처리
+  const handleConfirmDelete = () => {
+    setDeleteStatus('loading')
+
+    deleteProject(undefined, {
+      onSuccess: () => {
+        setDeleteStatus('success')
+        setIsDeleteDialogOpen(false)
+        setTimeout(() => {
+          onRefresh() // 대시보드 갱신
+        }, 1000)
+      },
+      onError: (error) => {
+        setDeleteStatus('error')
+        setErrorMessage(
+          error.message || '프로젝트 삭제 중 오류가 발생했습니다.',
+        )
+      },
+    })
+  }
+
+  // 오류 닫기 핸들러
+  const handleCloseError = () => {
+    setDeleteStatus('idle')
+  }
 
   return (
-    <article className="flex w-[306px] rounded-[8px] border border-slate-400 bg-white p-[21px] shadow-md">
-      <div className="flex flex-col gap-[22px]">
-        {/* Header Section */}
-        <header className="flex justify-between">
-          <h2 className="text-[20px] font-semibold">{card.title}</h2>
-          <div className="flex items-center gap-[6px]">
-            <button aria-label="Edit">
-              <Pen size={14} className="cursor-pointer" />
-            </button>
-            <button aria-label="Delete">
-              <Trash2 size={16} className="cursor-pointer" />
-            </button>
-          </div>
-        </header>
+    <>
+      {/* 수정 성공 메시지 */}
+      {updateStatus === 'success' && <ProjectSuccessMessage type="update" />}
 
-        {/* Tech Stack List */}
-        <ul className="flex gap-[10px]">
-          {card.personal_stack.map((stack, index) => (
-            <li
-              key={index}
-              className="flex items-center rounded-[20px] bg-blue-100 px-2 py-1"
-            >
-              <span className="text-[8px] text-blue-500">{stack}</span>
-            </li>
-          ))}
-        </ul>
+      {/* 삭제 성공 또는 카드 내용 */}
+      {deleteStatus === 'success' ? (
+        <ProjectSuccessMessage type="delete" />
+      ) : (
+        <CardContent
+          card={card}
+          deleteStatus={deleteStatus}
+          errorMessage={errorMessage}
+          onEditClick={handleEditClick}
+          onDeleteClick={handleDeleteClick}
+          onCloseError={handleCloseError}
+        />
+      )}
 
-        {/* Description */}
-        <p className="text-[14px] font-light">{card.description}</p>
+      {/* 삭제 확인 대화상자 */}
+      <DeleteConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        projectTitle={card.title}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteStatus === 'loading'}
+        error={deleteStatus === 'error' ? { message: errorMessage } : undefined}
+      />
 
-        {/* Status & Updated Date */}
-        <footer className="flex justify-between text-[10px] font-light">
-          <div className="flex items-center gap-1">
-            <span
-              className={`h-[7px] w-[7px] rounded-full ${
-                card.status === 'Progress' ? 'bg-yellow-500' : 'bg-emerald-500'
-              }`}
-              aria-label={
-                card.status === 'Progress' ? 'In Progress' : 'Completed'
-              }
-            ></span>
-            <p>{card.status}</p>
-          </div>
-          <time dateTime={card.updated_At}>
-            Updated {formatDate(card.updated_At)}
-          </time>
-        </footer>
-      </div>
-    </article>
+      {/* 편집 모달 */}
+      {isEditModalOpen && (
+        <ProjectEditModal
+          projectId={projectId}
+          initialData={{
+            description: card.description,
+            role: card.role,
+            status: card.status as 'PROGRESS' | 'DONE',
+          }}
+          onClose={() => setIsEditModalOpen(false)}
+          onSubmit={handleEditSuccess}
+        />
+      )}
+    </>
   )
 }

@@ -17,7 +17,12 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { FormItem, FormLabel } from '@/components/ui/form'
+import {
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormField,
+} from '@/components/ui/form'
 import { ControllerRenderProps } from 'react-hook-form'
 
 /**
@@ -41,21 +46,33 @@ export interface Repository {
 interface TitleSelectProps {
   field: ControllerRenderProps<ProjectFormValues, 'title'>
   repositories: Repository[]
+  isLoading?: boolean
 }
 
 /**
  * 프로젝트 제목 선택을 위한 드롭다운 컴포넌트
  */
-export const TitleSelect = ({ field, repositories }: TitleSelectProps) => {
+export const TitleSelect = ({
+  field,
+  repositories,
+  isLoading = false,
+}: TitleSelectProps) => {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const titleInputId = 'project-title-input'
+  const { error } = useFormField()
 
   /**
    * 프로젝트 선택 핸들러
    */
   const handleSelect = (currentValue: string) => {
-    field.onChange(currentValue)
+    // value에서 저장소 이름만 추출하여 필드에 설정
+    const selectedRepo = repositories.find(
+      (repo) => repo.value === currentValue,
+    )
+    if (selectedRepo) {
+      field.onChange(selectedRepo.label)
+    }
     setOpen(false)
   }
 
@@ -72,8 +89,10 @@ export const TitleSelect = ({ field, repositories }: TitleSelectProps) => {
    * 선택된 프로젝트 라벨 찾기
    */
   const selectedLabel = field.value
-    ? repositories.find((repo) => repo.value === field.value)?.label
-    : 'Repository 불러오기'
+    ? field.value
+    : isLoading
+      ? '저장소 목록 로딩 중...'
+      : 'Repository 불러오기'
 
   return (
     <FormItem className="flex flex-col gap-1 self-stretch">
@@ -81,7 +100,7 @@ export const TitleSelect = ({ field, repositories }: TitleSelectProps) => {
         htmlFor={titleInputId}
         className="text-[15px] leading-tight font-medium text-slate-900"
       >
-        프로젝트 제목
+        프로젝트 제목 {error && <span className="text-red-500">*</span>}
       </FormLabel>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -90,7 +109,12 @@ export const TitleSelect = ({ field, repositories }: TitleSelectProps) => {
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="inline-flex h-10 w-full min-w-[180px] cursor-pointer items-center justify-between rounded-md border border-slate-300 bg-white px-3 py-2 text-left hover:bg-slate-50 focus:outline-2 focus:outline-slate-400"
+            className={cn(
+              'inline-flex h-10 w-full min-w-[180px] cursor-pointer items-center justify-between rounded-md border px-3 py-2 text-left hover:bg-slate-50 focus:outline-2 focus:outline-slate-400',
+              error && !field.value
+                ? 'border-red-500 focus-visible:ring-red-500'
+                : 'border-slate-300 bg-white',
+            )}
           >
             <span className="truncate text-sm font-normal text-zinc-950">
               {selectedLabel}
@@ -108,14 +132,15 @@ export const TitleSelect = ({ field, repositories }: TitleSelectProps) => {
               return itemValue.includes(searchValue) ? 1 : 0
             }}
             loop={true}
-            className="[&_[cmdk-item-subtitle]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item][aria-selected=true]]:bg-transparent [&_[cmdk-item][data-selected=true]]:bg-slate-100"
           >
             <CommandInput
               placeholder="프로젝트 검색..."
               onValueChange={setSearch}
             />
             <CommandList>
-              <CommandEmpty>프로젝트가 없습니다.</CommandEmpty>
+              <CommandEmpty>
+                {isLoading ? '저장소 목록 로딩 중...' : '프로젝트가 없습니다.'}
+              </CommandEmpty>
               <CommandGroup>
                 {repositories
                   .filter(
@@ -157,6 +182,7 @@ export const TitleSelect = ({ field, repositories }: TitleSelectProps) => {
           </Command>
         </PopoverContent>
       </Popover>
+      <FormMessage className="mt-1 text-xs" />
     </FormItem>
   )
 }

@@ -14,8 +14,14 @@ const notificationOptions = z.enum(['agree', 'deny'])
  */
 export const ProjectSchema = z.object({
   title: z.string().min(1, '프로젝트 제목을 선택해주세요'),
-  description: z.string().max(100, '최대 100자까지 입력 가능합니다'),
-  role: z.string().max(100, '최대 100자까지 입력 가능합니다'),
+  description: z
+    .string()
+    .min(1, '프로젝트 내용을 입력해주세요')
+    .max(100, '최대 100자까지 입력 가능합니다'),
+  role: z
+    .string()
+    .min(1, '맡은 역할을 입력해주세요')
+    .max(100, '최대 100자까지 입력 가능합니다'),
   status: z.enum(['in_progress', 'completed']),
 })
 
