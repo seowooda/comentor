@@ -10,9 +10,11 @@ import {
 import Link from 'next/link'
 import { useState } from 'react'
 import SlideMenu from './SlideMenu'
+import { useRouter } from 'next/navigation'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const router = useRouter()
 
   return (
     <>
@@ -51,7 +53,7 @@ const Header = () => {
               </span>
             </Link>
             <Link
-              href="/mypage"
+              href="/user"
               className="flex flex-col items-center justify-center gap-2.5 px-2.5"
             >
               <span className="text-base leading-[19.09px] font-medium text-black">
@@ -63,7 +65,10 @@ const Header = () => {
 
         <div className="flex h-[33px] items-center justify-between">
           <button className="hidden h-8 w-8 items-center justify-center gap-2.5 px-1 md:flex">
-            <Bookmark className="h-5 w-5 cursor-pointer text-slate-800" />
+            <Bookmark
+              className="h-5 w-5 cursor-pointer text-slate-800"
+              onClick={() => router.push('/bookmark')}
+            />
           </button>
           <button className="flex h-8 w-8 items-center justify-center gap-2.5">
             <Bell className="h-5 w-5 cursor-pointer text-slate-800" />

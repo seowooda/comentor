@@ -9,22 +9,23 @@ import {
 const fetcher = async <T>(
   url: string,
   options: RequestInit = {},
+  retry = true, // 🔹 재시도 여부를 판단하는 플래그 추가
 ): Promise<T> => {
   const { accessToken, refreshToken, setAccessToken, clearAuth } =
     useAuthStore.getState()
 
   const fetchRequest = async (token: string | null): Promise<T> => {
-    const response = await fetch(`/api${url}`, {
+    const response = await fetch(`/api/${url}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token ? `Bearer ${token}` : '',
+        Authorization: `Bearer ${token}`,
         ...options.headers,
       },
     })
 
-    if (response.status === 403) {
-      // ✅ refreshToken이 없으면 바로 로그아웃 처리
+    // 🔹 401 또는 403 에러가 발생하면 토큰 갱신을 시도
+    if ((response.status === 403 || response.status === 401) && retry) {
       if (!refreshToken) {
         clearAuth()
         throw new Error('토큰이 만료되었습니다. 다시 로그인해 주세요.')
@@ -45,10 +46,17 @@ const fetcher = async <T>(
       }
 
       const data = await refreshResponse.json()
-      setAccessToken(data.accessToken)
 
-      // ✅ 새로운 accessToken으로 원래 요청 재시도
-      return await fetchRequest(data.accessToken)
+      if (!data.result) {
+        clearAuth()
+        throw new Error('토큰 갱신 실패. 다시 로그인해 주세요.')
+      }
+
+      // ✅ 새로운 accessToken 저장
+      setAccessToken(data.result)
+
+      // ✅ 새로운 accessToken으로 원래 요청 재시도 (retry=false로 설정)
+      return await fetcher<T>(url, options, false)
     }
 
     if (!response.ok) {
