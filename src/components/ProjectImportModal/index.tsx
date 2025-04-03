@@ -40,6 +40,25 @@ export const ProjectImportModal = ({
   const { data: reposData, isLoading, refetch } = useGithubRepos()
   const { mutate: createProject } = useProjectCreate()
 
+  // 모달이 열릴 때 body 스크롤 방지
+  useEffect(() => {
+    // 현재 스크롤 위치 저장
+    const scrollY = window.scrollY
+
+    // body에 overflow hidden 적용
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.width = '100%'
+
+    // 컴포넌트 언마운트 시 원래 상태로 복원
+    return () => {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      window.scrollTo(0, scrollY)
+    }
+  }, [])
+
   // 컴포넌트 마운트 시 GitHub 레포지토리 목록 강제 새로고침
   useEffect(() => {
     refetch()
