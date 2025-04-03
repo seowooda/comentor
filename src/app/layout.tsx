@@ -3,7 +3,7 @@ import './globals.css'
 import Header from '@/components/header/header'
 import { MSWComponent } from '@/api/MSWComponent'
 import ReactQueryProvider from '@/providers/ReactQueryClient'
-import AutoRefreshToken from '@/components/Auth/token'
+import AutoRefreshToken from '@/components/AuthSetting/token'
 
 export const metadata: Metadata = {
   title: 'Create Next App',

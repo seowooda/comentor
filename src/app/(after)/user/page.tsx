@@ -1,10 +1,9 @@
 import { EditForm } from '@/components/EditForm/EditForm'
 
-const page = () => {
+export default function Page() {
   return (
     <main className="flex flex-grow items-center justify-center">
       <EditForm />
     </main>
   )
 }
-export default page
