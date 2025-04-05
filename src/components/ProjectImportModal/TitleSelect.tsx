@@ -67,11 +67,12 @@ export const TitleSelect = ({
    * 프로젝트 선택 핸들러
    */
   const handleSelect = (currentValue: string) => {
-    // value에서 저장소 이름만 추출하여 필드에 설정
+    // value는 문자열로 된 ID이므로 해당 ID로 저장소 찾기
     const selectedRepo = repositories.find(
       (repo) => repo.value === currentValue,
     )
     if (selectedRepo) {
+      // 레이블(저장소 이름)을 필드에 설정
       field.onChange(selectedRepo.label)
       setSelectedId(selectedRepo.value)
     }
