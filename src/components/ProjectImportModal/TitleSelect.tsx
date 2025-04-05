@@ -135,6 +135,7 @@ export const TitleSelect = ({
           >
             <CommandInput
               placeholder="프로젝트 검색..."
+              value={search}
               onValueChange={setSearch}
             />
             <CommandList>
@@ -143,12 +144,14 @@ export const TitleSelect = ({
               </CommandEmpty>
               <CommandGroup>
                 {repositories
-                  .filter(
-                    (repo) =>
-                      search === '' ||
+                  .filter((repo) => {
+                    if (!search) return true
+
+                    return (
                       repo.label.toLowerCase().includes(search.toLowerCase()) ||
-                      repo.value.toLowerCase().includes(search.toLowerCase()),
-                  )
+                      repo.value.toLowerCase().includes(search.toLowerCase())
+                    )
+                  })
                   .map((repository) => (
                     <div
                       key={repository.value}
