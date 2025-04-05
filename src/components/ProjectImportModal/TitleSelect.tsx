@@ -146,7 +146,6 @@ export const TitleSelect = ({
                 {repositories
                   .filter((repo) => {
                     if (!search) return true
-
                     return (
                       repo.label.toLowerCase().includes(search.toLowerCase()) ||
                       repo.value.toLowerCase().includes(search.toLowerCase())
