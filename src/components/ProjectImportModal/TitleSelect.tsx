@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -59,6 +59,7 @@ export const TitleSelect = ({
 }: TitleSelectProps) => {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
+  const [selectedId, setSelectedId] = useState<string>('')
   const titleInputId = 'project-title-input'
   const { error } = useFormField()
 
@@ -72,6 +73,7 @@ export const TitleSelect = ({
     )
     if (selectedRepo) {
       field.onChange(selectedRepo.label)
+      setSelectedId(selectedRepo.value)
     }
     setOpen(false)
   }
@@ -84,6 +86,16 @@ export const TitleSelect = ({
     e.stopPropagation()
     handleSelect(value)
   }
+
+  // 컴포넌트 초기 마운트 시 field.value에 해당하는 저장소 ID 설정
+  useEffect(() => {
+    if (field.value && repositories.length > 0) {
+      const repo = repositories.find((repo) => repo.label === field.value)
+      if (repo) {
+        setSelectedId(repo.value)
+      }
+    }
+  }, [field.value, repositories])
 
   /**
    * 선택된 프로젝트 라벨 찾기
@@ -146,7 +158,6 @@ export const TitleSelect = ({
                 {repositories
                   .filter((repo) => {
                     if (!search) return true
-
                     return (
                       repo.label.toLowerCase().includes(search.toLowerCase()) ||
                       repo.value.toLowerCase().includes(search.toLowerCase())
@@ -163,15 +174,15 @@ export const TitleSelect = ({
                         onSelect={() => handleSelect(repository.value)}
                         className={cn(
                           'w-full !bg-white px-3 py-2 text-left text-sm',
-                          field.value === repository.value &&
+                          selectedId === repository.value &&
                             '!bg-slate-100 font-medium',
                         )}
-                        data-selected={field.value === repository.value}
+                        data-selected={selectedId === repository.value}
                       >
                         <Check
                           className={cn(
                             'mr-2 h-4 w-4',
-                            field.value === repository.value
+                            selectedId === repository.value
                               ? 'opacity-100'
                               : 'opacity-0',
                           )}
