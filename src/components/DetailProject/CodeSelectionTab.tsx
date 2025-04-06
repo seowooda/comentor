@@ -16,7 +16,7 @@ import {
   Folder,
   Code,
 } from 'lucide-react'
-import { format } from 'date-fns'
+import { format, subDays, subWeeks, subMonths } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import {
@@ -40,16 +40,44 @@ const CodeSelectionTab: React.FC<CodeSelectionTabProps> = ({
   files = [],
   onGenerateQuestions,
 }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState('custom')
+  const [selectedPeriod, setSelectedPeriod] = useState('1week')
   const [selectedFile, setSelectedFile] = useState<string>('')
   const [code, setCode] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [availableFiles, setAvailableFiles] = useState<string[]>(files)
   const [codeLoading, setCodeLoading] = useState(false)
   const [selectedCode, setSelectedCode] = useState<string>('')
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date())
+  const [startDate, setStartDate] = useState<Date | undefined>(
+    subWeeks(new Date(), 1),
+  )
   const [endDate, setEndDate] = useState<Date | undefined>(new Date())
   const codeTextareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // 커밋 기간 계산 함수
+  const calculateDateRange = (period: string) => {
+    const today = new Date()
+    let start: Date = today
+
+    switch (period) {
+      case '1week':
+        start = subWeeks(today, 1)
+        break
+      case '2weeks':
+        start = subWeeks(today, 2)
+        break
+      case '1month':
+        start = subMonths(today, 1)
+        break
+      case '3months':
+        start = subMonths(today, 3)
+        break
+      // custom 기간의 경우 기존 startDate, endDate 유지
+      case 'custom':
+        return { startDate, endDate }
+    }
+
+    return { startDate: start, endDate: today }
+  }
 
   // 커밋 기간 가져오기
   useEffect(() => {
@@ -121,6 +149,11 @@ const CodeSelectionTab: React.FC<CodeSelectionTabProps> = ({
   // 기간 선택 버튼 핸들러
   const handlePeriodClick = (period: string) => {
     setSelectedPeriod(period)
+
+    // 선택된 기간에 따라 날짜 범위 업데이트
+    const { startDate: newStart, endDate: newEnd } = calculateDateRange(period)
+    setStartDate(newStart)
+    setEndDate(newEnd)
   }
 
   // 파일 선택 핸들러
