@@ -318,7 +318,7 @@ const CodeSelectionTab: React.FC<CodeSelectionTabProps> = ({
           )}
         </div>
 
-        <div className="flex flex-1 flex-col rounded-md border border-slate-200 p-2">
+        <div className="flex w-3/5 flex-1 flex-col rounded-md border border-slate-200 p-2">
           <div className="mb-2 flex items-center gap-2">
             <Code className="h-4 w-4 text-zinc-700" />
             <span className="text-xs">코드</span>
