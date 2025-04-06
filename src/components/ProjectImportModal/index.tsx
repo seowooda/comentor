@@ -9,7 +9,7 @@ import { ModalButtons } from './ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
 import { ProjectSchema } from '@/hooks'
 import { useGithubRepos, GithubRepo } from '@/api/services/github'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useProjectCreate, ProjectCreateRequest } from '@/api/services/project'
 
 /**
@@ -32,11 +32,10 @@ export const ProjectImportModal = ({
   onClose,
   onSubmit,
 }: ProjectImportModalProps) => {
-  const [repositories, setRepositories] = useState<Repository[]>([])
-  const [submitStatus, setSubmitStatus] = useState<
-    'idle' | 'loading' | 'error'
-  >('idle')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [submitState, setSubmitState] = useState<{
+    status: 'idle' | 'loading' | 'error'
+    message?: string
+  }>({ status: 'idle' })
   const { data: reposData, isLoading, refetch } = useGithubRepos()
   const { mutate: createProject } = useProjectCreate()
 
@@ -64,15 +63,15 @@ export const ProjectImportModal = ({
     refetch()
   }, [refetch])
 
-  // GitHub 저장소 데이터 로드 시 저장소 목록 업데이트
-  useEffect(() => {
-    if (reposData?.result) {
-      const mappedRepos = reposData.result.map((repo: GithubRepo) => ({
-        value: `${repo.id}-${repo.name}`,
+  // GitHub 저장소 데이터를 가공하여 UI에 표시할 형태로 변환
+  const repositories = useMemo(() => {
+    return (
+      reposData?.result?.map((repo: GithubRepo) => ({
+        value: `${repo.id}`, // ID를 명시적으로 문자열로 변환
         label: repo.name,
-      }))
-      setRepositories(mappedRepos)
-    }
+        repoId: repo.id,
+      })) ?? []
+    )
   }, [reposData])
 
   const form = useForm<ProjectFormValues>({
@@ -87,27 +86,17 @@ export const ProjectImportModal = ({
 
   const handleSubmit = (data: ProjectFormValues) => {
     // 상태 초기화
-    setSubmitStatus('loading')
-    setErrorMessage('')
+    setSubmitState({ status: 'loading' })
 
-    // 선택된 레포지토리의 ID 추출
+    // 선택된 레포지토리 찾기 (이름으로 매칭)
     const selectedRepo = repositories.find((repo) => repo.label === data.title)
 
     // 레포지토리가 선택되지 않았다면 오류 상태 설정 후 함수 종료
-    if (!selectedRepo || !selectedRepo.value) {
-      setSubmitStatus('error')
-      setErrorMessage('유효한 GitHub 레포지토리를 선택해주세요.')
-      return
-    }
-
-    // value 형식이 'id-name'이므로 ID 부분만 추출
-    const idStr = selectedRepo.value.split('-')[0]
-    const repoId = parseInt(idStr)
-
-    // ID 파싱에 실패했다면 오류 상태 설정 후 함수 종료
-    if (isNaN(repoId)) {
-      setSubmitStatus('error')
-      setErrorMessage('유효한 GitHub 레포지토리 ID를 확인할 수 없습니다.')
+    if (!selectedRepo) {
+      setSubmitState({
+        status: 'error',
+        message: '유효한 GitHub 레포지토리를 선택해주세요.',
+      })
       return
     }
 
@@ -119,7 +108,7 @@ export const ProjectImportModal = ({
 
     // 서버에 전송할 데이터 구조로 변환
     const serverData: ProjectCreateRequest = {
-      id: repoId,
+      id: selectedRepo.repoId, // 저장된 실제 레포지토리 ID 사용
       description: data.description,
       role: data.role,
       status: statusMap[data.status as keyof typeof statusMap] as
@@ -136,10 +125,10 @@ export const ProjectImportModal = ({
         onSubmit(data, true)
       },
       onError: (error) => {
-        setSubmitStatus('error')
-        setErrorMessage(
-          error.message || '프로젝트 생성 중 오류가 발생했습니다.',
-        )
+        setSubmitState({
+          status: 'error',
+          message: error.message || '프로젝트 생성 중 오류가 발생했습니다.',
+        })
       },
     })
   }
@@ -151,7 +140,7 @@ export const ProjectImportModal = ({
         form.reset()
         onClose()
       }}
-      isSubmitting={submitStatus === 'loading'}
+      isSubmitting={submitState.status === 'loading'}
     />
   )
 
@@ -168,9 +157,9 @@ export const ProjectImportModal = ({
             className="flex w-full flex-col gap-7"
           >
             {/* 오류 메시지만 표시 (성공 메시지는 제거) */}
-            {submitStatus === 'error' && (
+            {submitState.status === 'error' && (
               <div className="mb-2 rounded-md bg-red-50 p-3 text-center text-sm text-red-600 transition-all">
-                {errorMessage}
+                {submitState.message}
               </div>
             )}
 
