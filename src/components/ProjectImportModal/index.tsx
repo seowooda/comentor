@@ -9,7 +9,7 @@ import { ModalButtons } from './ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
 import { ProjectSchema } from '@/hooks'
 import { useGithubRepos, GithubRepo } from '@/api/services/github'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useProjectCreate, ProjectCreateRequest } from '@/api/services/project'
 
 /**
@@ -25,11 +25,6 @@ interface ProjectImportModalProps {
   onSubmit: (data?: ProjectFormValues, success?: boolean) => void
 }
 
-// 내부에서만 사용할 확장된 저장소 인터페이스
-interface EnhancedRepository extends Repository {
-  repoId: number // 실제 GitHub 저장소 ID
-}
-
 /**
  * 프로젝트 정보 입력을 위한 모달 컴포넌트
  */
@@ -37,7 +32,6 @@ export const ProjectImportModal = ({
   onClose,
   onSubmit,
 }: ProjectImportModalProps) => {
-  const [repositories, setRepositories] = useState<EnhancedRepository[]>([])
   const [submitState, setSubmitState] = useState<{
     status: 'idle' | 'loading' | 'error'
     message?: string
@@ -50,16 +44,15 @@ export const ProjectImportModal = ({
     refetch()
   }, [refetch])
 
-  // GitHub 저장소 데이터 로드 시 저장소 목록 업데이트
-  useEffect(() => {
-    if (reposData?.result) {
-      const mappedRepos = reposData.result.map((repo: GithubRepo) => ({
+  // GitHub 저장소 데이터를 가공하여 UI에 표시할 형태로 변환
+  const repositories = useMemo(() => {
+    return (
+      reposData?.result?.map((repo: GithubRepo) => ({
         value: `${repo.id}`, // ID를 명시적으로 문자열로 변환
         label: repo.name,
         repoId: repo.id,
-      }))
-      setRepositories(mappedRepos)
-    }
+      })) ?? []
+    )
   }, [reposData])
 
   const form = useForm<ProjectFormValues>({
