@@ -38,10 +38,10 @@ export const ProjectImportModal = ({
   onSubmit,
 }: ProjectImportModalProps) => {
   const [repositories, setRepositories] = useState<EnhancedRepository[]>([])
-  const [submitStatus, setSubmitStatus] = useState<
-    'idle' | 'loading' | 'error'
-  >('idle')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [submitState, setSubmitState] = useState<{
+    status: 'idle' | 'loading' | 'error'
+    message?: string
+  }>({ status: 'idle' })
   const { data: reposData, isLoading, refetch } = useGithubRepos()
   const { mutate: createProject } = useProjectCreate()
 
@@ -74,16 +74,17 @@ export const ProjectImportModal = ({
 
   const handleSubmit = (data: ProjectFormValues) => {
     // 상태 초기화
-    setSubmitStatus('loading')
-    setErrorMessage('')
+    setSubmitState({ status: 'loading' })
 
     // 선택된 레포지토리 찾기 (이름으로 매칭)
     const selectedRepo = repositories.find((repo) => repo.label === data.title)
 
     // 레포지토리가 선택되지 않았다면 오류 상태 설정 후 함수 종료
     if (!selectedRepo) {
-      setSubmitStatus('error')
-      setErrorMessage('유효한 GitHub 레포지토리를 선택해주세요.')
+      setSubmitState({
+        status: 'error',
+        message: '유효한 GitHub 레포지토리를 선택해주세요.',
+      })
       return
     }
 
@@ -112,10 +113,10 @@ export const ProjectImportModal = ({
         onSubmit(data, true)
       },
       onError: (error) => {
-        setSubmitStatus('error')
-        setErrorMessage(
-          error.message || '프로젝트 생성 중 오류가 발생했습니다.',
-        )
+        setSubmitState({
+          status: 'error',
+          message: error.message || '프로젝트 생성 중 오류가 발생했습니다.',
+        })
       },
     })
   }
@@ -127,7 +128,7 @@ export const ProjectImportModal = ({
         form.reset()
         onClose()
       }}
-      isSubmitting={submitStatus === 'loading'}
+      isSubmitting={submitState.status === 'loading'}
     />
   )
 
@@ -144,9 +145,9 @@ export const ProjectImportModal = ({
             className="flex w-full flex-col gap-7"
           >
             {/* 오류 메시지만 표시 (성공 메시지는 제거) */}
-            {submitStatus === 'error' && (
+            {submitState.status === 'error' && (
               <div className="mb-2 rounded-md bg-red-50 p-3 text-center text-sm text-red-600 transition-all">
-                {errorMessage}
+                {submitState.message}
               </div>
             )}
 
