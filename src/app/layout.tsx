@@ -1,12 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/header/header'
 import { MSWComponent } from '@/api/MSWComponent'
 import ReactQueryProvider from '@/providers/ReactQueryClient'
 import AutoRefreshToken from '@/components/Auth/token'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'CommitMentor',
@@ -19,8 +16,8 @@ const RootLayout = ({
   children: React.ReactNode
 }>) => {
   return (
-    <html lang="ko">
-      <body className={inter.className}>
+    <html lang="en">
+      <body className="flex min-h-screen flex-col antialiased">
         <AutoRefreshToken />
 
         {process.env.NEXT_PUBLIC_MSW === 'enable' ? (
