@@ -44,7 +44,7 @@ export const CardContent = ({
       return
     }
 
-    router.push(`/dashboard/project/${card.id}`)
+    router.push(`/project/${card.id}`)
   }
 
   return (

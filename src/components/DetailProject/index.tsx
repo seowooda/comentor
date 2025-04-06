@@ -1,13 +1,13 @@
 'use client'
 
-import React, { useEffect, useState, use } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
 // 컴포넌트 분리
-import ProjectHeader from './components/ProjectHeader'
-import CodeSelectionTab from './components/CodeSelectionTab'
-import CSQuestionsTab from './components/CSQuestionsTab'
-import QuestionHistoryTab from './components/QuestionHistoryTab'
+import ProjectHeader from './ProjectHeader'
+import CodeSelectionTab from './CodeSelectionTab'
+import CSQuestionsTab from './CSQuestionsTab'
+import QuestionHistoryTab from './QuestionHistoryTab'
 
 interface ProjectParams {
   params: Promise<{
@@ -15,8 +15,19 @@ interface ProjectParams {
   }>
 }
 
+interface ProjectData {
+  id: string
+  title: string
+  description: string
+  role: string
+  techStack: string[]
+  status: string
+  updatedAt: string
+  files: string[]
+}
+
 // 목업 데이터
-const mockProject = {
+const mockProject: ProjectData = {
   id: '1',
   title: 'seowooda/CoMentor',
   description: 'Github 커밋 기반으로 개인별 맞춤 CS 질문을 생성해주는 서비스',
@@ -28,26 +39,31 @@ const mockProject = {
 }
 
 const ProjectDetailPage = ({ params }: ProjectParams) => {
-  const unwrappedParams = use(params)
-  const { projectId } = unwrappedParams
-
   const [selectedTab, setSelectedTab] = useState('code-select')
-  const [projectData, setProjectData] = useState(mockProject)
+  const [projectData, setProjectData] = useState<ProjectData>(mockProject)
   const [loading, setLoading] = useState(true)
+  const [projectId, setProjectId] = useState<string>('')
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProjectData = async () => {
       try {
-        // 실제 구현에서는 여기서 프로젝트 데이터를 API로 가져옵니다
-        // const response = await fetch(`/api/projects/${projectId}`)
+        const { projectId: id } = await params
+
+        if (!id) return
+
+        setProjectId(id)
+
+        // API 구현 후 실제 데이터를 가져오는 로직
+        // const response = await fetch(`/api/projects/${id}`)
         // const data = await response.json()
+        // setProjectData(data)
 
         // 목업 데이터 사용 (API 구현 전)
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        setProjectData({
-          ...mockProject,
-          id: projectId,
-        })
+        await new Promise((resolve) => setTimeout(resolve, 300))
+        setProjectData((prev) => ({
+          ...prev,
+          id,
+        }))
       } catch (error) {
         console.error('프로젝트 데이터를 가져오는 중 오류 발생:', error)
       } finally {
@@ -55,12 +71,8 @@ const ProjectDetailPage = ({ params }: ProjectParams) => {
       }
     }
 
-    fetchData()
-  }, [projectId])
-
-  const handleTabChange = (value: string) => {
-    setSelectedTab(value)
-  }
+    fetchProjectData()
+  }, [params])
 
   if (loading) {
     return (
@@ -71,16 +83,14 @@ const ProjectDetailPage = ({ params }: ProjectParams) => {
   }
 
   return (
-    <div className="flex flex-col gap-8 px-6 py-6">
-      {/* 프로젝트 정보 헤더 컴포넌트 */}
+    <div className="container mx-auto flex w-full max-w-[1368px] flex-col gap-8 px-4 py-6 md:px-6">
       <ProjectHeader project={projectData} />
 
-      {/* 탭 컨테이너 */}
       <Tabs
         defaultValue="code-select"
         value={selectedTab}
-        onValueChange={handleTabChange}
-        className="w-full"
+        onValueChange={setSelectedTab}
+        className="w-full max-w-[1368px]"
       >
         <TabsList className="w-full rounded-lg bg-slate-100">
           <TabsTrigger

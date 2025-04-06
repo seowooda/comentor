@@ -17,7 +17,7 @@ interface ProjectHeaderProps {
 
 const ProjectHeader = ({ project }: ProjectHeaderProps) => {
   return (
-    <div className="flex flex-col gap-5 rounded-lg border border-slate-300 p-6">
+    <div className="flex w-full flex-col gap-5 rounded-lg border border-slate-300 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{project.title}</h1>
         <div className="flex gap-2">
