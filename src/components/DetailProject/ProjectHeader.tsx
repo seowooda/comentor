@@ -1,30 +1,51 @@
 import React from 'react'
 import { Edit3, Trash2 } from 'lucide-react'
+import { ProjectData } from './index'
 
-export interface IProject {
-  id: string
-  title: string
-  description: string
-  role: string
-  techStack: string[]
-  status: string
-  updatedAt: string
+export interface ProjectHeaderProps {
+  project: ProjectData
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
-interface ProjectHeaderProps {
-  project: IProject
-}
+/**
+ * 프로젝트 헤더 컴포넌트
+ * 프로젝트 제목, 설명, 역할, 기술 스택, 상태 등을 표시합니다.
+ */
+export const ProjectHeader = ({
+  project,
+  onEdit,
+  onDelete,
+}: ProjectHeaderProps) => {
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onEdit) onEdit()
+  }
 
-const ProjectHeader = ({ project }: ProjectHeaderProps) => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onDelete) onDelete()
+  }
+
   return (
     <div className="flex w-full flex-col gap-5 rounded-lg border border-slate-300 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{project.title}</h1>
         <div className="flex gap-2">
-          <button className="rounded-full p-1.5 text-slate-700 hover:bg-slate-100">
+          <button
+            className="rounded-full p-1.5 text-slate-700 hover:bg-slate-100"
+            onClick={handleEdit}
+            disabled={!onEdit}
+            aria-label="프로젝트 편집"
+          >
             <Edit3 size={18} />
           </button>
-          <button className="rounded-full p-1.5 text-red-500 hover:bg-red-50">
+          <button
+            className="rounded-full p-1.5 text-red-500 hover:bg-red-50"
+            onClick={handleDelete}
+            disabled={!onDelete}
+            aria-label="프로젝트 삭제"
+          >
             <Trash2 size={18} />
           </button>
         </div>

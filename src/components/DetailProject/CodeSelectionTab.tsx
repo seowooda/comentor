@@ -1,184 +1,203 @@
-import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Calendar, Code, FileText, Folder } from 'lucide-react'
+'use client'
 
-interface CodeSelectionTabProps {
+import React, { useState, useEffect } from 'react'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  getCommitPeriods,
+  getProjectFiles,
+  getFileCode,
+} from '@/api/services/project'
+
+export interface CodeSelectionTabProps {
   projectId: string
-  files: string[]
+  files?: string[]
+  onGenerateQuestions?: (code: string, fileName: string) => void
 }
 
-const CodeSelectionTab = ({ projectId, files }: CodeSelectionTabProps) => {
+/**
+ * 코드 선택 탭 컴포넌트
+ * 프로젝트 파일 목록과 선택된 파일의 코드를 표시합니다.
+ */
+const CodeSelectionTab: React.FC<CodeSelectionTabProps> = ({
+  projectId,
+  files = [],
+  onGenerateQuestions,
+}) => {
   const [selectedPeriod, setSelectedPeriod] = useState('1week')
-  const [selectedFile, setSelectedFile] = useState('')
+  const [selectedFile, setSelectedFile] = useState<string>('')
+  const [code, setCode] = useState<string>('')
+  const [loading, setLoading] = useState(false)
+  const [periodOptions, setPeriodOptions] = useState<
+    Record<string, { startDate: string; endDate: string }>
+  >({})
+  const [availableFiles, setAvailableFiles] = useState<string[]>(files)
+  const [codeLoading, setCodeLoading] = useState(false)
 
-  const handlePeriodChange = (period: string) => {
-    setSelectedPeriod(period)
-  }
+  // 커밋 기간 가져오기
+  useEffect(() => {
+    const fetchPeriods = async () => {
+      if (!projectId) return
 
-  const handleFileSelect = (file: string) => {
-    setSelectedFile(file)
-  }
+      try {
+        const periods = await getCommitPeriods(projectId)
+        setPeriodOptions(periods)
+      } catch (error) {
+        console.error('커밋 기간 정보를 가져오는 중 오류 발생:', error)
+      }
+    }
 
-  const handleGenerateCSQuestions = () => {
-    // CS 질문 생성 로직 구현
-    console.log('CS 질문 생성', projectId, selectedFile)
-  }
+    fetchPeriods()
+  }, [projectId])
 
-  // 샘플 코드
-  const sampleCode = `import React, { useState, useEffect } from 'react'; 
+  // 프로젝트 파일 목록 가져오기
+  useEffect(() => {
+    const fetchFiles = async () => {
+      if (!projectId || !selectedPeriod) return
 
-function UserProfile({ userId }) { 
-  const [user, setUser] = useState(null); 
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState(null);  
+      setLoading(true)
+      try {
+        const files = await getProjectFiles(projectId, selectedPeriod)
+        setAvailableFiles(files)
+        // 새 파일 목록에 기존 선택 파일이 없으면 초기화
+        if (files.length > 0 && !files.includes(selectedFile)) {
+          setSelectedFile(files[0])
+        }
+      } catch (error) {
+        console.error('파일 목록을 가져오는 중 오류 발생:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  useEffect(() => { 
-  async function fetchUserData() { 
-  try { 
-  setLoading(true); 
-  const response = await fetch(\`https://api.example.com/users/\${userId}\`); 
+    fetchFiles()
+  }, [projectId, selectedPeriod])
 
-  if (!response.ok) { 
-  throw new Error('Failed to fetch user data'); 
-  }  
+  // 파일 선택 시 코드 가져오기
+  useEffect(() => {
+    const fetchCode = async () => {
+      if (!projectId || !selectedFile) return
 
-  const userData = await response.json(); 
-  setUser(userData); 
-  setError(null); 
-  } catch (err) { setError(err.message); 
-  setUser(null); 
-  } finally { 
-  setLoading(false); 
-  } 
-  }  
+      setCodeLoading(true)
+      try {
+        const code = await getFileCode(projectId, selectedFile)
+        setCode(code)
+      } catch (error) {
+        console.error('파일 코드를 가져오는 중 오류 발생:', error)
+        setCode('')
+      } finally {
+        setCodeLoading(false)
+      }
+    }
 
-  fetchUserData(); 
-  }, [userId]);  
-
-  if (loading) { 
-  return <div>Loading user data...</div>; 
-  }  
-
-  if (error) { 
-  return <div>Error: {error}</div>; 
-  }  
-
-  return ( 
-  <div className="user-profile"> 
-  <h2>{user.name}</h2> 
-  <p>Email: {user.email}</p> 
-  <p>Role: {user.role}</p> 
-   <p>Joined: {new Date(user.joinDate).toLocaleDateString()}</p> 
-  </div> 
- ); 
-}  
-
-export default UserProfile;`
+    fetchCode()
+  }, [projectId, selectedFile])
 
   return (
-    <div className="flex flex-col gap-5 rounded-lg border border-slate-300 p-6">
-      <h2 className="pt-3 text-lg font-semibold">커밋 기간 선택</h2>
+    <div className="space-y-6">
+      <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+        <div className="flex-1">
+          <label
+            htmlFor="period-select"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            커밋 기간
+          </label>
+          <Select
+            value={selectedPeriod}
+            onValueChange={setSelectedPeriod}
+            disabled={loading}
+          >
+            <SelectTrigger id="period-select" className="w-full">
+              <SelectValue placeholder="기간 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1week">최근 1주</SelectItem>
+              <SelectItem value="2weeks">최근 2주</SelectItem>
+              <SelectItem value="1month">최근 1개월</SelectItem>
+              <SelectItem value="3months">최근 3개월</SelectItem>
+            </SelectContent>
+          </Select>
+          {periodOptions[selectedPeriod] && (
+            <p className="mt-1 text-xs text-slate-500">
+              {periodOptions[selectedPeriod].startDate} -{' '}
+              {periodOptions[selectedPeriod].endDate}
+            </p>
+          )}
+        </div>
 
-      <div className="flex gap-2 py-2">
-        <button
-          className={`rounded-md border px-3 py-1 text-xs ${selectedPeriod === '1week' ? 'border-blue-500' : 'border-slate-200'}`}
-          onClick={() => handlePeriodChange('1week')}
-        >
-          최근 1주일
-        </button>
-        <button
-          className={`rounded-md border px-3 py-1 text-xs ${selectedPeriod === '2weeks' ? 'border-blue-500' : 'border-slate-200'}`}
-          onClick={() => handlePeriodChange('2weeks')}
-        >
-          최근 2주일
-        </button>
-        <button
-          className={`rounded-md border px-3 py-1 text-xs ${selectedPeriod === '1month' ? 'border-blue-500' : 'border-slate-200'}`}
-          onClick={() => handlePeriodChange('1month')}
-        >
-          최근 1개월
-        </button>
-        <button
-          className={`rounded-md border px-3 py-1 text-xs ${selectedPeriod === '3months' ? 'border-blue-500' : 'border-slate-200'}`}
-          onClick={() => handlePeriodChange('3months')}
-        >
-          최근 3개월
-        </button>
+        <div className="flex-1">
+          <label
+            htmlFor="file-select"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            파일 선택
+          </label>
+          <Select
+            value={selectedFile}
+            onValueChange={setSelectedFile}
+            disabled={loading || availableFiles.length === 0}
+          >
+            <SelectTrigger id="file-select" className="w-full">
+              <SelectValue placeholder="파일 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              {availableFiles.map((file) => (
+                <SelectItem key={file} value={file}>
+                  {file}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <div className="flex gap-5">
-        <div className="flex flex-1 flex-col gap-2">
-          <label className="text-sm font-semibold">시작 날짜</label>
-          <div className="flex items-center rounded-md border border-slate-200 px-3 py-1">
-            <Calendar className="mr-2 h-4 w-4 text-slate-600" />
-            <span className="text-xs">2025년 3월 9일</span>
-          </div>
+      <div className="rounded-lg border border-slate-200">
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2">
+          <span className="font-medium text-slate-800">
+            {selectedFile || '파일을 선택해주세요'}
+          </span>
         </div>
-
-        <div className="flex flex-1 flex-col gap-2">
-          <label className="text-sm font-semibold">종료 날짜</label>
-          <div className="flex items-center rounded-md border border-slate-200 px-3 py-1">
-            <Calendar className="mr-2 h-4 w-4 text-slate-600" />
-            <span className="text-xs">2025년 3월 16일</span>
-          </div>
-        </div>
-      </div>
-
-      <h2 className="pt-3 text-lg font-semibold">코드 선택</h2>
-
-      <p className="text-xs text-slate-500">
-        2025년 3월 9일 ~ 2025년 3월 16일 기간 동안의 커밋된 코드를 확인하고
-        선택하세요.
-      </p>
-
-      <div className="flex gap-5">
-        <div className="flex w-2/5 flex-col gap-2 rounded-md border border-slate-200 p-2">
-          <div className="flex items-center gap-2">
-            <Folder className="h-4 w-4 text-zinc-700" />
-            <span className="text-xs">파일</span>
-          </div>
-
-          {files.map((file, index) => (
-            <div
-              key={index}
-              className={`flex cursor-pointer items-center gap-2 rounded-md border border-slate-200 px-3 py-1 ${selectedFile === file ? 'bg-slate-50' : ''}`}
-              onClick={() => handleFileSelect(file)}
-            >
-              <FileText className="h-4 w-4 text-zinc-700" />
-              <span className="text-xs">{file}</span>
+        <div className="relative min-h-[300px] overflow-auto bg-slate-50 p-4">
+          {codeLoading ? (
+            <div className="flex h-[300px] items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
             </div>
-          ))}
-        </div>
-
-        <div className="flex flex-1 flex-col rounded-md border border-slate-200 p-2">
-          <div className="mb-2 flex items-center gap-2">
-            <Code className="h-4 w-4 text-zinc-700" />
-            <span className="text-xs">코드</span>
-          </div>
-
-          {!selectedFile ? (
-            <div className="flex h-32 items-center justify-center text-sm text-slate-500">
-              왼쪽에서 파일을 선택하세요
-            </div>
+          ) : code ? (
+            <Textarea
+              className="h-[300px] w-full font-mono text-sm"
+              value={code}
+              readOnly
+            />
           ) : (
-            <div className="flex flex-1 flex-col">
-              <div className="mb-4 flex-1 overflow-auto rounded-md bg-slate-100 p-2">
-                <pre className="text-xs whitespace-pre-wrap text-slate-600">
-                  {sampleCode}
-                </pre>
-              </div>
-
-              <div className="flex justify-end">
-                <Button
-                  onClick={handleGenerateCSQuestions}
-                  className="bg-black text-xs text-white hover:bg-gray-800"
-                >
-                  CS 질문 생성하기
-                </Button>
-              </div>
+            <div className="flex h-[300px] items-center justify-center text-slate-400">
+              {selectedFile
+                ? '코드를 불러올 수 없습니다'
+                : '파일을 선택하면 코드가 표시됩니다'}
             </div>
           )}
         </div>
+      </div>
+
+      <div className="flex justify-end">
+        <Button
+          variant="default"
+          disabled={
+            !selectedFile || !code || codeLoading || !onGenerateQuestions
+          }
+          onClick={() => onGenerateQuestions?.(code, selectedFile)}
+        >
+          CS 질문 생성하기
+        </Button>
       </div>
     </div>
   )

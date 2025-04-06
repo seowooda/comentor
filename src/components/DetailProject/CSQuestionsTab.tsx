@@ -1,141 +1,213 @@
-import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
+'use client'
 
-interface CSQuestionsTabProps {
+import React, { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Loader2 } from 'lucide-react'
+import { CSQuestion } from '@/api/mocks/handlers/project'
+import { generateCSQuestions } from '@/api/services/project'
+
+interface QuestionItem extends CSQuestion {}
+
+export interface CSQuestionsTabProps {
   projectId: string
+  onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
+  onSaveQuestion?: (questionId: number) => Promise<boolean>
 }
 
-const CSQuestionsTab = ({ projectId }: CSQuestionsTabProps) => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [isAnswering, setIsAnswering] = useState(false)
-  const [userAnswer, setUserAnswer] = useState('')
-  const [feedback, setFeedback] = useState('')
+/**
+ * CS 질문 탭 컴포넌트
+ * 생성된 CS 질문 목록을 표시하고 답변을 제출할 수 있습니다.
+ */
+const CSQuestionsTab: React.FC<CSQuestionsTabProps> = ({
+  projectId,
+  onAnswerSubmit,
+  onSaveQuestion,
+}) => {
+  const [questions, setQuestions] = useState<QuestionItem[]>([])
+  const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(
+    null,
+  )
+  const [answer, setAnswer] = useState('')
+  const [feedback, setFeedback] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [questionsLoading, setQuestionsLoading] = useState(true)
+  const [savedQuestions, setSavedQuestions] = useState<number[]>([])
 
-  // 목업 질문 데이터
-  const mockQuestions = [
-    {
-      id: 1,
-      question:
-        '이 코드에서 사용된 React Hook의 목적과 라이프사이클 메서드와의 관계를 설명해주세요.',
-      bestAnswer:
-        'React Hook은 함수형 컴포넌트에서 상태 관리와 사이드 이펙트를 처리하기 위해 도입되었습니다. 이 코드에서는 useState와 useEffect를 사용하고 있는데, useState는 컴포넌트의 상태를 관리하고, useEffect는 componentDidMount, componentDidUpdate, componentWillUnmount와 같은 라이프사이클 메서드의 기능을 대체합니다.',
-    },
-    {
-      id: 2,
-      question:
-        'fetch API를 사용할 때 발생할 수 있는 네트워크 오류 처리 방법과 이 코드의 개선점을 설명해주세요.',
-      bestAnswer:
-        'fetch API는 네트워크 요청 실패 시 reject 대신 HTTP 에러 응답을 받을 수 있으므로, response.ok를 확인하는 것이 중요합니다. 이 코드에서는 try-catch 블록으로 네트워크 오류를 처리하고 있으며, response.ok 체크도 구현되어 있습니다. 개선점으로는 타임아웃 설정, 재시도 로직, 더 구체적인 에러 메시지 제공 등이 있을 수 있습니다.',
-    },
-    {
-      id: 3,
-      question:
-        '상태 관리 관점에서 이 컴포넌트의 특징과 성능 최적화 방법을 논의해주세요.',
-      bestAnswer:
-        '이 컴포넌트는 여러 상태(user, loading, error)를 관리하며, useEffect 내에서 API 호출을 처리합니다. 성능 최적화를 위해 메모이제이션(React.memo, useMemo, useCallback), 불필요한 렌더링 방지, 데이터 페칭 라이브러리(React Query) 사용, 컴포넌트 분할 등을 고려할 수 있습니다.',
-    },
-  ]
+  // 질문 데이터 가져오기
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      if (!projectId) return
 
-  const handleStartAnswer = () => {
-    setIsAnswering(true)
+      setQuestionsLoading(true)
+      try {
+        const data = await generateCSQuestions(projectId, '', '')
+        setQuestions(data)
+        if (data.length > 0 && selectedQuestionId === null) {
+          setSelectedQuestionId(data[0].id)
+        }
+      } catch (error) {
+        console.error('CS 질문을 가져오는 중 오류 발생:', error)
+      } finally {
+        setQuestionsLoading(false)
+      }
+    }
+
+    fetchQuestions()
+  }, [projectId])
+
+  const handleSelectQuestion = (id: number) => {
+    setSelectedQuestionId(id)
+    setAnswer('')
+    setFeedback(null)
   }
 
-  const handleSubmitAnswer = () => {
-    // 실제 구현에서는 API를 통해 답변을 제출하고 피드백을 받음
-    setFeedback(`
-      좋은 시도입니다! 몇 가지 보완할 점이 있습니다:
-      
-      1. React Hook의 사용 목적에 대해 더 자세히 설명하면 좋겠습니다.
-      2. useState와 useEffect의 구체적인 사용 사례를 코드에서 찾아 설명해보세요.
-      3. 클래스 컴포넌트의 라이프사이클 메서드와 useEffect의 관계를 더 명확히 설명해보세요.
-    `)
-    setIsAnswering(false)
+  const handleAnswerChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setAnswer(e.target.value)
   }
 
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < mockQuestions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
-      setUserAnswer('')
-      setFeedback('')
-      setIsAnswering(false)
+  const handleSubmitAnswer = async () => {
+    if (!onAnswerSubmit || !selectedQuestionId || !answer.trim()) return
+
+    setLoading(true)
+    try {
+      const result = await onAnswerSubmit(answer, selectedQuestionId)
+      setFeedback(result)
+    } catch (error) {
+      console.error('답변 제출 중 오류 발생:', error)
+      setFeedback('답변 제출 중 오류가 발생했습니다.')
+    } finally {
+      setLoading(false)
     }
   }
 
-  const currentQuestion = mockQuestions[currentQuestionIndex]
+  const handleSaveQuestion = async (questionId: number) => {
+    if (!onSaveQuestion) return
+
+    try {
+      const success = await onSaveQuestion(questionId)
+      if (success) {
+        setSavedQuestions((prev) => [...prev, questionId])
+      }
+    } catch (error) {
+      console.error('질문 저장 중 오류 발생:', error)
+    }
+  }
+
+  const selectedQuestion = questions.find((q) => q.id === selectedQuestionId)
+
+  if (questionsLoading) {
+    return (
+      <div className="flex h-60 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-slate-700" />
+        <span className="ml-2 text-slate-700">질문 목록을 불러오는 중...</span>
+      </div>
+    )
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="flex h-60 items-center justify-center text-slate-500">
+        코드를 선택하고 CS 질문을 생성해주세요.
+      </div>
+    )
+  }
 
   return (
-    <div className="flex flex-col gap-5 rounded-lg border border-slate-300 p-6">
-      <h2 className="text-xl font-semibold">CS 질문</h2>
-
-      <div className="mb-2 rounded-md bg-slate-50 p-4">
-        <p className="font-medium text-slate-800">{currentQuestion.question}</p>
-      </div>
-
-      {isAnswering ? (
-        <div className="flex flex-col gap-4">
-          <textarea
-            value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-            placeholder="답변을 작성해주세요..."
-            className="min-h-[200px] rounded-md border border-slate-300 p-2 text-sm"
-          />
-
-          <Button
-            onClick={handleSubmitAnswer}
-            className="self-end bg-black text-white hover:bg-gray-800"
-          >
-            답변 제출
-          </Button>
-        </div>
-      ) : feedback ? (
-        <div className="flex flex-col gap-4">
-          <div className="rounded-md border border-slate-300 p-4">
-            <h3 className="mb-2 font-medium text-slate-700">내 답변:</h3>
-            <p className="text-sm whitespace-pre-wrap text-slate-600">
-              {userAnswer}
-            </p>
-          </div>
-
-          <div className="rounded-md border border-green-100 bg-green-50 p-4">
-            <h3 className="mb-2 font-medium text-green-700">피드백:</h3>
-            <p className="text-sm whitespace-pre-wrap text-green-600">
-              {feedback}
-            </p>
-          </div>
-
-          <div className="flex justify-between">
-            <Button
-              onClick={() => setIsAnswering(true)}
-              variant="outline"
-              className="border-slate-300 text-slate-700"
-            >
-              다시 답변하기
-            </Button>
-
-            {currentQuestionIndex < mockQuestions.length - 1 && (
-              <Button
-                onClick={handleNextQuestion}
-                className="bg-black text-white hover:bg-gray-800"
+    <div className="rounded-lg bg-white">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-1">
+          <h3 className="mb-4 font-semibold text-slate-800">생성된 CS 질문</h3>
+          <div className="space-y-2">
+            {questions.map((question) => (
+              <div
+                key={question.id}
+                className={`cursor-pointer rounded-md p-3 ${selectedQuestionId === question.id ? 'bg-slate-100' : 'bg-white hover:bg-slate-50'}`}
+                onClick={() => handleSelectQuestion(question.id)}
               >
-                다음 질문
-              </Button>
-            )}
+                <div className="flex items-start justify-between">
+                  <p className="text-sm text-slate-700">{question.question}</p>
+                  {savedQuestions.includes(question.id) && (
+                    <span className="ml-2 shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-600">
+                      저장됨
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      ) : (
-        <Button
-          onClick={handleStartAnswer}
-          className="self-start bg-black text-white hover:bg-gray-800"
-        >
-          답변 시작하기
-        </Button>
-      )}
 
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500">
-            질문 {currentQuestionIndex + 1}/{mockQuestions.length}
-          </span>
+        <div className="rounded-md border border-slate-200 p-4 lg:col-span-2">
+          {selectedQuestion ? (
+            <>
+              <div className="mb-4">
+                <h3 className="font-medium text-slate-800">
+                  {selectedQuestion.question}
+                </h3>
+
+                <div className="mt-1 flex justify-end">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => handleSaveQuestion(selectedQuestion.id)}
+                    disabled={savedQuestions.includes(selectedQuestion.id)}
+                  >
+                    {savedQuestions.includes(selectedQuestion.id)
+                      ? '저장됨'
+                      : '질문 저장'}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="mt-6 space-y-4">
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    내 답변
+                  </label>
+                  <Textarea
+                    placeholder="여기에 답변을 작성하세요..."
+                    value={answer}
+                    onChange={handleAnswerChange}
+                    className="min-h-[150px]"
+                  />
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleSubmitAnswer}
+                    disabled={loading || !answer.trim()}
+                  >
+                    {loading && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    답변 제출
+                  </Button>
+                </div>
+
+                {feedback && (
+                  <div className="mt-4 rounded-md bg-slate-50 p-3">
+                    <h4 className="mb-2 text-sm font-medium">피드백</h4>
+                    <div className="text-sm whitespace-pre-line text-slate-700">
+                      {feedback}
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-4 rounded-md bg-slate-50 p-3">
+                  <h4 className="mb-2 text-sm font-medium">모범 답안</h4>
+                  <div className="text-sm text-slate-700">
+                    {selectedQuestion.bestAnswer}
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex h-60 items-center justify-center text-slate-500">
+              왼쪽에서 질문을 선택해주세요.
+            </div>
+          )}
         </div>
       </div>
     </div>
