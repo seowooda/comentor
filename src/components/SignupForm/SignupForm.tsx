@@ -59,7 +59,7 @@ export default function SignupForm() {
   return (
     <Form {...form}>
       <form
-        className="flex h-full w-[400px] flex-col items-center gap-6"
+        className="flex w-[400px] flex-col items-center gap-6"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <h1 className="text-3xl leading-[20px] font-semibold tracking-[1.08px] text-slate-800">
