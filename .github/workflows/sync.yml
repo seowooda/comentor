@@ -1,0 +1,39 @@
+name: Synchronize to forked repo
+
+on:
+  push:
+    branches:
+      - main # ✅ main 브랜치 변경 감지
+
+jobs:
+  sync:
+    name: Sync forked repo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.AUTO_ACTIONS }}
+          fetch-depth: 0 # ✅ 전체 기록을 가져와야 충돌 방지됨
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "seowooda"
+          git config --global user.email "${{ secrets.EMAIL }}"
+
+      - name: Add remote forked repo
+        run: |
+          git remote add forked-repo https://seowooda:${{ secrets.AUTO_ACTIONS }}@github.com/seowooda/comentor.git
+
+      - name: Pull latest changes from forked repo
+        run: |
+          git pull forked-repo main --rebase  # ✅ 최신 변경사항 가져오기
+
+      - name: Push changes to forked repo
+        run: |
+          git push forked-repo main  # ✅ main 브랜치로 푸시
+
+      - name: Clean up
+        run: |
+          git remote remove forked-repo

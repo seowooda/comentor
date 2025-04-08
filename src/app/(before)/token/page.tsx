@@ -1,10 +1,18 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 
-const AuthCallback = () => {
+export default function AuthCallback() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthCallbackContent />
+    </Suspense>
+  )
+}
+
+const AuthCallbackContent = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { setAccessToken, setRole, setRefreshToken } = useAuthStore()
@@ -12,7 +20,7 @@ const AuthCallback = () => {
   const access = searchParams.get('accessToken')
   const refresh = searchParams.get('refreshToken')
   const role =
-    (searchParams.get('role') as 'GUEST' | 'USER' | 'WITHDRAWN') || 'GUEST' // ✅ 기본값 처리
+    (searchParams.get('role') as 'GUEST' | 'USER' | 'WITHDRAWN') || 'GUEST'
 
   useEffect(() => {
     if (access && refresh) {
@@ -27,6 +35,6 @@ const AuthCallback = () => {
       }
     }
   }, [access, refresh, role, router, setRefreshToken])
-}
 
-export default AuthCallback
+  return null
+}

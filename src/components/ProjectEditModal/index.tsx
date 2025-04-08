@@ -10,7 +10,7 @@ import {
 import { ModalButtons } from '../ProjectImportModal/ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
 import { z } from 'zod'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useProjectUpdate, ProjectUpdateRequest } from '@/api/services/project'
 
 // 프로젝트 수정 폼 스키마
@@ -56,6 +56,25 @@ export const ProjectEditModal = ({
   const [errorMessage, setErrorMessage] = useState('')
 
   const { mutate: updateProject } = useProjectUpdate(projectId)
+
+  // 모달이 열릴 때 body 스크롤 방지
+  useEffect(() => {
+    // 현재 스크롤 위치 저장
+    const scrollY = window.scrollY
+
+    // body에 overflow hidden 적용
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.width = '100%'
+
+    // 컴포넌트 언마운트 시 원래 상태로 복원
+    return () => {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      window.scrollTo(0, scrollY)
+    }
+  }, [])
 
   // 폼 초기화
   const form = useForm<ProjectEditFormValues>({

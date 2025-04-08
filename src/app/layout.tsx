@@ -3,11 +3,11 @@ import './globals.css'
 import Header from '@/components/header/header'
 import { MSWComponent } from '@/api/MSWComponent'
 import ReactQueryProvider from '@/providers/ReactQueryClient'
-import AutoRefreshToken from '@/components/Auth/token'
+import AutoRefreshToken from '@/components/AuthSetting/token'
 
 export const metadata: Metadata = {
-  title: 'CommitMentor',
-  description: 'GitHub 커밋 기반 CS 질문 생성 서비스',
+  title: 'CoMentor',
+  description: 'Github 커밋 기반 맞춤 CS 질문 추천 서비스',
 }
 
 const RootLayout = ({
@@ -17,7 +17,7 @@ const RootLayout = ({
 }>) => {
   return (
     <html lang="en">
-      <body className="flex min-h-screen flex-col antialiased">
+      <body className="flex h-dvh flex-col antialiased">
         <AutoRefreshToken />
 
         {process.env.NEXT_PUBLIC_MSW === 'enable' ? (

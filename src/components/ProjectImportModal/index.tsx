@@ -9,7 +9,7 @@ import { ModalButtons } from './ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
 import { ProjectSchema } from '@/hooks'
 import { useGithubRepos, GithubRepo } from '@/api/services/github'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import {
   useProjectCreate,
   ProjectCreateRequest,
@@ -28,11 +28,6 @@ interface ProjectImportModalProps {
   onSubmit: (data?: ProjectFormValues, success?: boolean) => void
 }
 
-// 내부에서만 사용할 확장된 저장소 인터페이스
-interface EnhancedRepository extends Repository {
-  repoId: number // 실제 GitHub 저장소 ID
-}
-
 /**
  * 프로젝트 정보 입력을 위한 모달 컴포넌트
  */
@@ -40,29 +35,46 @@ export const ProjectImportModal = ({
   onClose,
   onSubmit,
 }: ProjectImportModalProps) => {
-  const [repositories, setRepositories] = useState<EnhancedRepository[]>([])
-  const [submitStatus, setSubmitStatus] = useState<
-    'idle' | 'loading' | 'error'
-  >('idle')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [submitState, setSubmitState] = useState<{
+    status: 'idle' | 'loading' | 'error'
+    message?: string
+  }>({ status: 'idle' })
   const { data: reposData, isLoading, refetch } = useGithubRepos()
   const { mutate: createProject } = useProjectCreate()
+
+  // 모달이 열릴 때 body 스크롤 방지
+  useEffect(() => {
+    // 현재 스크롤 위치 저장
+    const scrollY = window.scrollY
+
+    // body에 overflow hidden 적용
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.width = '100%'
+
+    // 컴포넌트 언마운트 시 원래 상태로 복원
+    return () => {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      window.scrollTo(0, scrollY)
+    }
+  }, [])
 
   // 컴포넌트 마운트 시 GitHub 레포지토리 목록 강제 새로고침
   useEffect(() => {
     refetch()
   }, [refetch])
 
-  // GitHub 저장소 데이터 로드 시 저장소 목록 업데이트
-  useEffect(() => {
-    if (reposData?.result) {
-      const mappedRepos = reposData.result.map((repo: GithubRepo) => ({
+  // GitHub 저장소 데이터를 가공하여 UI에 표시할 형태로 변환
+  const repositories = useMemo(() => {
+    return (
+      reposData?.result?.map((repo: GithubRepo) => ({
         value: `${repo.id}`, // ID를 명시적으로 문자열로 변환
         label: repo.name,
         repoId: repo.id,
-      }))
-      setRepositories(mappedRepos)
-    }
+      })) ?? []
+    )
   }, [reposData])
 
   const form = useForm<ProjectFormValues>({
@@ -77,16 +89,17 @@ export const ProjectImportModal = ({
 
   const handleSubmit = (data: ProjectFormValues) => {
     // 상태 초기화
-    setSubmitStatus('loading')
-    setErrorMessage('')
+    setSubmitState({ status: 'loading' })
 
     // 선택된 레포지토리 찾기 (이름으로 매칭)
     const selectedRepo = repositories.find((repo) => repo.label === data.title)
 
     // 레포지토리가 선택되지 않았다면 오류 상태 설정 후 함수 종료
     if (!selectedRepo) {
-      setSubmitStatus('error')
-      setErrorMessage('유효한 GitHub 레포지토리를 선택해주세요.')
+      setSubmitState({
+        status: 'error',
+        message: '유효한 GitHub 레포지토리를 선택해주세요.',
+      })
       return
     }
 
@@ -115,10 +128,10 @@ export const ProjectImportModal = ({
         onSubmit(data, true)
       },
       onError: (error) => {
-        setSubmitStatus('error')
-        setErrorMessage(
-          error.message || '프로젝트 생성 중 오류가 발생했습니다.',
-        )
+        setSubmitState({
+          status: 'error',
+          message: error.message || '프로젝트 생성 중 오류가 발생했습니다.',
+        })
       },
     })
   }
@@ -130,7 +143,7 @@ export const ProjectImportModal = ({
         form.reset()
         onClose()
       }}
-      isSubmitting={submitStatus === 'loading'}
+      isSubmitting={submitState.status === 'loading'}
     />
   )
 
@@ -147,9 +160,9 @@ export const ProjectImportModal = ({
             className="flex w-full flex-col gap-7"
           >
             {/* 오류 메시지만 표시 (성공 메시지는 제거) */}
-            {submitStatus === 'error' && (
+            {submitState.status === 'error' && (
               <div className="mb-2 rounded-md bg-red-50 p-3 text-center text-sm text-red-600 transition-all">
-                {errorMessage}
+                {submitState.message}
               </div>
             )}
 

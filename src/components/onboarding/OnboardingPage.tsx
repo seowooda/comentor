@@ -6,19 +6,19 @@ const OnboardingPage = () => {
   const handleGithubLogin = () => {
     const url = `${process.env.NEXT_PUBLIC_SOCIAL_LOGIN_GITHUB}?redirect_uri=${
       process.env.VERCEL
-        ? 'https://comentor.vercel.app/auth/token'
-        : 'http://localhost:3000/auth/token'
+        ? 'https://comentor.vercel.app/token'
+        : 'http://localhost:3000/token'
     }`
     window.location.href = url
   }
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center bg-white px-4 pb-[55px] md:px-[60px]">
+    <div className="flex flex-col bg-white px-4 md:px-[60px]">
       {/* 그라데이션 배경 */}
       <div className="fixed bottom-0 left-0 z-0 h-[226px] w-full bg-gradient-to-b from-transparent to-slate-100" />
 
       {/* 메인 컨텐츠 */}
-      <div className="relative z-10 flex h-[689px] w-full max-w-[1280px] flex-col items-center justify-center gap-[35px] py-8 md:py-12 lg:py-20">
+      <div className="relative z-10 flex w-full max-w-[1280px] flex-col items-center justify-center gap-[35px] py-8 md:py-12 lg:py-20">
         <div className="flex flex-col items-center gap-[17px] py-8 md:py-12 lg:py-20">
           <h1 className="w-full max-w-[928px] text-center text-4xl font-semibold tracking-wider text-slate-800 md:text-5xl md:leading-tight md:tracking-wider lg:text-[52px] lg:leading-[62.05px] lg:tracking-widest">
             GitHub 커밋 기반 맞춤 CS 면접 준비,
