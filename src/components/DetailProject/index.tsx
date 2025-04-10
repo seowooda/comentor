@@ -199,6 +199,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
             onChooseAnotherCode={handleChooseAnotherCode}
             onGenerateMoreQuestions={() => console.log('더 많은 질문 생성')}
             onFinish={() => setSelectedTab('question-history')}
+            onTabChange={(tabId) => setSelectedTab(tabId)}
           />
         </TabsContent>
 

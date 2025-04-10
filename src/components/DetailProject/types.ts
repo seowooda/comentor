@@ -4,6 +4,7 @@ import {
   HistoryByDate,
   QuestionHistoryItem,
 } from '@/api/mocks/handlers/project'
+import { RefObject } from 'react'
 
 // 프로젝트 데이터 타입
 export interface ProjectData extends Project {}
@@ -26,7 +27,7 @@ export interface ProjectHeaderProps {
 export interface CodeSelectionTabProps {
   projectId: string
   files?: string[]
-  onGenerateQuestions?: (code: string, fileName: string) => void
+  onSelectCodeSnippet: (snippet: string) => void
 }
 
 // CS 질문 관련 타입
@@ -48,6 +49,7 @@ export interface CSQuestionsTabProps {
   onChooseAnotherCode?: () => void
   onGenerateMoreQuestions?: () => void
   onFinish?: () => void
+  onTabChange?: (tabId: string) => void
 }
 
 // 질문 이력 탭 props

@@ -15,7 +15,7 @@ interface AnswerFormProps {
   feedback: string | null
   isAnswered: boolean
   isLoading: boolean
-  isBookmarked: boolean
+  isBookmarked: boolean | undefined
   onAnswerChange: (value: string) => void
   onSubmit: () => void
   onSave?: () => Promise<boolean | undefined>
