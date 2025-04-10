@@ -23,34 +23,6 @@ const apiFetch = async (url: string, options: RequestInit = {}) => {
       headers,
     })
 
-    // MSW 환경에서 토큰 에러(401)가 발생하면 모의 데이터로 응답
-    // if (isMswEnabled && response.status === 401) {
-    //   console.warn(`MSW 모의 데이터 사용: ${url}`)
-
-    //   // 해당 URL에 맞는 모의 데이터 응답 로직 (프로젝트 ID 33을 기본값으로 사용)
-    //   if (url.includes('/api/projects/')) {
-    //     const mockProject = {
-    //       id: '33',
-    //       title: 'seowooda/GitAnalyzer (MSW)',
-    //       description: 'GitHub 저장소 분석 및 시각화 도구',
-    //       role: '프론트엔드 개발자',
-    //       techStack: ['React.js', 'D3.js', 'Node.js', 'Express.js'],
-    //       status: 'Progress',
-    //       updatedAt: '2025. 4. 10',
-    //       files: [
-    //         'AnalyzerComponent.jsx',
-    //         'VisualizationChart.jsx',
-    //         'DataProcessor.js',
-    //       ],
-    //     }
-
-    //     return new Response(JSON.stringify(mockProject), {
-    //       status: 200,
-    //       headers: { 'Content-Type': 'application/json' },
-    //     })
-    //   }
-    // }
-
     return response
   } catch (error) {
     console.error('API 요청 중 오류 발생:', error)
