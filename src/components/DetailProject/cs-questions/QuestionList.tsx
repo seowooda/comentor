@@ -3,12 +3,14 @@
 import React from 'react'
 import { QuestionItem } from '../types'
 import QuestionCard from '../ui/QuestionCard'
+import { Progress } from '@/components/ui/progress'
 
 interface QuestionListProps {
   questions: QuestionItem[]
   selectedQuestionId: number | null
   savedQuestions: number[]
   onSelectQuestion: (id: number) => void
+  progressPercentage: number
 }
 
 /**
@@ -19,6 +21,7 @@ const QuestionList: React.FC<QuestionListProps> = ({
   selectedQuestionId,
   savedQuestions,
   onSelectQuestion,
+  progressPercentage,
 }) => {
   if (questions.length === 0) {
     return (
@@ -28,18 +31,32 @@ const QuestionList: React.FC<QuestionListProps> = ({
     )
   }
 
+  // 답변한 질문 수
+  const answeredCount = questions.filter((q) => q.answered).length
+
   return (
-    <div className="space-y-2">
-      <h3 className="mb-2 text-sm font-medium text-slate-800">질문 목록</h3>
-      {questions.map((question) => (
-        <QuestionCard
-          key={question.id}
-          question={question}
-          isSelected={selectedQuestionId === question.id}
-          isBookmarked={savedQuestions.includes(question.id)}
-          onClick={() => onSelectQuestion(question.id)}
-        />
-      ))}
+    <div className="space-y-4">
+      <div>
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="text-sm font-medium">질문 목록</h3>
+          <span className="text-muted-foreground text-xs">
+            {answeredCount}/{questions.length} 완료
+          </span>
+        </div>
+        <Progress value={progressPercentage} className="h-1.5" />
+      </div>
+
+      <div className="space-y-2">
+        {questions.map((question) => (
+          <QuestionCard
+            key={question.id}
+            question={question}
+            isSelected={selectedQuestionId === question.id}
+            isBookmarked={savedQuestions.includes(question.id)}
+            onClick={() => onSelectQuestion(question.id)}
+          />
+        ))}
+      </div>
     </div>
   )
 }

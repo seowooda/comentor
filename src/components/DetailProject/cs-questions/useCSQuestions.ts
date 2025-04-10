@@ -122,7 +122,7 @@ export default function useCSQuestions({
   const handleSaveQuestion = useCallback(
     async (
       questionId: number,
-      onSave?: (questionId: number) => Promise<boolean>,
+      onSave?: (questionId: number) => Promise<boolean | undefined>,
     ) => {
       if (!onSave) return
 

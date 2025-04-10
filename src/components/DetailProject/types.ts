@@ -44,7 +44,7 @@ export interface CSQuestionsTabProps {
   projectId: string
   codeSnippet?: string
   onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
-  onSaveQuestion?: (questionId: number) => Promise<boolean>
+  onSaveQuestion?: (questionId: number) => Promise<boolean | undefined>
   onChooseAnotherCode?: () => void
   onGenerateMoreQuestions?: () => void
   onFinish?: () => void

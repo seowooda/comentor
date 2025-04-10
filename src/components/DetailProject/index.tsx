@@ -72,14 +72,11 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   }, [params])
 
   // CS 질문 생성 핸들러
-  const handleGenerateQuestions = useCallback(
-    (code: string, fileName: string) => {
-      setSelectedCodeSnippet(code)
-      // 질문 생성 후 CS 질문 탭으로 전환
-      setSelectedTab('cs-questions')
-    },
-    [],
-  )
+  const handleGenerateQuestions = useCallback((code: string) => {
+    setSelectedCodeSnippet(code)
+    // 질문 생성 후 CS 질문 탭으로 전환
+    setSelectedTab('cs-questions')
+  }, [])
 
   // 답변 제출 핸들러
   const handleAnswerSubmit = useCallback(
@@ -189,7 +186,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
           <CodeSelectionTab
             projectId={projectId}
             files={projectData.files}
-            onGenerateQuestions={handleGenerateQuestions}
+            onSelectCodeSnippet={handleGenerateQuestions}
           />
         </TabsContent>
 
