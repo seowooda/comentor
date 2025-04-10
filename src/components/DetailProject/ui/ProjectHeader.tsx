@@ -1,22 +1,18 @@
+'use client'
+
 import React from 'react'
 import { Edit3, Trash2 } from 'lucide-react'
-import { ProjectData } from './index'
-
-export interface ProjectHeaderProps {
-  project: ProjectData
-  onEdit?: () => void
-  onDelete?: () => void
-}
+import { ProjectHeaderProps } from '../types'
 
 /**
  * 프로젝트 헤더 컴포넌트
  * 프로젝트 제목, 설명, 역할, 기술 스택, 상태 등을 표시합니다.
  */
-export const ProjectHeader = ({
+const ProjectHeader: React.FC<ProjectHeaderProps> = ({
   project,
   onEdit,
   onDelete,
-}: ProjectHeaderProps) => {
+}) => {
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (onEdit) onEdit()
@@ -27,33 +23,41 @@ export const ProjectHeader = ({
     if (onDelete) onDelete()
   }
 
+  const getStatusColor = (status: string) => {
+    return status === 'Progress' ? 'bg-yellow-400' : 'bg-green-500'
+  }
+
   return (
     <div className="flex w-full flex-col gap-5 rounded-lg border border-slate-300 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{project.title}</h1>
         <div className="flex gap-2">
-          <button
-            className="rounded-full p-1.5 text-slate-700 hover:bg-slate-100"
-            onClick={handleEdit}
-            disabled={!onEdit}
-            aria-label="프로젝트 편집"
-          >
-            <Edit3 size={18} />
-          </button>
-          <button
-            className="rounded-full p-1.5 text-red-500 hover:bg-red-50"
-            onClick={handleDelete}
-            disabled={!onDelete}
-            aria-label="프로젝트 삭제"
-          >
-            <Trash2 size={18} />
-          </button>
+          {onEdit && (
+            <button
+              className="rounded-full p-1.5 text-slate-700 hover:bg-slate-100"
+              onClick={handleEdit}
+              aria-label="프로젝트 편집"
+            >
+              <Edit3 size={18} />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              className="rounded-full p-1.5 text-red-500 hover:bg-red-50"
+              onClick={handleDelete}
+              aria-label="프로젝트 삭제"
+            >
+              <Trash2 size={18} />
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="text-xs text-gray-600">
-        최근 업데이트: {project.updatedAt}
-      </div>
+      {project.updatedAt && (
+        <div className="text-xs text-gray-600">
+          최근 업데이트: {project.updatedAt}
+        </div>
+      )}
 
       <div className="flex gap-5">
         <div className="flex flex-1 flex-col gap-2">
@@ -85,9 +89,7 @@ export const ProjectHeader = ({
         <span className="text-xs text-slate-500">상태:</span>
         <div className="flex items-center gap-1.5">
           <div
-            className={`h-2 w-2 rounded-full ${
-              project.status === 'Progress' ? 'bg-yellow-400' : 'bg-green-500'
-            }`}
+            className={`h-2 w-2 rounded-full ${getStatusColor(project.status)}`}
           ></div>
           <span className="text-xs font-medium">{project.status}</span>
         </div>

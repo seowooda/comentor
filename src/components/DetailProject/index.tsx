@@ -1,38 +1,24 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Loader2 } from 'lucide-react'
+import { DetailProjectProps, ProjectData } from './types'
 
-// 컴포넌트 분리
-import ProjectHeader from './ProjectHeader'
-import CodeSelectionTab from './CodeSelectionTab'
-import CSQuestionsTab from './CSQuestionsTab'
-import QuestionHistoryTab from './QuestionHistoryTab'
-// API 서비스가 개발되면 해당 주석 제거
-// import { useProjectDetail } from '@/api/services/project'
+// 컴포넌트 및 UI
+import ProjectHeader from './ui/ProjectHeader'
+import CodeSelectionTab from './code-selection'
+import CSQuestionsTab from './cs-questions'
+import QuestionHistoryTab from './question-history'
 
+// API 서비스
 import {
   getProjectDetail,
   getQuestionHistory,
-  generateCSQuestions,
   submitAnswer,
   saveQuestion,
   bookmarkQuestion,
 } from '@/api/services/project'
-import {
-  Project,
-  HistoryByDate,
-  CSQuestion,
-} from '@/api/mocks/handlers/project'
-
-export interface ProjectData extends Project {}
-
-export interface DetailProjectProps {
-  params: Promise<{
-    projectId: string
-  }>
-}
 
 /**
  * 프로젝트 상세 페이지 컴포넌트
@@ -44,9 +30,8 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const [loading, setLoading] = useState(true)
   const [projectData, setProjectData] = useState<ProjectData | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [questionHistory, setQuestionHistory] = useState<HistoryByDate | null>(
-    null,
-  )
+  const [questionHistory, setQuestionHistory] = useState<any | null>(null)
+  const [selectedCodeSnippet, setSelectedCodeSnippet] = useState<string>('')
 
   // 프로젝트 ID를 가져오고 데이터 로드
   useEffect(() => {
@@ -86,12 +71,59 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
     fetchProjectData()
   }, [params])
 
-  // API 연동 시 아래 코드 활성화
-  // useEffect(() => {
-  //   if (data) {
-  //     setProjectData(data);
-  //   }
-  // }, [data]);
+  // CS 질문 생성 핸들러
+  const handleGenerateQuestions = useCallback(
+    (code: string, fileName: string) => {
+      setSelectedCodeSnippet(code)
+      // 질문 생성 후 CS 질문 탭으로 전환
+      setSelectedTab('cs-questions')
+    },
+    [],
+  )
+
+  // 답변 제출 핸들러
+  const handleAnswerSubmit = useCallback(
+    async (answer: string, questionId: number): Promise<string> => {
+      try {
+        return await submitAnswer(questionId, answer)
+      } catch (error) {
+        console.error('답변 제출 중 오류 발생:', error)
+        return '답변 제출 중 오류가 발생했습니다. 다시 시도해주세요.'
+      }
+    },
+    [],
+  )
+
+  // 질문 저장 핸들러
+  const handleSaveQuestion = useCallback(
+    async (questionId: number): Promise<boolean> => {
+      try {
+        return await saveQuestion(questionId)
+      } catch (error) {
+        console.error('질문 저장 중 오류 발생:', error)
+        return false
+      }
+    },
+    [],
+  )
+
+  // 질문 북마크 핸들러
+  const handleBookmarkQuestion = useCallback(
+    async (questionId: number): Promise<boolean> => {
+      try {
+        return await bookmarkQuestion(questionId)
+      } catch (error) {
+        console.error('북마크 중 오류 발생:', error)
+        return false
+      }
+    },
+    [],
+  )
+
+  // 다른 코드 선택 핸들러
+  const handleChooseAnotherCode = useCallback(() => {
+    setSelectedTab('code-select')
+  }, [])
 
   // 로딩 상태 처리
   if (loading) {
@@ -116,54 +148,6 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
         </div>
       </div>
     )
-  }
-
-  // CS 질문 생성 핸들러
-  const handleGenerateQuestions = async (code: string, fileName: string) => {
-    try {
-      // API 호출하여 질문 생성
-      await generateCSQuestions(projectId, code, fileName)
-      // 질문 생성 후 CS 질문 탭으로 전환
-      setSelectedTab('cs-questions')
-    } catch (error) {
-      console.error('CS 질문 생성 중 오류 발생:', error)
-      // 오류 처리 (필요시 사용자에게 알림)
-    }
-  }
-
-  // 답변 제출 핸들러
-  const handleAnswerSubmit = async (
-    answer: string,
-    questionId: number,
-  ): Promise<string> => {
-    try {
-      return await submitAnswer(questionId, answer)
-    } catch (error) {
-      console.error('답변 제출 중 오류 발생:', error)
-      return '답변 제출 중 오류가 발생했습니다. 다시 시도해주세요.'
-    }
-  }
-
-  // 질문 저장 핸들러
-  const handleSaveQuestion = async (questionId: number): Promise<boolean> => {
-    try {
-      return await saveQuestion(questionId)
-    } catch (error) {
-      console.error('질문 저장 중 오류 발생:', error)
-      return false
-    }
-  }
-
-  // 질문 북마크 핸들러
-  const handleBookmarkQuestion = async (
-    questionId: number,
-  ): Promise<boolean> => {
-    try {
-      return await bookmarkQuestion(questionId)
-    } catch (error) {
-      console.error('북마크 중 오류 발생:', error)
-      return false
-    }
   }
 
   return (
@@ -212,15 +196,19 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
         <TabsContent value="cs-questions">
           <CSQuestionsTab
             projectId={projectId}
+            codeSnippet={selectedCodeSnippet}
             onAnswerSubmit={handleAnswerSubmit}
             onSaveQuestion={handleSaveQuestion}
+            onChooseAnotherCode={handleChooseAnotherCode}
+            onGenerateMoreQuestions={() => console.log('더 많은 질문 생성')}
+            onFinish={() => setSelectedTab('question-history')}
           />
         </TabsContent>
 
         <TabsContent value="question-history">
           <QuestionHistoryTab
             projectId={projectId}
-            initialHistory={questionHistory || undefined}
+            initialHistory={questionHistory}
             onBookmarkQuestion={handleBookmarkQuestion}
           />
         </TabsContent>
