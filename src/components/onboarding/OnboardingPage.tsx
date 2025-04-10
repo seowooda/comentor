@@ -4,11 +4,9 @@ import Image from 'next/image'
 
 const OnboardingPage = () => {
   const handleGithubLogin = () => {
-    const url = `${process.env.NEXT_PUBLIC_SOCIAL_LOGIN_GITHUB}?redirect_uri=${
-      process.env.VERCEL
-        ? 'https://comentor.vercel.app/token'
-        : 'http://localhost:3000/token'
-    }`
+    const env = process.env.VERCEL ? 'prod' : 'dev'
+
+    const url = `${process.env.NEXT_PUBLIC_SOCIAL_LOGIN_GITHUB}?env=${env}`
     window.location.href = url
   }
 
