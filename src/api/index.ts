@@ -10,3 +10,9 @@ export type {
   QuestionHistoryItem,
 } from '@/api/mocks/handlers/project'
 export * from '@/api/services/project'
+
+//github
+export {
+  fetchGitHubContents,
+  fetchGitHubFile,
+} from '@/api/services/github/githubService'
