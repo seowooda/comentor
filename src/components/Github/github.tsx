@@ -1,7 +1,7 @@
 'use client'
 
+import { fetchGitHubContents, fetchGitHubFile } from '@/api'
 import { useState, useEffect } from 'react'
-import { fetchGitHubContents, fetchGitHubFile } from './lib/GithubService'
 
 export default function GitHubExplorer({
   owner,
