@@ -15,17 +15,20 @@ export default function AuthCallback() {
 const AuthCallbackContent = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { setAccessToken, setRole, setRefreshToken } = useAuthStore()
+  const { setAccessToken, setRole, setRefreshToken, setGithubAccessToken } =
+    useAuthStore()
 
   const access = searchParams.get('accessToken')
   const refresh = searchParams.get('refreshToken')
+  const githubAccess = searchParams.get('githubAccessToken')
   const role =
     (searchParams.get('role') as 'GUEST' | 'USER' | 'WITHDRAWN') || 'GUEST'
 
   useEffect(() => {
-    if (access && refresh) {
+    if (access && refresh && githubAccess) {
       setAccessToken(access)
       setRefreshToken(refresh)
+      setGithubAccessToken(githubAccess)
       setRole(role)
 
       if (role === 'GUEST' || role === 'WITHDRAWN') {

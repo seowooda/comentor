@@ -1,3 +1,5 @@
+import { useAuthStore } from '@/store/authStore'
+
 // 공통 API 호출 함수
 export async function fetchGitHubAPI(
   owner: string,
@@ -6,10 +8,10 @@ export async function fetchGitHubAPI(
   branch: string,
 ) {
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`
-  const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN
+  const { githubAccessToken } = useAuthStore.getState()
 
   const headers: HeadersInit = {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${githubAccessToken}`,
     Accept: 'application/vnd.github.v3+json',
   }
 
