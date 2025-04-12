@@ -96,7 +96,7 @@ export default function DateRangePicker({
               : '',
           )}
         >
-          1주일
+          최근 1주일
         </Button>
         <Button
           variant="outline"
@@ -114,7 +114,7 @@ export default function DateRangePicker({
               : '',
           )}
         >
-          2주일
+          최근 2주일
         </Button>
         <Button
           variant="outline"
@@ -132,7 +132,7 @@ export default function DateRangePicker({
               : '',
           )}
         >
-          1개월
+          최근 1개월
         </Button>
         <Button
           variant="outline"
@@ -150,7 +150,7 @@ export default function DateRangePicker({
               : '',
           )}
         >
-          3개월
+          최근 3개월
         </Button>
       </div>
 
