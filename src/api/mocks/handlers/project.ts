@@ -317,4 +317,74 @@ export const projectHandlers = [
     await delay(500)
     return HttpResponse.json(mockQuestionHistory)
   }),
+
+  // 프로젝트 목록 조회 API (페이징 지원)
+  http.get('/project', async ({ request }) => {
+    await delay(500)
+
+    const url = new URL(request.url)
+    const statusParam = url.searchParams.get('status') // 'PROGRESS' 또는 'DONE' 또는 null
+    const pageParam = url.searchParams.get('page') || '0'
+
+    const page = parseInt(pageParam, 10)
+    const size = 8 // 페이지당 8개 항목
+
+    // 상태에 따라 프로젝트 필터링
+    let filteredProjects = [...mockProjects]
+    if (statusParam) {
+      const status = statusParam === 'PROGRESS' ? 'Progress' : 'Done'
+      filteredProjects = filteredProjects.filter((p) => p.status === status)
+    }
+
+    // 페이징 처리
+    const totalElements = filteredProjects.length
+    const totalPages = Math.ceil(totalElements / size)
+    const start = page * size
+    const end = Math.min(start + size, totalElements)
+    const pageContent = filteredProjects.slice(start, end)
+
+    // 페이징 형식에 맞춰 응답 데이터 구성
+    const response = {
+      code: 200,
+      message: '프로젝트 목록 조회 성공',
+      result: {
+        content: pageContent.map((project) => ({
+          id: parseInt(project.id),
+          name: project.title,
+          language: project.techStack[0] || null,
+          description: project.description,
+          role: project.role,
+          status: project.status === 'Progress' ? 'PROGRESS' : 'DONE',
+          updatedAt: project.updatedAt,
+        })),
+        pageable: {
+          pageNumber: page,
+          pageSize: size,
+          sort: {
+            empty: false,
+            sorted: true,
+            unsorted: false,
+          },
+          offset: start,
+          paged: true,
+          unpaged: false,
+        },
+        totalPages,
+        totalElements,
+        last: page >= totalPages - 1,
+        size,
+        number: page,
+        sort: {
+          empty: false,
+          sorted: true,
+          unsorted: false,
+        },
+        numberOfElements: pageContent.length,
+        first: page === 0,
+        empty: pageContent.length === 0,
+      },
+    }
+
+    return HttpResponse.json(response)
+  }),
 ]
