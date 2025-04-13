@@ -12,13 +12,13 @@ import CSQuestionsTab from './cs-questions'
 import QuestionHistoryTab from './question-history'
 
 // API 서비스
+import { getProjectDetail } from '@/api/services/project'
 import {
-  getProjectDetail,
   getQuestionHistory,
   submitAnswer,
   saveQuestion,
   bookmarkQuestion,
-} from '@/api/services/project'
+} from '@/api/services/question'
 
 /**
  * 프로젝트 상세 페이지 컴포넌트
@@ -185,7 +185,6 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
         <TabsContent value="code-select" className="mt-4">
           <CodeSelectionTab
             projectId={projectId}
-            files={projectData.files}
             onSelectCodeSnippet={handleGenerateQuestions}
           />
         </TabsContent>

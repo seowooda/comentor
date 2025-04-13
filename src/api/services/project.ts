@@ -3,94 +3,154 @@ import {
   CSQuestion,
   HistoryByDate,
 } from '@/api/mocks/handlers/project'
+import { fetcher } from '@/api/lib/fetcher'
 
-// API 요청에 공통 헤더를 적용하는 기본 fetch 함수
-const apiFetch = async (url: string, options: RequestInit = {}) => {
-  // MSW 환경인지 확인
-  const isMswEnabled = process.env.NEXT_PUBLIC_MSW === 'enable'
-
-  // 기본 헤더 설정
-  const headers = {
-    'Content-Type': 'application/json',
-    // 모의 토큰 추가 - MSW를 활성화한 경우 항상 추가
-    ...(isMswEnabled ? { Authorization: 'Bearer mock-token-for-msw' } : {}),
-    ...options.headers,
-  }
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    })
-
-    return response
-  } catch (error) {
-    console.error('API 요청 중 오류 발생:', error)
-    throw error
-  }
-}
+// API 기본 URL 가져오기
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
 
 /**
- * 프로젝트 상세 정보 조회
+ * 특정 프로젝트의 상세 정보를 가져오는 함수
+ * @param projectId 프로젝트 ID
+ * @returns 프로젝트 상세 정보
  */
 export const getProjectDetail = async (projectId: string): Promise<Project> => {
-  const response = await apiFetch(`/api/projects/${projectId}`)
+  try {
+    // 프로젝트 상세 정보 API 요청
+    const response = await fetcher<any>(
+      `/project/info?projectId=${projectId}`,
+      { method: 'GET' },
+      true,
+    )
 
-  if (!response.ok) {
-    throw new Error('프로젝트 정보를 가져오는데 실패했습니다')
+    // API 응답을 Project 인터페이스에 맞게 매핑
+    return {
+      id: response.result?.id?.toString() || projectId,
+      title: response.result?.name || '',
+      description: response.result?.description || '',
+      role: response.result?.role || '',
+      techStack: Array.isArray(response.result?.stack)
+        ? response.result.stack
+        : response.result?.stack
+          ? [response.result.stack]
+          : [],
+      status: response.result?.status || 'active',
+      updatedAt: response.result?.updatedAt || new Date().toISOString(),
+      files: response.result?.files || [],
+    }
+  } catch (error) {
+    console.error('프로젝트 상세 정보 조회 중 오류:', error)
+    throw error
   }
-
-  return response.json()
 }
 
 /**
  * 프로젝트의 커밋 기간 조회
  */
 export const getCommitPeriods = async (projectId: string) => {
-  const response = await apiFetch(`/api/projects/${projectId}/commit-periods`)
-
-  if (!response.ok) {
-    throw new Error('커밋 기간 정보를 가져오는데 실패했습니다')
-  }
-
-  return response.json()
+  return await fetcher(
+    `/projects/${projectId}/commit-periods`,
+    { method: 'GET' },
+    true,
+  )
 }
 
 /**
- * 프로젝트 파일 목록 조회
+ * GitHub 저장소 정보 가져오기
+ */
+async function getGitHubRepoInfo(projectId: string) {
+  try {
+    const response = await fetcher<any>(
+      `/project/info?projectId=${projectId}`,
+      { method: 'GET' },
+      true,
+    )
+
+    // GitHub 정보 추출
+    const owner = response.result?.login || 'CommitMentor' // 기본값 설정
+    const repo = response.result?.name || 'CoMentor-Frontend' // 기본값 설정
+    const branch = 'develop' // 고정값
+
+    return { owner, repo, branch }
+  } catch (error) {
+    console.error('GitHub 정보 가져오기 실패:', error)
+    // 기본값 반환
+    return {
+      owner: 'CommitMentor',
+      repo: 'CoMentor-Frontend',
+      branch: 'develop',
+    }
+  }
+}
+
+/**
+ * 파일 및 폴더 정보 인터페이스
+ */
+export interface FileItem {
+  name: string
+  path: string
+  type: 'file' | 'dir'
+  url?: string
+}
+
+/**
+ * 프로젝트 파일 목록 조회 (GitHub API 직접 사용)
  */
 export const getProjectFiles = async (
   projectId: string,
   period: string = '1week',
-): Promise<string[]> => {
-  const response = await apiFetch(
-    `/api/projects/${projectId}/files?period=${period}`,
-  )
+  path: string = '',
+): Promise<FileItem[]> => {
+  try {
+    // GitHub 저장소 정보 가져오기
+    const { owner, repo, branch } = await getGitHubRepoInfo(projectId)
 
-  if (!response.ok) {
-    throw new Error('파일 목록을 가져오는데 실패했습니다')
+    console.log('GitHub 정보:', { owner, repo, branch })
+
+    // GitHub API를 사용하여 파일 목록 가져오기 (경로 지정)
+    const { fetchGitHubContents } = await import(
+      '@/api/services/github/githubService'
+    )
+
+    // 지정된 경로의 파일 및 폴더 목록 가져오기
+    const contents = await fetchGitHubContents(owner, repo, path, branch)
+
+    // 파일과 폴더 모두 포함하여 반환 (타입 정보 추가)
+    const fileList = contents.map((item: any) => ({
+      name: item.name,
+      path: item.path,
+      type: item.type as 'file' | 'dir',
+      url: item.html_url || item.url,
+    }))
+
+    return fileList
+  } catch (error) {
+    console.error('프로젝트 파일 목록 조회 중 오류:', error)
+    return []
   }
-
-  return response.json()
 }
 
 /**
- * 파일 코드 조회
+ * 파일 코드 조회 (GitHub API 직접 사용)
  */
 export const getFileCode = async (
   projectId: string,
   fileName: string,
 ): Promise<string> => {
-  const response = await apiFetch(
-    `/api/projects/${projectId}/code?fileName=${encodeURIComponent(fileName)}`,
-  )
+  try {
+    // GitHub 저장소 정보 가져오기
+    const { owner, repo, branch } = await getGitHubRepoInfo(projectId)
 
-  if (!response.ok) {
-    throw new Error('파일 코드를 가져오는데 실패했습니다')
+    // GitHub API를 사용하여 파일 내용 가져오기
+    const { fetchGitHubFile } = await import(
+      '@/api/services/github/githubService'
+    )
+    const content = await fetchGitHubFile(owner, repo, fileName, branch)
+
+    return content
+  } catch (error) {
+    console.error('파일 코드 조회 중 오류:', error)
+    return '// 파일을 불러오는 데 실패했습니다.'
   }
-
-  const data = await response.json()
-  return data.code
 }
 
 /**
@@ -101,16 +161,14 @@ export const generateCSQuestions = async (
   code: string,
   fileName: string,
 ): Promise<CSQuestion[]> => {
-  const response = await apiFetch('/api/cs-questions/generate', {
-    method: 'POST',
-    body: JSON.stringify({ projectId, code, fileName }),
-  })
-
-  if (!response.ok) {
-    throw new Error('CS 질문 생성에 실패했습니다')
-  }
-
-  return response.json()
+  return await fetcher<CSQuestion[]>(
+    '/cs-questions/generate',
+    {
+      method: 'POST',
+      body: JSON.stringify({ projectId, code, fileName }),
+    },
+    true,
+  )
 }
 
 /**
@@ -120,16 +178,14 @@ export const submitAnswer = async (
   questionId: number,
   answer: string,
 ): Promise<string> => {
-  const response = await apiFetch('/api/cs-questions/answer', {
-    method: 'POST',
-    body: JSON.stringify({ questionId, answer }),
-  })
-
-  if (!response.ok) {
-    throw new Error('답변 제출에 실패했습니다')
-  }
-
-  const data = await response.json()
+  const data = await fetcher<{ feedback: string }>(
+    '/cs-questions/answer',
+    {
+      method: 'POST',
+      body: JSON.stringify({ questionId, answer }),
+    },
+    true,
+  )
   return data.feedback
 }
 
@@ -137,15 +193,11 @@ export const submitAnswer = async (
  * 질문 저장
  */
 export const saveQuestion = async (questionId: number): Promise<boolean> => {
-  const response = await apiFetch(`/api/cs-questions/${questionId}/save`, {
-    method: 'POST',
-  })
-
-  if (!response.ok) {
-    throw new Error('질문 저장에 실패했습니다')
-  }
-
-  const data = await response.json()
+  const data = await fetcher<{ success: boolean }>(
+    `/cs-questions/${questionId}/save`,
+    { method: 'POST' },
+    true,
+  )
   return data.success
 }
 
@@ -155,15 +207,11 @@ export const saveQuestion = async (questionId: number): Promise<boolean> => {
 export const bookmarkQuestion = async (
   questionId: number,
 ): Promise<boolean> => {
-  const response = await apiFetch(`/api/cs-questions/${questionId}/bookmark`, {
-    method: 'POST',
-  })
-
-  if (!response.ok) {
-    throw new Error('북마크에 실패했습니다')
-  }
-
-  const data = await response.json()
+  const data = await fetcher<{ success: boolean }>(
+    `/cs-questions/${questionId}/bookmark`,
+    { method: 'POST' },
+    true,
+  )
   return data.success
 }
 
@@ -173,11 +221,9 @@ export const bookmarkQuestion = async (
 export const getQuestionHistory = async (
   projectId: string,
 ): Promise<HistoryByDate> => {
-  const response = await apiFetch(`/api/projects/${projectId}/question-history`)
-
-  if (!response.ok) {
-    throw new Error('질문 이력을 가져오는데 실패했습니다')
-  }
-
-  return response.json()
+  return await fetcher<HistoryByDate>(
+    `/projects/${projectId}/question-history`,
+    { method: 'GET' },
+    true,
+  )
 }

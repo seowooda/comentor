@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { QuestionItem } from '../types'
-import { generateCSQuestions } from '@/api/services/project'
+import { generateCSQuestions } from '@/api/services/question'
 
 interface UseCSQuestionsProps {
   projectId: string

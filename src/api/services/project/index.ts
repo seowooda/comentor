@@ -4,6 +4,7 @@ import {
   usePutMutation,
   useDeleteMutation,
 } from '@/api/lib/fetcher'
+import { Project } from '@/api/mocks/handlers/project'
 
 // 프로젝트 생성 응답 타입 정의
 export interface ProjectCreateResponse {
@@ -42,6 +43,23 @@ export interface ProjectListResponse {
   }
 }
 
+// 프로젝트 상세 조회 응답 타입 정의
+export interface ProjectDetailResponse {
+  code: number
+  message: string
+  result: {
+    id: number
+    name: string
+    language: string
+    description: string
+    role: string
+    status: 'PROGRESS' | 'DONE'
+    updatedAt: string
+    stack: string[] | string
+    files?: string[]
+  }
+}
+
 // 프로젝트 수정 요청 타입 정의
 export interface ProjectUpdateRequest {
   description: string
@@ -68,20 +86,8 @@ export interface ProjectDeleteResponse {
 }
 
 /**
- * 프로젝트 생성 hook
- * @returns 프로젝트 생성 뮤테이션 객체
- */
-export const useProjectCreate = () => {
-  return usePostMutation<ProjectCreateResponse, ProjectCreateRequest>(
-    '/project',
-  )
-}
-
-/**
- * 프로젝트 목록 조회 hook
- * @param status 프로젝트 상태 필터 (선택 사항)
- * @param page 페이지 번호 (기본값: 0)
- * @returns 프로젝트 목록 쿼리 객체
+ * 프로젝트 목록 조회 (대시보드)
+ * GET /project
  */
 export const useProjectList = (
   status?: 'PROGRESS' | 'DONE',
@@ -97,9 +103,18 @@ export const useProjectList = (
 }
 
 /**
- * 프로젝트 수정 hook
- * @param projectId 수정할 프로젝트 ID
- * @returns 프로젝트 수정 뮤테이션 객체
+ * 프로젝트 생성
+ * POST /project
+ */
+export const useProjectCreate = () => {
+  return usePostMutation<ProjectCreateResponse, ProjectCreateRequest>(
+    '/project',
+  )
+}
+
+/**
+ * 프로젝트 수정
+ * PUT /project
  */
 export const useProjectUpdate = (projectId: number) => {
   return usePutMutation<ProjectUpdateResponse, ProjectUpdateRequest>(
@@ -108,12 +123,44 @@ export const useProjectUpdate = (projectId: number) => {
 }
 
 /**
- * 프로젝트 삭제 hook
- * @param projectId 삭제할 프로젝트 ID
- * @returns 프로젝트 삭제 뮤테이션 객체
+ * 프로젝트 삭제
+ * DELETE /project
  */
 export const useProjectDelete = (projectId: number) => {
   return useDeleteMutation<ProjectDeleteResponse>(
     `/project?projectId=${projectId}`,
   )
+}
+
+/**
+ * 프로젝트 상세 조회
+ * GET /project/info
+ */
+export const useProjectDetail = (projectId: number) => {
+  return useGetQuery<ProjectDetailResponse>(
+    ['project', projectId.toString()],
+    `/project/info?projectId=${projectId}`,
+  )
+}
+
+/**
+ * 프로젝트 상세 정보 변환 (API 응답 -> Project 인터페이스)
+ */
+export const mapToProject = (data: ProjectDetailResponse): Project => {
+  const result = data.result || {}
+
+  return {
+    id: result.id?.toString() || '',
+    title: result.name || '제목 없음',
+    description: result.description || '',
+    role: result.role || '',
+    techStack: Array.isArray(result.stack)
+      ? result.stack
+      : result.stack
+        ? [result.stack]
+        : [],
+    status: result.status || 'PROGRESS',
+    updatedAt: result.updatedAt || new Date().toISOString(),
+    files: Array.isArray(result.files) ? result.files : [],
+  }
 }

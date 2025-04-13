@@ -8,7 +8,7 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
-const fetcher = async <T>(
+export const fetcher = async <T>(
   url: string,
   options: RequestInit = {},
   retry = true,

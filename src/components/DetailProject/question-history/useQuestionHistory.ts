@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { getQuestionHistory } from '@/api/services/project'
+import { getQuestionHistory } from '@/api/services/question'
 import { HistoryByDate, QuestionHistoryItem } from '../types'
 
 interface UseQuestionHistoryProps {
