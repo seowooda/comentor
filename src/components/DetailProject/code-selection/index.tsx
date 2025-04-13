@@ -17,7 +17,7 @@ import { FileItem } from '@/api/services/project'
 interface CodeSelectionTabProps {
   projectId: string
   files?: FileItem[]
-  onSelectCodeSnippet: (snippet: string) => void
+  onSelectCodeSnippet: (snippet: string, fileName: string) => void
 }
 
 export default function CodeSelectionTab({
@@ -52,7 +52,7 @@ export default function CodeSelectionTab({
 
   const handleGenerateQuestions = () => {
     if (selectedCode) {
-      onSelectCodeSnippet(selectedCode)
+      onSelectCodeSnippet(selectedCode, selectedFile)
     }
   }
 

@@ -6,7 +6,7 @@ import { fetcher } from '@/api/lib/fetcher'
 // CS 질문 생성 요청 타입 정의
 export interface CreateProjectCsQuestionRequest {
   projectId: number
-  codeSnippet: string
+  userCode: string
   fileName?: string
 }
 
@@ -87,7 +87,7 @@ export const generateCSQuestions = async (
         method: 'POST',
         body: JSON.stringify({
           projectId: parseInt(projectId),
-          codeSnippet: code,
+          userCode: code,
           fileName: fileName,
         }),
       },

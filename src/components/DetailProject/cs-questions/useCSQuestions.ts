@@ -7,11 +7,13 @@ import { generateCSQuestions } from '@/api/services/question'
 interface UseCSQuestionsProps {
   projectId: string
   codeSnippet?: string
+  fileName?: string
 }
 
 export default function useCSQuestions({
   projectId,
   codeSnippet = '',
+  fileName = '',
 }: UseCSQuestionsProps) {
   const [questions, setQuestions] = useState<QuestionItem[]>([])
   const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(
@@ -32,7 +34,7 @@ export default function useCSQuestions({
 
       setQuestionsLoading(true)
       try {
-        const data = await generateCSQuestions(projectId, codeSnippet, '')
+        const data = await generateCSQuestions(projectId, codeSnippet, fileName)
         const enhancedData = data.map((q) => ({
           ...q,
           answered: false,
@@ -52,7 +54,7 @@ export default function useCSQuestions({
     }
 
     fetchQuestions()
-  }, [projectId, codeSnippet])
+  }, [projectId, codeSnippet, fileName])
 
   // 모든 질문이 답변되었는지 확인
   useEffect(() => {

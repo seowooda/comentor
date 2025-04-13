@@ -32,6 +32,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const [error, setError] = useState<string | null>(null)
   const [questionHistory, setQuestionHistory] = useState<any | null>(null)
   const [selectedCodeSnippet, setSelectedCodeSnippet] = useState<string>('')
+  const [selectedFileName, setSelectedFileName] = useState<string>('')
 
   // 프로젝트 ID를 가져오고 데이터 로드
   useEffect(() => {
@@ -72,11 +73,15 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   }, [params])
 
   // CS 질문 생성 핸들러
-  const handleGenerateQuestions = useCallback((code: string) => {
-    setSelectedCodeSnippet(code)
-    // 질문 생성 후 CS 질문 탭으로 전환
-    setSelectedTab('cs-questions')
-  }, [])
+  const handleGenerateQuestions = useCallback(
+    (code: string, fileName: string) => {
+      setSelectedCodeSnippet(code)
+      setSelectedFileName(fileName)
+      // 질문 생성 후 CS 질문 탭으로 전환
+      setSelectedTab('cs-questions')
+    },
+    [],
+  )
 
   // 답변 제출 핸들러
   const handleAnswerSubmit = useCallback(
@@ -193,6 +198,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
           <CSQuestionsTab
             projectId={projectId}
             codeSnippet={selectedCodeSnippet}
+            fileName={selectedFileName}
             onAnswerSubmit={handleAnswerSubmit}
             onSaveQuestion={handleSaveQuestion}
             onChooseAnotherCode={handleChooseAnotherCode}

@@ -27,7 +27,7 @@ export interface ProjectHeaderProps {
 export interface CodeSelectionTabProps {
   projectId: string
   files?: string[]
-  onSelectCodeSnippet: (snippet: string) => void
+  onSelectCodeSnippet: (snippet: string, fileName: string) => void
 }
 
 // CS 질문 관련 타입
@@ -44,6 +44,7 @@ export interface QuestionItem extends Partial<CSQuestion> {
 export interface CSQuestionsTabProps {
   projectId: string
   codeSnippet?: string
+  fileName?: string
   onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
   onSaveQuestion?: (questionId: number) => Promise<boolean | undefined>
   onChooseAnotherCode?: () => void

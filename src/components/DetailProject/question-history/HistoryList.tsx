@@ -36,19 +36,26 @@ const HistoryList: React.FC<HistoryListProps> = ({
         <div key={date}>
           <h4 className="mb-2 text-sm font-medium text-slate-700">{date}</h4>
           <div className="space-y-2">
-            {history[date].map((question) => (
-              <QuestionCard
-                key={question.id}
-                question={{
-                  ...question,
-                  answered: true,
-                  codeSnippet: question.codeSnippet,
-                }}
-                isSelected={selectedQuestionId === question.id}
-                isBookmarked={bookmarkedQuestions.includes(question.id)}
-                onClick={() => onSelectQuestion(question)}
-              />
-            ))}
+            {Array.isArray(history[date]) ? (
+              history[date].map((question, index) => (
+                <QuestionCard
+                  key={question.id || `question-${date}-${index}`}
+                  question={{
+                    ...question,
+                    id: question.id || index + 1000,
+                    answered: true,
+                    codeSnippet: question.codeSnippet,
+                  }}
+                  isSelected={selectedQuestionId === question.id}
+                  isBookmarked={bookmarkedQuestions.includes(question.id)}
+                  onClick={() => onSelectQuestion(question)}
+                />
+              ))
+            ) : (
+              <div className="rounded-md bg-yellow-50 p-3 text-sm text-yellow-700">
+                이 날짜의 질문 목록을 불러올 수 없습니다.
+              </div>
+            )}
           </div>
         </div>
       ))}
