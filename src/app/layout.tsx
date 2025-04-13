@@ -4,6 +4,7 @@ import Header from '@/components/header/header'
 import { MSWComponent } from '@/api/MSWComponent'
 import ReactQueryProvider from '@/providers/ReactQueryClient'
 import AutoRefreshToken from '@/components/AuthSetting/token'
+import GlobalModal from '@/components/Modal/GlobalModal'
 
 export const metadata: Metadata = {
   title: 'CoMentor',
@@ -19,6 +20,7 @@ const RootLayout = ({
     <html lang="en">
       <body className="flex h-dvh flex-col antialiased">
         <AutoRefreshToken />
+        <GlobalModal />
 
         {process.env.NEXT_PUBLIC_MSW === 'enable' ? (
           <MSWComponent>
