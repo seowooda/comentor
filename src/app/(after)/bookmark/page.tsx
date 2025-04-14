@@ -1,5 +1,6 @@
 'use client'
 
+import { folderInfo } from '@/api/services/folder/quries'
 import { QuestionList } from '@/components/Bookmark'
 import { FolderList } from '@/components/Bookmark/FolderList'
 import { useState } from 'react'
@@ -7,12 +8,7 @@ import { useState } from 'react'
 export default function Page() {
   const [folderId, setFolderId] = useState<number | null>(1)
 
-  const folderList = [
-    { id: 1, name: '중요질문' },
-    { id: 2, name: '폴더2' },
-    { id: 3, name: '서우다' },
-    { id: 4, name: '폴더4' },
-  ]
+  const { data: folder } = folderInfo()
 
   return (
     <main className="flex w-full flex-grow justify-center px-[60px] pt-10">
@@ -20,10 +16,10 @@ export default function Page() {
         <FolderList
           folderId={folderId}
           setFolderId={setFolderId}
-          folders={folderList}
+          folders={folder?.result || []}
         />
         <div className="flex-1">
-          <QuestionList folderId={folderId} folders={folderList} />
+          <QuestionList folderId={folderId} folders={folder?.result || []} />
         </div>
       </div>
     </main>

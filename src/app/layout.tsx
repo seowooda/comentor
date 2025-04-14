@@ -20,11 +20,12 @@ const RootLayout = ({
     <html lang="en">
       <body className="flex h-dvh flex-col antialiased">
         <AutoRefreshToken />
-        <GlobalModal />
 
         {process.env.NEXT_PUBLIC_MSW === 'enable' ? (
           <MSWComponent>
             <ReactQueryProvider>
+              <GlobalModal />
+
               <header className="mx-[60px]">
                 <Header />
               </header>
@@ -34,6 +35,8 @@ const RootLayout = ({
           </MSWComponent>
         ) : (
           <ReactQueryProvider>
+            <GlobalModal />
+
             <header className="mx-[60px]">
               <Header />
             </header>

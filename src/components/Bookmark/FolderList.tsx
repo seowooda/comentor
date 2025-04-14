@@ -6,7 +6,7 @@ import { FolderIcon, Pencil, Trash } from 'lucide-react'
 interface FolderListProps {
   folderId: number | null
   setFolderId: (id: number) => void
-  folders: { id: number; name: string }[]
+  folders: { id: number; folder_name: string }[]
 }
 
 export const FolderList = ({
@@ -22,17 +22,17 @@ export const FolderList = ({
       <div className="flex flex-col gap-5">
         <h3 className="text-[18px] leading-5 font-medium">폴더 목록</h3>
         <div>
-          {folders.map((folder) => (
+          {folders?.map((folder) => (
             <div
               key={folder.id}
               onClick={() => setFolderId(folder.id)}
-              className={`group cursor-pointer rounded-md transition-colors ${
+              className={`group cursor-pointer rounded-md transition-colors hover:bg-sky-50 hover:transition-colors ${
                 folderId === folder.id ? 'bg-sky-100' : ''
               }`}
             >
               <div className="flex items-center gap-4 p-3">
                 <FolderIcon size={18} />
-                <span className="flex-1">{folder.name}</span>
+                <span className="flex-1">{folder.folder_name}</span>
 
                 {/* ✏️ 연필, 🗑️ 휴지통 - hover 시만 보임 */}
                 <div className="flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
