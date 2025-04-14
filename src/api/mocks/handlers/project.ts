@@ -30,10 +30,13 @@ export interface CSQuestion {
 // 질문 이력 아이템 타입
 export interface QuestionHistoryItem {
   id: number
+  csQuestionId?: number // API 응답에서 사용될 수 있는 필드
   question: string
   answer: string
   feedback: string
   codeSnippet: string
+  answered?: boolean
+  status?: 'Todo' | 'Done'
 }
 
 // 날짜별 질문 이력 타입
@@ -198,6 +201,8 @@ const mockQuestionHistory: HistoryByDate = {
       feedback:
         '좋은 시도입니다! React Hook의 구체적인 사용 사례를 더 설명해보세요.',
       codeSnippet: 'UserProfile.jsx',
+      answered: true,
+      status: 'Done',
     },
     {
       id: 2,
@@ -208,6 +213,8 @@ const mockQuestionHistory: HistoryByDate = {
       feedback:
         '네트워크 오류 처리에 대한 설명이 좋습니다. 개선 방안도 추가해보세요.',
       codeSnippet: 'UserProfile.jsx',
+      answered: true,
+      status: 'Done',
     },
   ],
   '2025-03-14': [
@@ -218,6 +225,32 @@ const mockQuestionHistory: HistoryByDate = {
       answer: '이 컴포넌트는 여러 상태를 관리하며 API 호출을 처리합니다.',
       feedback: '성능 최적화 방법에 대해 더 자세히 설명해주세요.',
       codeSnippet: 'App.js',
+      answered: true,
+      status: 'Done',
+    },
+  ],
+  '2025-04-14': [
+    {
+      id: 4,
+      question:
+        'React에서 상태 관리 라이브러리를 사용하는 이유와 장단점을 설명해주세요.',
+      answer: '',
+      feedback: '',
+      codeSnippet: 'App.js',
+      answered: false,
+      status: 'Todo',
+    },
+  ],
+  '2025-04-13': [
+    {
+      id: 5,
+      question:
+        'TypeScript의 주요 기능과 JavaScript와의 차이점을 설명해주세요.',
+      answer: '',
+      feedback: '',
+      codeSnippet: 'index.ts',
+      answered: false,
+      status: 'Todo',
     },
   ],
 }

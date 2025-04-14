@@ -3,6 +3,7 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { QuestionHistoryItem } from '../types'
+import { FileCode } from 'lucide-react'
 
 interface QuestionDetailProps {
   question: QuestionHistoryItem | null
@@ -30,11 +31,23 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
     <div>
       <div className="mb-4">
         <h3 className="font-medium text-slate-800">{question.question}</h3>
-        {question.codeSnippet && (
-          <p className="mt-1 text-xs text-slate-500">{question.codeSnippet}</p>
+
+        {question.fileName && (
+          <div className="mt-2 flex items-center text-xs text-blue-600">
+            <FileCode className="mr-1 h-4 w-4" />
+            <span>{question.fileName}</span>
+          </div>
         )}
 
-        <div className="mt-1 flex justify-end">
+        {question.codeSnippet && (
+          <div className="mt-2 overflow-auto rounded-md bg-slate-100 p-3">
+            <pre className="text-xs whitespace-pre-wrap text-slate-700">
+              {question.codeSnippet}
+            </pre>
+          </div>
+        )}
+
+        <div className="mt-3 flex justify-end">
           <Button
             variant="outline"
             size="sm"
@@ -51,14 +64,14 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
         <div className="rounded-md bg-slate-50 p-3">
           <h4 className="mb-2 text-sm font-medium">내 답변</h4>
           <div className="text-sm whitespace-pre-line text-slate-700">
-            {question.answer}
+            {question.answer || '답변이 없습니다.'}
           </div>
         </div>
 
         <div className="rounded-md bg-green-50 p-3">
           <h4 className="mb-2 text-sm font-medium text-green-700">피드백</h4>
           <div className="text-sm whitespace-pre-line text-green-600">
-            {question.feedback}
+            {question.feedback || '피드백이 없습니다.'}
           </div>
         </div>
       </div>
