@@ -60,11 +60,13 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       )}
 
       <div className="mt-1 flex justify-end">
-        <span
-          className={`rounded-full px-2 py-0.5 text-xs ${getStatusColorStyle()}`}
-        >
-          {statusText || (question.answered ? '답변됨' : '답변필요')}
-        </span>
+        {(statusText || question.answered) && (
+          <span
+            className={`rounded-full px-2 py-0.5 text-xs ${getStatusColorStyle()}`}
+          >
+            {statusText || '답변됨'}
+          </span>
+        )}
       </div>
     </div>
   )
