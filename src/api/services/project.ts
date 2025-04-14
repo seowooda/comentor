@@ -1,9 +1,6 @@
-import {
-  Project,
-  CSQuestion,
-  HistoryByDate,
-} from '@/api/mocks/handlers/project'
+import { Project, CSQuestion } from '@/api/mocks/handlers/project'
 import { fetcher } from '@/api/lib/fetcher'
+import { fetchGitHubContents, fetchGitHubFile } from './github/githubService'
 
 // API 기본 URL 가져오기
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
@@ -104,13 +101,6 @@ export const getProjectFiles = async (
     // GitHub 저장소 정보 가져오기
     const { owner, repo, branch } = await getGitHubRepoInfo(projectId)
 
-    console.log('GitHub 정보:', { owner, repo, branch })
-
-    // GitHub API를 사용하여 파일 목록 가져오기 (경로 지정)
-    const { fetchGitHubContents } = await import(
-      '@/api/services/github/githubService'
-    )
-
     // 지정된 경로의 파일 및 폴더 목록 가져오기
     const contents = await fetchGitHubContents(owner, repo, path, branch)
 
@@ -141,9 +131,6 @@ export const getFileCode = async (
     const { owner, repo, branch } = await getGitHubRepoInfo(projectId)
 
     // GitHub API를 사용하여 파일 내용 가져오기
-    const { fetchGitHubFile } = await import(
-      '@/api/services/github/githubService'
-    )
     const content = await fetchGitHubFile(owner, repo, fileName, branch)
 
     return content
@@ -161,69 +148,36 @@ export const generateCSQuestions = async (
   code: string,
   fileName: string,
 ): Promise<CSQuestion[]> => {
-  return await fetcher<CSQuestion[]>(
-    '/cs-questions/generate',
-    {
-      method: 'POST',
-      body: JSON.stringify({ projectId, code, fileName }),
-    },
-    true,
-  )
-}
+  try {
+    const response = await fetcher<{
+      code: number
+      message: string
+      result: any[]
+    }>(
+      '/question/project',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          projectId,
+          userCode: code,
+          fileName,
+        }),
+      },
+      true,
+    )
 
-/**
- * CS 질문 답변 제출
- */
-export const submitAnswer = async (
-  questionId: number,
-  answer: string,
-): Promise<string> => {
-  const data = await fetcher<{ feedback: string }>(
-    '/cs-questions/answer',
-    {
-      method: 'POST',
-      body: JSON.stringify({ questionId, answer }),
-    },
-    true,
-  )
-  return data.feedback
-}
+    // 서버에서 온 응답을 CSQuestion 형식으로 변환
+    if (response.result && Array.isArray(response.result)) {
+      return response.result.map((item) => ({
+        id: item.questionId,
+        question: item.question,
+        bestAnswer: '', // 초기에는 비어있는 bestAnswer 제공
+      }))
+    }
 
-/**
- * 질문 저장
- */
-export const saveQuestion = async (questionId: number): Promise<boolean> => {
-  const data = await fetcher<{ success: boolean }>(
-    `/cs-questions/${questionId}/save`,
-    { method: 'POST' },
-    true,
-  )
-  return data.success
-}
-
-/**
- * 질문 북마크
- */
-export const bookmarkQuestion = async (
-  questionId: number,
-): Promise<boolean> => {
-  const data = await fetcher<{ success: boolean }>(
-    `/cs-questions/${questionId}/bookmark`,
-    { method: 'POST' },
-    true,
-  )
-  return data.success
-}
-
-/**
- * 질문 이력 조회
- */
-export const getQuestionHistory = async (
-  projectId: string,
-): Promise<HistoryByDate> => {
-  return await fetcher<HistoryByDate>(
-    `/projects/${projectId}/question-history`,
-    { method: 'GET' },
-    true,
-  )
+    return []
+  } catch (error) {
+    console.error('CS 질문 생성 중 오류:', error)
+    return []
+  }
 }

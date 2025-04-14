@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Info } from 'lucide-react'
 import { DateRange } from 'react-day-picker'
-import { FileItem } from '@/api/services/project'
+import { FileItem } from '@/api'
 
 interface CodeSelectionTabProps {
   projectId: string

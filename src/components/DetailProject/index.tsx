@@ -12,13 +12,13 @@ import CSQuestionsTab from './cs-questions'
 import QuestionHistoryTab from './question-history'
 
 // API 서비스
-import { getProjectDetail } from '@/api/services/project'
 import {
-  getQuestionHistory,
-  submitAnswer,
-  saveQuestion,
-  bookmarkQuestion,
-} from '@/api/services/question'
+  getProjectDetail,
+  getCSQuestionHistory,
+  submitCSAnswer,
+  saveCSQuestion,
+  bookmarkCSQuestion,
+} from '@/api'
 
 /**
  * 프로젝트 상세 페이지 컴포넌트
@@ -53,7 +53,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
 
         // 질문 이력 가져오기
         try {
-          const history = await getQuestionHistory(id)
+          const history = await getCSQuestionHistory(id)
           setQuestionHistory(history)
         } catch (historyError) {
           console.error('질문 이력을 가져오는 중 오류 발생:', historyError)
@@ -88,7 +88,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
     async (answer: string, questionId: number): Promise<string> => {
       try {
         console.log('답변 제출 호출:', { answer, csQuestionId: questionId })
-        return await submitAnswer(questionId, answer)
+        return await submitCSAnswer(questionId, answer)
       } catch (error) {
         console.error('답변 제출 중 오류 발생:', error)
         return '답변 제출 중 오류가 발생했습니다. 다시 시도해주세요.'
@@ -101,7 +101,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const handleSaveQuestion = useCallback(
     async (questionId: number): Promise<boolean> => {
       try {
-        return await saveQuestion(questionId)
+        return await saveCSQuestion(questionId)
       } catch (error) {
         console.error('질문 저장 중 오류 발생:', error)
         return false
@@ -114,7 +114,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const handleBookmarkQuestion = useCallback(
     async (questionId: number): Promise<boolean> => {
       try {
-        return await bookmarkQuestion(questionId)
+        return await bookmarkCSQuestion(questionId)
       } catch (error) {
         console.error('북마크 중 오류 발생:', error)
         return false

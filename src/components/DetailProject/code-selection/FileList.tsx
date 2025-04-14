@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Loader2, Folder, FileText, ChevronUp } from 'lucide-react'
-import { FileItem } from '@/api/services/project'
+import { FileItem } from '@/api'
 
 interface FileListProps {
   files: FileItem[]

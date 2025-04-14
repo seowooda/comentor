@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { QuestionItem } from '../types'
-import { generateCSQuestions } from '@/api/services/question'
+import { generateCSQuestions } from '@/api'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { CSQuestion } from '@/api/mocks/handlers/project'
+import { CSQuestion } from '@/api'
 
 interface UseCSQuestionsProps {
   projectId: string

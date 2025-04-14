@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { getQuestionHistory, getQuestionDetail } from '@/api/services/question'
+import { getCSQuestionHistory, getQuestionDetail } from '@/api'
 import { HistoryByDate, QuestionHistoryItem } from '../types'
 
 interface UseQuestionHistoryProps {
@@ -29,7 +29,7 @@ export default function useQuestionHistory({
 
       setLoading(true)
       try {
-        const data = await getQuestionHistory(projectId)
+        const data = await getCSQuestionHistory(projectId)
         setHistory(data)
       } catch (error) {
         console.error('질문 이력을 가져오는 중 오류 발생:', error)

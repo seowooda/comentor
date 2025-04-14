@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { getProjectFiles, getFileCode, FileItem } from '@/api/services/project'
+import { getProjectFiles, getFileCode, FileItem } from '@/api'
 
 interface UseCodeSelectionProps {
   projectId: string

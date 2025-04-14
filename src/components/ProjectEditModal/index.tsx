@@ -11,10 +11,7 @@ import { ModalButtons } from '../ProjectImportModal/ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
 import { z } from 'zod'
 import { useState, useEffect } from 'react'
-import {
-  useProjectUpdate,
-  ProjectUpdateRequest,
-} from '@/api/services/project/index'
+import { useProjectUpdate, ProjectUpdateRequest } from '@/api'
 
 // 프로젝트 수정 폼 스키마
 const ProjectEditSchema = z.object({
