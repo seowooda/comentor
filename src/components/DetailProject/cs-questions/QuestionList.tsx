@@ -58,14 +58,15 @@ const QuestionList: React.FC<QuestionListProps> = ({
             isSelected={selectedQuestionId === question.id}
             isBookmarked={
               selectedQuestionId !== null &&
+              question.id !== undefined &&
               savedQuestions.includes(question.id)
             }
             onClick={() => {
-              if (question.id) {
-                onSelectQuestion(question.id)
-              } else {
+              if (!question.id) {
                 console.error('질문 ID가 없습니다:', question)
+                return // ID가 없으면 함수 실행 중단
               }
+              onSelectQuestion(question.id)
             }}
           />
         ))}

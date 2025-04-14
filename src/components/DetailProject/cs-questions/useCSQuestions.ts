@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { QuestionItem } from '../types'
 import { generateCSQuestions } from '@/api/services/question'
+import { useQuery } from '@tanstack/react-query'
+import { CSQuestion } from '@/api/mocks/handlers/project'
 
 interface UseCSQuestionsProps {
   projectId: string
@@ -22,39 +24,66 @@ export default function useCSQuestions({
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [questionsLoading, setQuestionsLoading] = useState(true)
   const [savedQuestions, setSavedQuestions] = useState<number[]>([])
   const [showCompletionToast, setShowCompletionToast] = useState(false)
   const [showLearningInsights, setShowLearningInsights] = useState(false)
 
-  // 질문 데이터 가져오기
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      if (!projectId || !codeSnippet) return
+  // React Query를 사용하여 질문 데이터 가져오기 및 캐싱
+  const {
+    data: csQuestions,
+    isLoading: questionsLoading,
+    error,
+  } = useQuery<CSQuestion[]>({
+    queryKey: ['csQuestions', projectId, codeSnippet, fileName],
+    queryFn: () => generateCSQuestions(projectId, codeSnippet, fileName),
+    enabled: !!projectId && !!codeSnippet,
+    staleTime: 1000 * 60 * 5, // 5분간 데이터 유지
+    gcTime: 1000 * 60 * 10, // 10분간 캐시 유지
+  })
 
-      setQuestionsLoading(true)
-      try {
-        const data = await generateCSQuestions(projectId, codeSnippet, fileName)
-        const enhancedData = data.map((q) => ({
-          ...q,
-          answered: false,
-          userAnswer: '',
-          feedback: '',
-          codeSnippet: codeSnippet.substring(0, 100) + '...',
-        }))
-        setQuestions(enhancedData)
-        if (enhancedData.length > 0 && selectedQuestionId === null) {
-          setSelectedQuestionId(enhancedData[0].id)
-        }
-      } catch (error) {
-        console.error('CS 질문을 가져오는 중 오류 발생:', error)
-      } finally {
-        setQuestionsLoading(false)
+  // 질문 데이터가 변경되면 상태 업데이트
+  useEffect(() => {
+    if (csQuestions && Array.isArray(csQuestions) && csQuestions.length > 0) {
+      // 기존 질문 상태 유지하면서 새 데이터 병합
+      setQuestions((prevQuestions) => {
+        const enhancedData = csQuestions.map((q: CSQuestion) => {
+          // 기존 질문이 있는지 확인
+          const existingQuestion = prevQuestions.find(
+            (prevQ) => prevQ.id === q.id,
+          )
+
+          if (existingQuestion) {
+            // 기존 질문이 있으면 상태 유지하면서 데이터 업데이트
+            return {
+              ...q,
+              answered: existingQuestion.answered,
+              userAnswer: existingQuestion.userAnswer,
+              feedback: existingQuestion.feedback,
+              codeSnippet:
+                existingQuestion.codeSnippet ||
+                codeSnippet.substring(0, 100) + '...',
+            }
+          } else {
+            // 새 질문이면 초기 상태로 설정
+            return {
+              ...q,
+              answered: false,
+              userAnswer: '',
+              feedback: '',
+              codeSnippet: codeSnippet.substring(0, 100) + '...',
+            }
+          }
+        })
+
+        return enhancedData
+      })
+
+      // 선택된 질문이 없을 때만 첫 번째 질문 선택
+      if (selectedQuestionId === null) {
+        setSelectedQuestionId(csQuestions[0].id)
       }
     }
-
-    fetchQuestions()
-  }, [projectId, codeSnippet, fileName])
+  }, [csQuestions, codeSnippet]) // selectedQuestionId 의존성 제거
 
   // 모든 질문이 답변되었는지 확인
   useEffect(() => {

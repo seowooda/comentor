@@ -31,9 +31,10 @@ export interface CodeSelectionTabProps {
 }
 
 // CS 질문 관련 타입
-export interface QuestionItem extends Partial<CSQuestion> {
+export interface QuestionItem {
   id: number
   question: string
+  bestAnswer?: string
   answered?: boolean
   userAnswer?: string
   feedback?: string
