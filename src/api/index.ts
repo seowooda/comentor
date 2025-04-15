@@ -84,4 +84,10 @@ export {
   fetchGitHubFile,
 } from '@/api/services/github/githubService'
 
-export { useGithubRepos } from '@/api/services/github'
+//folder
+export type {
+  FolderResponse,
+  FolderDetailResponse,
+  DefaultResponse,
+} from '@/api/services/folder/model'
+
