@@ -29,16 +29,11 @@ export const submitAnswer = async (
       throw new Error('답변 내용이 비어있습니다.')
     }
 
-    // API 요청 데이터 로깅
-    console.log('답변 제출 데이터:', { questionId, answer })
-
     // 서버가 기대하는 형식으로 요청 본문 구성 (필드명 변경)
     const requestBody = {
       csQuestionId: questionId,
       answer: answer,
     }
-
-    console.log('서버 요청 본문:', JSON.stringify(requestBody, null, 2))
 
     const data = await fetcher<{
       code?: number
@@ -53,8 +48,6 @@ export const submitAnswer = async (
       },
       true,
     )
-
-    console.log('피드백 응답:', data)
 
     // result 또는 feedback 필드에서 응답 데이터 추출
     if (data.result) {

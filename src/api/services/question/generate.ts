@@ -39,8 +39,6 @@ export const generateCSQuestions = async (
       true,
     )
 
-    console.log('CS 질문 생성 결과:', data)
-
     // 결과가 없거나 배열이 아닌 경우 빈 배열 반환
     if (!data.result || !Array.isArray(data.result)) {
       return []

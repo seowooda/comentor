@@ -87,7 +87,6 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const handleAnswerSubmit = useCallback(
     async (answer: string, questionId: number): Promise<string> => {
       try {
-        console.log('답변 제출 호출:', { answer, csQuestionId: questionId })
         return await submitCSAnswer(questionId, answer)
       } catch (error) {
         console.error('답변 제출 중 오류 발생:', error)

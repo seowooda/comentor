@@ -31,17 +31,6 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
     initialHistory,
   })
 
-  // 디버깅을 위한 데이터 로깅
-  useEffect(() => {
-    console.log('QuestionHistoryTab 데이터:', {
-      projectId,
-      history,
-      sortedDates,
-      selectedQuestion,
-      currentQuestion,
-    })
-  }, [projectId, history, sortedDates, selectedQuestion, currentQuestion])
-
   if (loading) {
     return (
       <div className="flex h-60 items-center justify-center">
