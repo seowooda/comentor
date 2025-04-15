@@ -1,10 +1,5 @@
-//====================
-// USER
-//====================
-// Types
-export type { User, UserResponse } from '@/api/services/user/model'
-
-// Functions
+//user
+export type { User } from '@/api/services/user/model'
 export { stackNames } from '@/api/services/user/model'
 
 //====================
@@ -21,7 +16,6 @@ export type {
   ProjectUpdateResponse,
   ProjectDeleteResponse,
 } from '@/api/services/project/index'
-
 // Functions
 export {
   getProjectDetail,
@@ -79,20 +73,12 @@ export {
 export {
   getQuestionDetail,
   useQuestionDetail,
-  getRecentQuestions,
-  useRecentQuestions,
   useProjectCsQuestion,
   useRecentCSQuestions,
   useProjectCsQuestionList,
 } from '@/api/services/question/query'
 
-//====================
-// GITHUB
-//====================
-// Types
-export type { GithubRepoResponse, GithubRepo } from '@/api/services/github'
-
-// Functions
+//github
 export {
   fetchGitHubContents,
   fetchGitHubFile,

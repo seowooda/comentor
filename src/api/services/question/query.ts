@@ -42,25 +42,6 @@ export const useProjectCsQuestionList = (projectId: number) => {
 }
 
 /**
- * 최근 질문 3개 조회 (직접 호출)
- * GET /question/project/recent
- */
-export const getRecentQuestions = async (): Promise<CSQuestion[]> => {
-  try {
-    const data = await fetcher<{ result: CSQuestion[] }>(
-      '/question/project/recent',
-      { method: 'GET' },
-      true,
-    )
-
-    return data.result || []
-  } catch (error) {
-    console.error('최근 질문 조회 중 오류:', error)
-    return []
-  }
-}
-
-/**
  * 질문 상세 정보 조회
  * GET /question/project
  */
@@ -151,15 +132,5 @@ export const useQuestionDetail = (csQuestionId: number | undefined) => {
     queryKey: ['questionDetail', csQuestionId?.toString()],
     queryFn: () => getQuestionDetail(csQuestionId || 0),
     enabled: !!csQuestionId,
-  })
-}
-
-/**
- * 최근 질문 조회 훅
- */
-export const useRecentQuestions = () => {
-  return useQuery({
-    queryKey: ['recentQuestions'],
-    queryFn: getRecentQuestions,
   })
 }
