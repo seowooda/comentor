@@ -1,18 +1,20 @@
 'use client'
 
 import { useModalStore } from '@/store/modalStore'
-import { FolderIcon, Pencil, Trash } from 'lucide-react'
+import { FolderItem } from './FolderItem'
 
 interface FolderListProps {
   folderId: number | null
   setFolderId: (id: number) => void
   folders: { id: number; folder_name: string }[]
+  isLoading: boolean
 }
 
 export const FolderList = ({
   folderId,
   setFolderId,
   folders,
+  isLoading,
 }: FolderListProps) => {
   const { openModal } = useModalStore()
 
@@ -21,41 +23,26 @@ export const FolderList = ({
       <h2 className="text-xl font-semibold">폴더 관리</h2>
       <div className="flex flex-col gap-5">
         <h3 className="text-[18px] leading-5 font-medium">폴더 목록</h3>
-        <div>
-          {folders?.map((folder) => (
-            <div
-              key={folder.id}
-              onClick={() => setFolderId(folder.id)}
-              className={`group cursor-pointer rounded-md transition-colors hover:bg-sky-50 hover:transition-colors ${
-                folderId === folder.id ? 'bg-sky-100' : ''
-              }`}
-            >
-              <div className="flex items-center gap-4 p-3">
-                <FolderIcon size={18} />
-                <span className="flex-1">{folder.folder_name}</span>
-
-                {/* ✏️ 연필, 🗑️ 휴지통 - hover 시만 보임 */}
-                <div className="flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                  <button
-                    onClick={() =>
-                      openModal('editFolder', { folderId: folder.id })
-                    }
-                    className="cursor-pointer p-1 hover:text-sky-600"
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  <button
-                    onClick={() =>
-                      openModal('deleteFolder', { folderId: folder.id })
-                    }
-                    className="cursor-pointer p-1 hover:text-red-600"
-                  >
-                    <Trash size={16} />
-                  </button>
+        <div className="flex flex-col gap-2">
+          {isLoading
+            ? Array.from({ length: folders.length || 0 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex animate-pulse items-center gap-4 rounded-md bg-slate-100 p-3"
+                >
+                  <div className="h-4 w-4 rounded-full bg-slate-300" />
+                  <div className="h-4 flex-1 rounded bg-slate-200" />
                 </div>
-              </div>
-            </div>
-          ))}
+              ))
+            : folders.map((folder) => (
+                <FolderItem
+                  key={folder.id}
+                  folder={folder}
+                  isSelected={folderId === folder.id}
+                  onSelect={setFolderId}
+                  openModal={openModal}
+                />
+              ))}
         </div>
       </div>
     </section>
