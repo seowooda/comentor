@@ -48,7 +48,6 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
       activeTab === 'question-history' &&
       prevActiveTabRef.current !== 'question-history'
     ) {
-      console.log('질문 이력 탭으로 전환됨, 데이터 새로고침')
       didSwitchToThisTabRef.current = true
       refreshHistory().then(() => {
         didSwitchToThisTabRef.current = false
@@ -95,8 +94,6 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
       // 질문 ID를 세션 스토리지에 저장
       sessionStorage.setItem('selectedQuestionId', String(question.id))
       onTabChange('cs-questions')
-    } else {
-      console.log('탭 변경 기능을 사용할 수 없습니다.')
     }
   }
 
