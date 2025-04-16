@@ -1,8 +1,8 @@
 import {
   Project,
   CSQuestion,
-  HistoryByDate,
-  QuestionHistoryItem,
+  HistoryByDate as ImportedHistoryByDate,
+  QuestionHistoryItem as ImportedQuestionHistoryItem,
 } from '@/api/mocks/handlers/project'
 import { RefObject } from 'react'
 
@@ -27,23 +27,26 @@ export interface ProjectHeaderProps {
 export interface CodeSelectionTabProps {
   projectId: string
   files?: string[]
-  onSelectCodeSnippet: (snippet: string) => void
+  onSelectCodeSnippet: (snippet: string, fileName: string) => void
 }
 
 // CS 질문 관련 타입
-export interface QuestionItem extends Partial<CSQuestion> {
+export interface QuestionItem {
   id: number
   question: string
+  bestAnswer?: string
   answered?: boolean
   userAnswer?: string
   feedback?: string
   codeSnippet?: string
+  fileName?: string
 }
 
 // CS 질문 탭 props
 export interface CSQuestionsTabProps {
   projectId: string
   codeSnippet?: string
+  fileName?: string
   onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
   onSaveQuestion?: (questionId: number) => Promise<boolean | undefined>
   onChooseAnotherCode?: () => void
@@ -72,8 +75,21 @@ export interface QuestionCardProps {
   question: QuestionItem
   isSelected?: boolean
   isBookmarked?: boolean
+  statusText?: string
+  statusColor?: 'green' | 'yellow' | 'red' | 'blue'
   onClick?: () => void
 }
 
-// 여러 컴포넌트에서 공유하는 타입들
-export type { HistoryByDate, QuestionHistoryItem }
+// 질문 이력 아이템 타입 (확장)
+export interface QuestionHistoryItem extends ImportedQuestionHistoryItem {
+  // API 응답에서 가능한 필드
+  fileName?: string
+  concept?: string
+  date?: string
+  questionId?: number
+  csQuestionId?: number
+  userCode?: string
+}
+
+// 날짜별 질문 이력 타입
+export interface HistoryByDate extends ImportedHistoryByDate {}

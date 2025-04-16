@@ -14,11 +14,11 @@ import QuestionHistoryTab from './question-history'
 // API 서비스
 import {
   getProjectDetail,
-  getQuestionHistory,
-  submitAnswer,
-  saveQuestion,
-  bookmarkQuestion,
-} from '@/api/services/project'
+  getCSQuestionHistory,
+  submitCSAnswer,
+  saveCSQuestion,
+  bookmarkCSQuestion,
+} from '@/api'
 
 /**
  * 프로젝트 상세 페이지 컴포넌트
@@ -32,6 +32,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const [error, setError] = useState<string | null>(null)
   const [questionHistory, setQuestionHistory] = useState<any | null>(null)
   const [selectedCodeSnippet, setSelectedCodeSnippet] = useState<string>('')
+  const [selectedFileName, setSelectedFileName] = useState<string>('')
 
   // 프로젝트 ID를 가져오고 데이터 로드
   useEffect(() => {
@@ -52,7 +53,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
 
         // 질문 이력 가져오기
         try {
-          const history = await getQuestionHistory(id)
+          const history = await getCSQuestionHistory(id)
           setQuestionHistory(history)
         } catch (historyError) {
           console.error('질문 이력을 가져오는 중 오류 발생:', historyError)
@@ -72,17 +73,21 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   }, [params])
 
   // CS 질문 생성 핸들러
-  const handleGenerateQuestions = useCallback((code: string) => {
-    setSelectedCodeSnippet(code)
-    // 질문 생성 후 CS 질문 탭으로 전환
-    setSelectedTab('cs-questions')
-  }, [])
+  const handleGenerateQuestions = useCallback(
+    (code: string, fileName: string) => {
+      setSelectedCodeSnippet(code)
+      setSelectedFileName(fileName)
+      // 질문 생성 후 CS 질문 탭으로 전환
+      setSelectedTab('cs-questions')
+    },
+    [],
+  )
 
   // 답변 제출 핸들러
   const handleAnswerSubmit = useCallback(
     async (answer: string, questionId: number): Promise<string> => {
       try {
-        return await submitAnswer(questionId, answer)
+        return await submitCSAnswer(questionId, answer)
       } catch (error) {
         console.error('답변 제출 중 오류 발생:', error)
         return '답변 제출 중 오류가 발생했습니다. 다시 시도해주세요.'
@@ -95,7 +100,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const handleSaveQuestion = useCallback(
     async (questionId: number): Promise<boolean> => {
       try {
-        return await saveQuestion(questionId)
+        return await saveCSQuestion(questionId)
       } catch (error) {
         console.error('질문 저장 중 오류 발생:', error)
         return false
@@ -108,7 +113,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const handleBookmarkQuestion = useCallback(
     async (questionId: number): Promise<boolean> => {
       try {
-        return await bookmarkQuestion(questionId)
+        return await bookmarkCSQuestion(questionId)
       } catch (error) {
         console.error('북마크 중 오류 발생:', error)
         return false
@@ -185,7 +190,6 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
         <TabsContent value="code-select" className="mt-4">
           <CodeSelectionTab
             projectId={projectId}
-            files={projectData.files}
             onSelectCodeSnippet={handleGenerateQuestions}
           />
         </TabsContent>
@@ -194,6 +198,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
           <CSQuestionsTab
             projectId={projectId}
             codeSnippet={selectedCodeSnippet}
+            fileName={selectedFileName}
             onAnswerSubmit={handleAnswerSubmit}
             onSaveQuestion={handleSaveQuestion}
             onChooseAnotherCode={handleChooseAnotherCode}

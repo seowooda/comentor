@@ -47,13 +47,27 @@ const QuestionList: React.FC<QuestionListProps> = ({
       </div>
 
       <div className="space-y-2">
-        {questions.map((question) => (
+        {questions.map((question, index) => (
           <QuestionCard
-            key={question.id}
+            key={
+              question.id
+                ? `question-${question.id}`
+                : `question-index-${index}`
+            }
             question={question}
             isSelected={selectedQuestionId === question.id}
-            isBookmarked={savedQuestions.includes(question.id)}
-            onClick={() => onSelectQuestion(question.id)}
+            isBookmarked={
+              selectedQuestionId !== null &&
+              question.id !== undefined &&
+              savedQuestions.includes(question.id)
+            }
+            onClick={() => {
+              if (!question.id) {
+                console.error('질문 ID가 없습니다:', question)
+                return // ID가 없으면 함수 실행 중단
+              }
+              onSelectQuestion(question.id)
+            }}
           />
         ))}
       </div>

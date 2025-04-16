@@ -12,24 +12,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Info } from 'lucide-react'
 import { DateRange } from 'react-day-picker'
+import { FileItem } from '@/api'
 
 interface CodeSelectionTabProps {
   projectId: string
-  files?: string[]
-  onSelectCodeSnippet: (snippet: string) => void
+  files?: FileItem[]
+  onSelectCodeSnippet: (snippet: string, fileName: string) => void
 }
 
 export default function CodeSelectionTab({
   projectId,
-  files,
+  files: initialFiles,
   onSelectCodeSnippet,
 }: CodeSelectionTabProps) {
   const {
     dateRange,
     handleDateRangeChange,
-    files: codeFiles,
+    files,
+    currentPath,
     selectedFile,
     handleSelectFile,
+    navigateUp,
     code,
     selectedCode,
     handleSelectCode,
@@ -49,7 +52,7 @@ export default function CodeSelectionTab({
 
   const handleGenerateQuestions = () => {
     if (selectedCode) {
-      onSelectCodeSnippet(selectedCode)
+      onSelectCodeSnippet(selectedCode, selectedFile)
     }
   }
 
@@ -90,27 +93,22 @@ export default function CodeSelectionTab({
 
         <TabsContent value="calendar" className="mt-0">
           <div className="grid gap-6 md:grid-cols-2">
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="border-b p-6">
-                  <h3 className="mb-2 text-lg font-semibold">날짜 범위 선택</h3>
-                  <p className="text-muted-foreground mb-4 text-sm">
-                    분석할 코드의 커밋 날짜 범위를 선택해주세요.
-                  </p>
-                  <DateRangePicker
-                    dateRange={dateRange}
-                    onDateRangeChange={handleDateChange}
-                  />
-                </div>
-                <div className="bg-muted/20 flex justify-end border-t p-6">
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="mb-2 text-lg font-semibold">날짜 범위 선택</h3>
+                <p className="text-muted-foreground mb-4 text-sm">
+                  조회할 커밋 기간을 선택해주세요.
+                </p>
+                <DateRangePicker
+                  dateRange={dateRange}
+                  onDateRangeChange={handleDateChange}
+                />
+
+                <div className="mt-4 flex justify-end">
                   <Button
                     onClick={fetchCommitsAndFiles}
-                    disabled={loading}
-                    className="relative"
+                    className="bg-primary hover:bg-primary/90"
                   >
-                    {loading && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
                     파일 가져오기
                   </Button>
                 </div>
@@ -131,15 +129,17 @@ export default function CodeSelectionTab({
                   <div className="flex justify-center p-10">
                     <Loader2 className="text-primary h-6 w-6 animate-spin" />
                   </div>
-                ) : codeFiles.length === 0 ? (
+                ) : files.length === 0 ? (
                   <div className="bg-muted rounded-md border p-4 text-sm">
                     날짜 범위를 선택하고 파일을 가져와주세요.
                   </div>
                 ) : (
                   <FileList
-                    files={codeFiles}
+                    files={files}
                     selectedFile={selectedFile}
+                    currentPath={currentPath}
                     onSelectFile={handleSelectFile}
+                    onNavigateUp={navigateUp}
                     loading={loading}
                   />
                 )}

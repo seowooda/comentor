@@ -8,12 +8,13 @@ import { StatusRadioGroup, StatusOption } from './StatusRadioGroup'
 import { ModalButtons } from './ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
 import { ProjectSchema } from '@/hooks'
-import { useGithubRepos, GithubRepo } from '@/api/services/github'
-import { useEffect, useState, useMemo } from 'react'
 import {
+  useGithubRepos,
+  GithubRepo,
   useProjectCreate,
   ProjectCreateRequest,
-} from '@/api/services/project/index'
+} from '@/api'
+import { useEffect, useState, useMemo } from 'react'
 
 /**
  * 진행 상태 옵션 정의

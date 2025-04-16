@@ -13,7 +13,7 @@ import { stackNames, User } from '@/api'
 import { useGetQuery, usePutMutation } from '@/api/lib/fetcher'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { UserResponse } from '@/api/services/user/model'
+import { UserResponse } from '@/api'
 import { useAuthStore } from '@/store/authStore'
 import { useQueryClient } from '@tanstack/react-query'
 
