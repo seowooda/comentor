@@ -83,6 +83,7 @@ export {
   fetchGitHubContents,
   fetchGitHubFile,
 } from '@/api/services/github/githubService'
+export { useGithubRepos } from '@/api/services/github'
 
 //folder
 export type {
@@ -90,4 +91,3 @@ export type {
   FolderDetailResponse,
   DefaultResponse,
 } from '@/api/services/folder/model'
-
