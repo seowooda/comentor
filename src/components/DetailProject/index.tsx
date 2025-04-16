@@ -275,7 +275,8 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
             initialHistory={questionHistory}
             onBookmarkQuestion={handleBookmarkQuestion}
             onAnswerSubmit={handleAnswerSubmit}
-            onTabChange={(tabId) => setSelectedTab(tabId)}
+            onTabChange={setSelectedTab}
+            activeTab={selectedTab}
           />
         </TabsContent>
       </Tabs>

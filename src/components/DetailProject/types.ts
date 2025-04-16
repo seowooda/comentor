@@ -67,6 +67,7 @@ export interface QuestionHistoryTabProps {
   onBookmarkQuestion?: (questionId: number) => Promise<boolean>
   onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
   onTabChange?: (tabId: string) => void
+  activeTab?: string
 }
 
 // 재사용 가능한 UI 컴포넌트 props

@@ -7,6 +7,7 @@ import { HistoryByDate, QuestionHistoryItem } from '../types'
 interface UseQuestionHistoryProps {
   projectId: string
   initialHistory?: HistoryByDate
+  forceRefresh?: boolean
 }
 
 // 정규화된 데이터 구조를 위한 인터페이스
@@ -19,6 +20,7 @@ interface NormalizedQuestions {
 export default function useQuestionHistory({
   projectId,
   initialHistory,
+  forceRefresh = false,
 }: UseQuestionHistoryProps) {
   // 정규화된 데이터 구조로 상태 관리
   const [questionsData, setQuestionsData] = useState<NormalizedQuestions>(
@@ -51,7 +53,7 @@ export default function useQuestionHistory({
     },
   )
 
-  const [loading, setLoading] = useState(!initialHistory)
+  const [loading, setLoading] = useState(!initialHistory || forceRefresh)
   const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(
     null,
   )
@@ -104,7 +106,8 @@ export default function useQuestionHistory({
   // 질문 이력 가져오기
   useEffect(() => {
     const fetchHistory = async () => {
-      if (initialHistory || !projectId) return
+      // 초기 데이터가 있고 강제 새로고침이 아니면 API 호출 생략
+      if (initialHistory && !forceRefresh) return
 
       setLoading(true)
       try {
@@ -139,7 +142,7 @@ export default function useQuestionHistory({
     }
 
     fetchHistory()
-  }, [projectId, initialHistory])
+  }, [projectId, initialHistory, forceRefresh])
 
   // 질문 선택 핸들러 - 상세 정보 API 호출 추가
   const handleSelectQuestion = useCallback(
@@ -182,6 +185,42 @@ export default function useQuestionHistory({
     },
     [],
   )
+
+  // 데이터 새로고침 함수 추가
+  const refreshHistory = useCallback(async () => {
+    setLoading(true)
+    try {
+      const data = await getCSQuestionHistory(projectId)
+
+      // 받아온 데이터 정규화
+      const byId: Record<number, QuestionHistoryItem> = {}
+      const byDate: Record<string, number[]> = {}
+      const allDates = Object.keys(data).sort(
+        (a, b) => new Date(b).getTime() - new Date(a).getTime(),
+      )
+
+      allDates.forEach((date) => {
+        const questions = data[date] || []
+        byDate[date] = []
+
+        questions.forEach((question) => {
+          const id = (question as any).questionId || question.id || 0
+          if (id) {
+            byId[id] = question
+            byDate[date].push(id)
+          }
+        })
+      })
+
+      setQuestionsData({ byId, byDate, allDates })
+      return true
+    } catch (error) {
+      console.error('질문 이력을 다시 가져오는 중 오류 발생:', error)
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }, [projectId])
 
   // 개별 질문 업데이트 - 최적화된 업데이트 로직
   const updateQuestion = useCallback(
@@ -247,6 +286,7 @@ export default function useQuestionHistory({
     sortedDates,
     handleSelectQuestion,
     handleBookmark,
-    updateQuestion, // 최적화된 업데이트 함수 추가
+    updateQuestion,
+    refreshHistory,
   }
 }

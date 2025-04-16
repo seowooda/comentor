@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Loader2 } from 'lucide-react'
 import { QuestionHistoryTabProps } from '../types'
 import HistoryList from './HistoryList'
@@ -18,7 +18,13 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
   onBookmarkQuestion,
   onAnswerSubmit,
   onTabChange,
+  activeTab,
 }) => {
+  // 이전에 활성화된 탭을 추적하는 ref
+  const prevActiveTabRef = useRef<string | undefined>(undefined)
+  // 탭 전환 감지를 위한 ref
+  const didSwitchToThisTabRef = useRef(false)
+
   const {
     history,
     loading,
@@ -30,12 +36,30 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
     handleSelectQuestion,
     handleBookmark,
     updateQuestion,
+    refreshHistory,
   } = useQuestionHistory({
     projectId,
     initialHistory,
+    forceRefresh: didSwitchToThisTabRef.current,
   })
 
-  // 질문 답변 처리 - 최적화된 방식으로 상태 업데이트
+  useEffect(() => {
+    if (
+      activeTab === 'question-history' &&
+      prevActiveTabRef.current !== 'question-history'
+    ) {
+      console.log('질문 이력 탭으로 전환됨, 데이터 새로고침')
+      didSwitchToThisTabRef.current = true
+      refreshHistory().then(() => {
+        didSwitchToThisTabRef.current = false
+      })
+    }
+
+    prevActiveTabRef.current = activeTab
+  }, [activeTab, refreshHistory])
+
+  const historyListKey = `history-list-${sortedDates.length}-${Object.keys(history).length}`
+
   const handleAnswerSubmit = async (question: any, answer: string) => {
     try {
       if (!answer.trim()) return undefined
@@ -107,6 +131,7 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
             질문 이력 ({sortedDates.length}일)
           </h3>
           <HistoryList
+            key={historyListKey}
             dates={sortedDates}
             history={history}
             selectedQuestionId={currentQuestion?.id || selectedQuestion?.id}
