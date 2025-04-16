@@ -23,7 +23,7 @@ export const useCreateProjectCsQuestion = () => {
 export const generateCSQuestions = async (
   projectId: string,
   code: string,
-  fileName: string,
+  folderName: string,
 ): Promise<CSQuestion[]> => {
   try {
     const data = await fetcher<{ result: any[] }>(
@@ -33,7 +33,7 @@ export const generateCSQuestions = async (
         body: JSON.stringify({
           projectId: parseInt(projectId),
           userCode: code,
-          fileName: fileName,
+          folderName: folderName,
         }),
       },
       true,
@@ -80,11 +80,11 @@ export const useGenerateCSQuestions = () => {
     mutationFn: ({
       projectId,
       code,
-      fileName,
+      folderName,
     }: {
       projectId: string
       code: string
-      fileName: string
-    }) => generateCSQuestions(projectId, code, fileName),
+      folderName: string
+    }) => generateCSQuestions(projectId, code, folderName),
   })
 }

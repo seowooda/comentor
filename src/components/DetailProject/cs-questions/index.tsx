@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button'
 const CSQuestionsTab: React.FC<CSQuestionsTabProps> = ({
   projectId,
   codeSnippet = '',
-  fileName = '',
+  folderName = '',
   onAnswerSubmit,
   onSaveQuestion,
   onTabChange,
@@ -51,7 +51,7 @@ const CSQuestionsTab: React.FC<CSQuestionsTabProps> = ({
     handleSubmitAnswer,
     handleSaveQuestion,
     toggleLearningInsights,
-  } = useCSQuestions({ projectId, codeSnippet, fileName })
+  } = useCSQuestions({ projectId, codeSnippet, folderName })
 
   const handleSubmit = useCallback(async () => {
     await handleSubmitAnswer(onAnswerSubmit)

@@ -9,13 +9,13 @@ import { CSQuestion } from '@/api'
 interface UseCSQuestionsProps {
   projectId: string
   codeSnippet?: string
-  fileName?: string
+  folderName?: string
 }
 
 export default function useCSQuestions({
   projectId,
   codeSnippet = '',
-  fileName = '',
+  folderName = '',
 }: UseCSQuestionsProps) {
   // QueryClient 인스턴스 가져오기
   const queryClient = useQueryClient()
@@ -56,8 +56,8 @@ export default function useCSQuestions({
     isLoading,
     error,
   } = useQuery<CSQuestion[]>({
-    queryKey: ['csQuestions', projectId, codeSnippet, fileName],
-    queryFn: () => generateCSQuestions(projectId, codeSnippet, fileName),
+    queryKey: ['csQuestions', projectId, codeSnippet, folderName],
+    queryFn: () => generateCSQuestions(projectId, codeSnippet, folderName),
     enabled: !!projectId && !!codeSnippet,
     staleTime: 1000 * 60 * 30, // 30분간 데이터 유지
     gcTime: 1000 * 60 * 60, // 60분간 캐시 유지
@@ -103,7 +103,7 @@ export default function useCSQuestions({
         userAnswer: '',
         feedback: '',
         codeSnippet: codeSnippet.substring(0, 100) + '...',
-        fileName, // 파일명 추가
+        folderName: folderName, // folderName 저장
       }))
 
       setQuestions(initialQuestions)
@@ -135,7 +135,13 @@ export default function useCSQuestions({
         setSelectedQuestionId(initialQuestions[0].id)
       }
     }
-  }, [csQuestions, codeSnippet, fileName, selectedQuestionId, questions.length])
+  }, [
+    csQuestions,
+    codeSnippet,
+    folderName,
+    selectedQuestionId,
+    questions.length,
+  ])
 
   // 모든 질문이 답변되었는지 확인
   useEffect(() => {

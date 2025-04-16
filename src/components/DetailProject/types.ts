@@ -26,7 +26,7 @@ export interface ProjectHeaderProps {
 export interface CodeSelectionTabProps {
   projectId: string
   files?: string[]
-  onSelectCodeSnippet: (snippet: string, fileName: string) => void
+  onSelectCodeSnippet: (snippet: string, folderName: string) => void
 }
 
 // CS 질문 관련 타입 (공통 속성)
@@ -35,6 +35,7 @@ interface BaseQuestion {
   question: string
   codeSnippet?: string
   fileName?: string
+  folderName?: string
   status?: string
 }
 
@@ -50,7 +51,7 @@ export interface QuestionItem extends BaseQuestion {
 export interface CSQuestionsTabProps {
   projectId: string
   codeSnippet?: string
-  fileName?: string
+  folderName?: string
   onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
   onSaveQuestion?: (questionId: number) => Promise<boolean | undefined>
   onChooseAnotherCode?: () => void

@@ -17,7 +17,7 @@ import { FileItem } from '@/api'
 interface CodeSelectionTabProps {
   projectId: string
   files?: FileItem[]
-  onSelectCodeSnippet: (snippet: string, fileName: string) => void
+  onSelectCodeSnippet: (snippet: string, folderName: string) => void
 }
 
 export default function CodeSelectionTab({

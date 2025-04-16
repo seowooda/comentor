@@ -105,7 +105,7 @@ const HistoryList: React.FC<HistoryListProps> = ({
                         answered: isAnswered,
                         question: question.question || '질문 내용 없음',
                         codeSnippet: question.codeSnippet || '',
-                        fileName: (question as any).fileName || '',
+                        folderName: (question as any).folderName || '',
                         status: isDone ? 'DONE' : 'TODO',
                         userAnswer: question.answer || '',
                         feedback: question.feedback || '',
@@ -125,7 +125,7 @@ const HistoryList: React.FC<HistoryListProps> = ({
                             onSelectQuestion({
                               ...question,
                               id: questionId,
-                              fileName: (question as any).fileName,
+                              folderName: (question as any).folderName,
                             })
                           }
                           statusText={statusText}
@@ -139,6 +139,8 @@ const HistoryList: React.FC<HistoryListProps> = ({
                                     question:
                                       question.question || '질문 내용 없음',
                                     fileName: (question as any).fileName || '',
+                                    folderName:
+                                      (question as any).folderName || '',
                                   })
                               : undefined
                           }

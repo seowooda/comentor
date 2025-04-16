@@ -38,7 +38,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const [error, setError] = useState<string | null>(null)
   const [questionHistory, setQuestionHistory] = useState<any | null>(null)
   const [selectedCodeSnippet, setSelectedCodeSnippet] = useState<string>('')
-  const [selectedFileName, setSelectedFileName] = useState<string>('')
+  const [selectedFolderName, setSelectedFolderName] = useState<string>('')
 
   // 수정 및 삭제 관련 상태
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -90,9 +90,9 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
 
   // CS 질문 생성 핸들러
   const handleGenerateQuestions = useCallback(
-    (code: string, fileName: string) => {
+    (code: string, folderName: string) => {
       setSelectedCodeSnippet(code)
-      setSelectedFileName(fileName)
+      setSelectedFolderName(folderName)
       // 질문 생성 후 CS 질문 탭으로 전환
       setSelectedTab('cs-questions')
     },
@@ -259,7 +259,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
           <CSQuestionsTab
             projectId={projectId}
             codeSnippet={selectedCodeSnippet}
-            fileName={selectedFileName}
+            folderName={selectedFolderName}
             onAnswerSubmit={handleAnswerSubmit}
             onSaveQuestion={handleSaveQuestion}
             onChooseAnotherCode={handleChooseAnotherCode}
