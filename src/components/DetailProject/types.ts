@@ -3,7 +3,6 @@ import {
   CSQuestion,
   HistoryByDate as ImportedHistoryByDate,
 } from '@/api/mocks/handlers/project'
-import { RefObject } from 'react'
 
 // 프로젝트 데이터 타입
 export interface ProjectData extends Project {}
@@ -68,6 +67,7 @@ export interface QuestionHistoryTabProps {
   onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
   onTabChange?: (tabId: string) => void
   activeTab?: string
+  activeCSQuestionIds?: number[]
 }
 
 // 재사용 가능한 UI 컴포넌트 props
@@ -89,19 +89,38 @@ export interface QuestionCardProps {
   onAnswer?: (question: QuestionItem) => void
 }
 
-// 질문 이력 아이템 타입
+// 질문 이력 아이템 기본 타입
 export interface QuestionHistoryItem extends BaseQuestion {
-  // API 응답에서 가능한 필드
-  csQuestionId?: number
   answer?: string
   feedback?: string
   answered?: boolean
-  concept?: string
-  date?: string
-  userCode?: string
-  // API와 프론트엔드에서 사용하는 공통 필드
-  questionId?: number // API 응답에서 대체 ID로 사용될 수 있음
+  createdAt?: string
+  questionId?: number
+  csQuestionId?: number
+
+  [key: string]: any
 }
 
 // 날짜별 질문 이력 타입
 export interface HistoryByDate extends ImportedHistoryByDate {}
+
+// 탭 컴포넌트 공통 속성
+export interface TabProps {
+  projectId: string
+  onTabChange?: (tabId: string) => void
+}
+
+// CS 질문 탭 컴포넌트 속성
+export interface CSQuestionsTabProps extends TabProps {
+  codeSnippet?: string
+  folderName?: string
+  onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
+  onSaveQuestion?: (questionId: number) => Promise<boolean | undefined>
+  onQuestionsLoad?: (questions: any[]) => void
+}
+
+// 코드 선택 탭 컴포넌트 속성
+export interface CodeSelectionTabProps extends TabProps {
+  onSelectedCode?: (code: string) => void
+  onFinish?: () => void
+}

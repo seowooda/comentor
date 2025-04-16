@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { QuestionHistoryItem } from '../types'
-import { FileCode, MessageSquareText, CheckCircle, Loader2 } from 'lucide-react'
+import { FileCode, MessageSquareText, Loader2, AlertCircle } from 'lucide-react'
 
 interface QuestionDetailProps {
   question: QuestionHistoryItem | null
@@ -14,6 +14,7 @@ interface QuestionDetailProps {
     question: QuestionHistoryItem,
     answer: string,
   ) => Promise<string | undefined>
+  activeCSQuestionIds?: number[] // CS 질문 탭에서 활성화된 질문 ID 목록
 }
 
 /**
@@ -24,11 +25,16 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
   isBookmarked,
   onBookmark,
   onAnswer,
+  activeCSQuestionIds = [], // 기본값은 빈 배열
 }) => {
   const [userAnswer, setUserAnswer] = useState('')
   const [feedback, setFeedback] = useState<string | null>(null)
   const [isAnswering, setIsAnswering] = useState(false)
   const [isAnswered, setIsAnswered] = useState(false)
+
+  // 현재 질문이 CS 질문 탭에서 답변 중인지 확인
+  const isActiveCSQuestion =
+    question && activeCSQuestionIds.includes(question.id)
 
   // 질문이 변경될 때마다 상태 초기화 및 이미 답변된 질문인지 확인
   useEffect(() => {
@@ -108,7 +114,17 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
       </div>
 
       <div className="mt-6 space-y-4">
-        {isTodo && onAnswer ? (
+        {isActiveCSQuestion && (
+          <div className="mb-4 flex items-center gap-2 rounded-md bg-amber-50 p-3 text-amber-700">
+            <AlertCircle className="h-4 w-4" />
+            <p className="text-sm">
+              이 질문은 현재 CS 질문 탭에서 답변 중인 질문입니다. CS 질문 탭에서
+              답변해주세요.
+            </p>
+          </div>
+        )}
+
+        {isTodo && onAnswer && !isActiveCSQuestion ? (
           <div className="space-y-2">
             <h4 className="flex items-center text-sm font-medium">
               내 답변{' '}

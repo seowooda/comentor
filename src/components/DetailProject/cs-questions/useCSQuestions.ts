@@ -12,6 +12,10 @@ interface UseCSQuestionsProps {
   folderName?: string
 }
 
+function getQuestionId(question: any): number {
+  return question.id ?? question.questionId ?? question.csQuestionId ?? 0
+}
+
 export default function useCSQuestions({
   projectId,
   codeSnippet = '',
@@ -108,31 +112,31 @@ export default function useCSQuestions({
 
       setQuestions(initialQuestions)
 
-      // 세션 스토리지에 저장된 질문 ID 확인
-      const savedQuestionId = sessionStorage.getItem('selectedQuestionId')
-      if (savedQuestionId) {
-        const questionId = parseInt(savedQuestionId, 10)
-        const targetQuestion = initialQuestions.find((q) => q.id === questionId)
+      if (initialQuestions.length > 0) {
+        const savedQuestionId = sessionStorage.getItem('selectedQuestionId')
+        if (savedQuestionId) {
+          const questionId = parseInt(savedQuestionId, 10)
+          // ID를 일관되게 처리하여 일치하는 질문 찾기
+          const targetQuestion = initialQuestions.find(
+            (q) => getQuestionId(q) === questionId,
+          )
 
-        if (targetQuestion) {
-          // 저장된 질문 ID가 있으면 해당 질문을 선택 상태로 설정
-          setSelectedQuestionId(questionId)
-
-          // 해당 질문에 기존 답변이 있으면 설정
-          if (targetQuestion.userAnswer) {
-            setAnswer(targetQuestion.userAnswer)
+          if (targetQuestion) {
+            // 질문을 찾으면 선택 상태로 설정
+            setSelectedQuestionId(targetQuestion.id)
+            // 답변과 피드백 설정 (answer 속성이 있으면 사용, 없으면 userAnswer 사용)
+            const answerText =
+              (targetQuestion as any).answer || targetQuestion.userAnswer || ''
+            setAnswer(answerText)
+            setFeedback(targetQuestion.feedback || '')
           }
-          if (targetQuestion.feedback) {
-            setFeedback(targetQuestion.feedback)
-          }
+          // 세션 스토리지 초기화
+          sessionStorage.removeItem('selectedQuestionId')
         }
-
-        // 사용 후 세션 스토리지에서 제거
-        sessionStorage.removeItem('selectedQuestionId')
-      }
-      // 선택된 질문이 없을 때만 첫 번째 질문 선택
-      else if (selectedQuestionId === null && initialQuestions.length > 0) {
-        setSelectedQuestionId(initialQuestions[0].id)
+        // 선택된 질문이 없으면 첫 번째 질문 선택
+        else if (selectedQuestionId === null && initialQuestions.length > 0) {
+          setSelectedQuestionId(initialQuestions[0].id)
+        }
       }
     }
   }, [
@@ -187,18 +191,33 @@ export default function useCSQuestions({
       if (!onSubmit || !selectedQuestionId || !answer.trim()) return
 
       setLoading(true)
-      try {
-        const result = await onSubmit(answer, selectedQuestionId)
-        setFeedback(result)
+      setShowCompletionToast(false)
 
-        // 답변과 피드백 함께 저장
+      try {
+        // 답변 제출 API 호출
+        const result = await onSubmit(answer, selectedQuestionId)
+
+        // 질문 목록 업데이트 (불변성 유지)
         setQuestions((prev) =>
-          prev.map((q) =>
-            q.id === selectedQuestionId
-              ? { ...q, answered: true, userAnswer: answer, feedback: result }
-              : q,
-          ),
+          prev.map((q) => {
+            // ID 비교 헬퍼 함수 사용
+            if (getQuestionId(q) === selectedQuestionId) {
+              return {
+                ...q,
+                userAnswer: answer,
+                feedback: result,
+                answered: true,
+              }
+            }
+            return q
+          }),
         )
+
+        setFeedback(result)
+        // 완료된 질문을 저장된 질문 목록에 추가
+        if (!savedQuestions.includes(selectedQuestionId)) {
+          setSavedQuestions((prev) => [...prev, selectedQuestionId])
+        }
       } catch (error) {
         console.error('답변 제출 중 오류 발생:', error)
         setFeedback('답변 제출 중 오류가 발생했습니다.')
@@ -206,7 +225,7 @@ export default function useCSQuestions({
         setLoading(false)
       }
     },
-    [selectedQuestionId, answer],
+    [selectedQuestionId, answer, savedQuestions],
   )
 
   const handleSaveQuestion = useCallback(
@@ -214,12 +233,15 @@ export default function useCSQuestions({
       questionId: number,
       onSave?: (questionId: number) => Promise<boolean | undefined>,
     ) => {
-      if (!onSave) return
+      if (!onSave) return false
 
       try {
         const success = await onSave(questionId)
         if (success) {
-          setSavedQuestions((prev) => [...prev, questionId])
+          // 중복 저장 방지
+          setSavedQuestions((prev) =>
+            prev.includes(questionId) ? prev : [...prev, questionId],
+          )
           return true
         }
         return false

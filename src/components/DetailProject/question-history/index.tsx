@@ -19,6 +19,7 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
   onAnswerSubmit,
   onTabChange,
   activeTab,
+  activeCSQuestionIds = [], // CS 질문 탭에서 활성화된 질문 ID 목록
 }) => {
   // 이전에 활성화된 탭을 추적하는 ref
   const prevActiveTabRef = useRef<string | undefined>(undefined)
@@ -63,7 +64,14 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
     try {
       if (!answer.trim()) return undefined
 
-      const questionId = question.id || question.questionId || 0
+      // ID 안전하게 추출 (간소화된 방식)
+      const questionId =
+        question.id ?? question.questionId ?? question.csQuestionId ?? 0
+
+      if (!questionId) {
+        console.error('유효하지 않은 질문 ID:', question)
+        return '유효하지 않은 질문입니다.'
+      }
 
       let feedback: string
       if (onAnswerSubmit) {
@@ -73,7 +81,7 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
         feedback = await submitCSAnswer(questionId, answer)
       }
 
-      // 최적화된 방식으로 해당 질문만 업데이트
+      // 질문 상태 업데이트
       updateQuestion(questionId, {
         answer,
         feedback,
@@ -91,8 +99,12 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
   // CS 질문 탭으로 이동
   const handleAnswerInQuestionTab = (question: any) => {
     if (onTabChange) {
+      // ID 안전하게 추출 (간소화된 방식)
+      const questionId =
+        question.id ?? question.questionId ?? question.csQuestionId ?? 0
+
       // 질문 ID를 세션 스토리지에 저장
-      sessionStorage.setItem('selectedQuestionId', String(question.id))
+      sessionStorage.setItem('selectedQuestionId', String(questionId))
       onTabChange('cs-questions')
     }
   }
@@ -156,6 +168,7 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
               }
               onBookmark={(id) => handleBookmark(id, onBookmarkQuestion)}
               onAnswer={handleAnswerSubmit}
+              activeCSQuestionIds={activeCSQuestionIds}
             />
           )}
         </div>

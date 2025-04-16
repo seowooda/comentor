@@ -4,7 +4,6 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Loader2 } from 'lucide-react'
 import { DetailProjectProps, ProjectData } from './types'
-import { useRouter } from 'next/navigation'
 
 // 컴포넌트 및 UI
 import ProjectHeader from './ui/ProjectHeader'
@@ -21,7 +20,6 @@ import {
   submitCSAnswer,
   saveCSQuestion,
   bookmarkCSQuestion,
-  useProjectUpdate,
   useProjectDelete,
 } from '@/api'
 
@@ -30,7 +28,6 @@ import {
  * 프로젝트 정보와 탭 컨텐츠(코드 선택, CS 질문, 질문 기록)를 표시합니다.
  */
 export const DetailProject = ({ params }: DetailProjectProps) => {
-  const router = useRouter()
   const [selectedTab, setSelectedTab] = useState('code-select')
   const [projectId, setProjectId] = useState<string>('')
   const [loading, setLoading] = useState(true)
@@ -46,9 +43,11 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
-  // 프로젝트 수정 및 삭제 훅 설정
-  const { mutateAsync: updateProject } = useProjectUpdate(Number(projectId))
+  // 프로젝트 삭제 훅 설정
   const { mutateAsync: deleteProject } = useProjectDelete(Number(projectId))
+
+  // CS 질문 탭에서 사용 중인 질문 ID 목록 상태 추가
+  const [activeCSQuestionIds, setActiveCSQuestionIds] = useState<number[]>([])
 
   // 프로젝트 ID를 가져오고 데이터 로드
   useEffect(() => {
@@ -188,6 +187,15 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
     }
   }, [deleteProject])
 
+  // CS 질문 컴포넌트로부터 현재 사용 중인 질문 ID 목록을 받아옴
+  const handleCSQuestionsLoaded = useCallback((questions: any[]) => {
+    if (questions && questions.length > 0) {
+      // 모든 질문 ID를 추출하여 저장
+      const questionIds = questions.map((q) => q.id || 0).filter((id) => id > 0)
+      setActiveCSQuestionIds(questionIds)
+    }
+  }, [])
+
   // 로딩 상태 처리
   if (loading) {
     return (
@@ -266,6 +274,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
             onGenerateMoreQuestions={() => console.log('더 많은 질문 생성')}
             onFinish={() => setSelectedTab('question-history')}
             onTabChange={(tabId) => setSelectedTab(tabId)}
+            onQuestionsLoad={handleCSQuestionsLoaded}
           />
         </TabsContent>
 
@@ -277,6 +286,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
             onAnswerSubmit={handleAnswerSubmit}
             onTabChange={setSelectedTab}
             activeTab={selectedTab}
+            activeCSQuestionIds={activeCSQuestionIds}
           />
         </TabsContent>
       </Tabs>

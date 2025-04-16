@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useState, useEffect } from 'react'
+import React, { useCallback, useState, useEffect, useRef, useMemo } from 'react'
 import { Loader2 } from 'lucide-react'
 import { CSQuestionsTabProps } from '../types'
 import QuestionList from './QuestionList'
@@ -24,8 +24,11 @@ const CSQuestionsTab: React.FC<CSQuestionsTabProps> = ({
   onAnswerSubmit,
   onSaveQuestion,
   onTabChange,
+  onQuestionsLoad,
 }) => {
   const [activeTab, setActiveTab] = useState('questions')
+  // 이전 질문 목록의 ID를 저장할 ref
+  const prevQuestionsIdsRef = useRef<string>('')
 
   const {
     // 상태
@@ -52,6 +55,22 @@ const CSQuestionsTab: React.FC<CSQuestionsTabProps> = ({
     handleSaveQuestion,
     toggleLearningInsights,
   } = useCSQuestions({ projectId, codeSnippet, folderName })
+
+  // 질문 ID 문자열을 계산하고 메모이제이션
+  const questionIds = useMemo(() => {
+    return questions.map((q) => q.id).join(',')
+  }, [questions])
+
+  // 질문 목록이 로드됐을 때 부모 컴포넌트에 알림
+  useEffect(() => {
+    if (questions.length > 0 && onQuestionsLoad) {
+      // 이전 질문 ID와 현재 질문 ID가 다른 경우에만 호출
+      if (questionIds !== prevQuestionsIdsRef.current) {
+        onQuestionsLoad(questions)
+        prevQuestionsIdsRef.current = questionIds
+      }
+    }
+  }, [questions, onQuestionsLoad, questionIds])
 
   const handleSubmit = useCallback(async () => {
     await handleSubmitAnswer(onAnswerSubmit)
