@@ -6,6 +6,7 @@ import { QuestionHistoryTabProps } from '../types'
 import HistoryList from './HistoryList'
 import QuestionDetail from './QuestionDetail'
 import useQuestionHistory from './useQuestionHistory'
+import { submitCSAnswer } from '@/api'
 
 /**
  * 질문 이력 탭 컴포넌트
@@ -15,6 +16,8 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
   projectId,
   initialHistory,
   onBookmarkQuestion,
+  onAnswerSubmit,
+  onTabChange,
 }) => {
   const {
     history,
@@ -26,10 +29,52 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
     sortedDates,
     handleSelectQuestion,
     handleBookmark,
+    updateQuestion,
   } = useQuestionHistory({
     projectId,
     initialHistory,
   })
+
+  // 질문 답변 처리 - 최적화된 방식으로 상태 업데이트
+  const handleAnswerSubmit = async (question: any, answer: string) => {
+    try {
+      if (!answer.trim()) return undefined
+
+      const questionId = question.id || question.questionId || 0
+
+      let feedback: string
+      if (onAnswerSubmit) {
+        feedback = await onAnswerSubmit(answer, questionId)
+      } else {
+        // 기본 API 사용
+        feedback = await submitCSAnswer(questionId, answer)
+      }
+
+      // 최적화된 방식으로 해당 질문만 업데이트
+      updateQuestion(questionId, {
+        answer,
+        feedback,
+        status: 'DONE',
+        answered: true,
+      })
+
+      return feedback
+    } catch (error) {
+      console.error('답변 제출 중 오류 발생:', error)
+      return '답변 제출 중 오류가 발생했습니다.'
+    }
+  }
+
+  // CS 질문 탭으로 이동
+  const handleAnswerInQuestionTab = (question: any) => {
+    if (onTabChange) {
+      // 질문 ID를 세션 스토리지에 저장
+      sessionStorage.setItem('selectedQuestionId', String(question.id))
+      onTabChange('cs-questions')
+    } else {
+      console.log('탭 변경 기능을 사용할 수 없습니다.')
+    }
+  }
 
   if (loading) {
     return (
@@ -64,9 +109,10 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
           <HistoryList
             dates={sortedDates}
             history={history}
-            selectedQuestionId={selectedQuestion?.id}
+            selectedQuestionId={currentQuestion?.id || selectedQuestion?.id}
             bookmarkedQuestions={bookmarkedQuestions}
             onSelectQuestion={handleSelectQuestion}
+            onAnswer={handleAnswerInQuestionTab}
           />
         </div>
 
@@ -87,6 +133,7 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
                   : false
               }
               onBookmark={(id) => handleBookmark(id, onBookmarkQuestion)}
+              onAnswer={handleAnswerSubmit}
             />
           )}
         </div>

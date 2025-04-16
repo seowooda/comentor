@@ -274,6 +274,8 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
             projectId={projectId}
             initialHistory={questionHistory}
             onBookmarkQuestion={handleBookmarkQuestion}
+            onAnswerSubmit={handleAnswerSubmit}
+            onTabChange={(tabId) => setSelectedTab(tabId)}
           />
         </TabsContent>
       </Tabs>

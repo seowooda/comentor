@@ -2,7 +2,6 @@ import {
   Project,
   CSQuestion,
   HistoryByDate as ImportedHistoryByDate,
-  QuestionHistoryItem as ImportedQuestionHistoryItem,
 } from '@/api/mocks/handlers/project'
 import { RefObject } from 'react'
 
@@ -30,16 +29,21 @@ export interface CodeSelectionTabProps {
   onSelectCodeSnippet: (snippet: string, fileName: string) => void
 }
 
-// CS 질문 관련 타입
-export interface QuestionItem {
+// CS 질문 관련 타입 (공통 속성)
+interface BaseQuestion {
   id: number
   question: string
+  codeSnippet?: string
+  fileName?: string
+  status?: string
+}
+
+// CS 질문 관련 타입
+export interface QuestionItem extends BaseQuestion {
   bestAnswer?: string
   answered?: boolean
   userAnswer?: string
   feedback?: string
-  codeSnippet?: string
-  fileName?: string
 }
 
 // CS 질문 탭 props
@@ -60,6 +64,8 @@ export interface QuestionHistoryTabProps {
   projectId: string
   initialHistory?: HistoryByDate
   onBookmarkQuestion?: (questionId: number) => Promise<boolean>
+  onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
+  onTabChange?: (tabId: string) => void
 }
 
 // 재사용 가능한 UI 컴포넌트 props
@@ -78,17 +84,21 @@ export interface QuestionCardProps {
   statusText?: string
   statusColor?: 'green' | 'yellow' | 'red' | 'blue'
   onClick?: () => void
+  onAnswer?: (question: QuestionItem) => void
 }
 
-// 질문 이력 아이템 타입 (확장)
-export interface QuestionHistoryItem extends ImportedQuestionHistoryItem {
+// 질문 이력 아이템 타입
+export interface QuestionHistoryItem extends BaseQuestion {
   // API 응답에서 가능한 필드
-  fileName?: string
+  csQuestionId?: number
+  answer?: string
+  feedback?: string
+  answered?: boolean
   concept?: string
   date?: string
-  questionId?: number
-  csQuestionId?: number
   userCode?: string
+  // API와 프론트엔드에서 사용하는 공통 필드
+  questionId?: number // API 응답에서 대체 ID로 사용될 수 있음
 }
 
 // 날짜별 질문 이력 타입

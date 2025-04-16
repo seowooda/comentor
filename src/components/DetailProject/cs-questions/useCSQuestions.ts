@@ -53,7 +53,7 @@ export default function useCSQuestions({
   // React Query를 사용하여 질문 데이터 가져오기 및 캐싱
   const {
     data: csQuestions,
-    isLoading: questionsLoading,
+    isLoading,
     error,
   } = useQuery<CSQuestion[]>({
     queryKey: ['csQuestions', projectId, codeSnippet, fileName],
@@ -108,30 +108,34 @@ export default function useCSQuestions({
 
       setQuestions(initialQuestions)
 
+      // 세션 스토리지에 저장된 질문 ID 확인
+      const savedQuestionId = sessionStorage.getItem('selectedQuestionId')
+      if (savedQuestionId) {
+        const questionId = parseInt(savedQuestionId, 10)
+        const targetQuestion = initialQuestions.find((q) => q.id === questionId)
+
+        if (targetQuestion) {
+          // 저장된 질문 ID가 있으면 해당 질문을 선택 상태로 설정
+          setSelectedQuestionId(questionId)
+
+          // 해당 질문에 기존 답변이 있으면 설정
+          if (targetQuestion.userAnswer) {
+            setAnswer(targetQuestion.userAnswer)
+          }
+          if (targetQuestion.feedback) {
+            setFeedback(targetQuestion.feedback)
+          }
+        }
+
+        // 사용 후 세션 스토리지에서 제거
+        sessionStorage.removeItem('selectedQuestionId')
+      }
       // 선택된 질문이 없을 때만 첫 번째 질문 선택
-      if (selectedQuestionId === null && initialQuestions.length > 0) {
+      else if (selectedQuestionId === null && initialQuestions.length > 0) {
         setSelectedQuestionId(initialQuestions[0].id)
       }
     }
   }, [csQuestions, codeSnippet, fileName, selectedQuestionId, questions.length])
-
-  // 컴포넌트 마운트 시 선택된 질문이 있고 캐시된 상태가 없는 경우,
-  // 답변한 질문이면 해당 답변과 피드백 설정
-  useEffect(() => {
-    if (
-      selectedQuestionId &&
-      questions.length > 0 &&
-      !cachedState // 캐시된 상태가 없는 경우에만
-    ) {
-      const selectedQuestion = questions.find(
-        (q) => q.id === selectedQuestionId,
-      )
-      if (selectedQuestion?.answered && selectedQuestion?.userAnswer) {
-        setAnswer(selectedQuestion.userAnswer)
-        setFeedback(selectedQuestion.feedback || null)
-      }
-    }
-  }, [selectedQuestionId, questions, cachedState])
 
   // 모든 질문이 답변되었는지 확인
   useEffect(() => {
@@ -242,7 +246,7 @@ export default function useCSQuestions({
     answer,
     feedback,
     loading,
-    questionsLoading,
+    questionsLoading: isLoading,
     savedQuestions,
     showCompletionToast,
     showLearningInsights,
