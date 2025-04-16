@@ -83,7 +83,9 @@ export const ProjectEditModal = ({
       title: '', // 폼 제출 시 필요하지만 실제로 사용하지 않음
       description: initialData.description || '',
       role: initialData.role || '',
-      status: initialData.status === 'PROGRESS' ? 'in_progress' : 'completed',
+      status: initialData.status.toLowerCase().includes('progress')
+        ? 'in_progress'
+        : 'completed',
     },
   })
 

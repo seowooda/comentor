@@ -24,7 +24,9 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
   }
 
   const getStatusColor = (status: string) => {
-    return status === 'Progress' ? 'bg-yellow-400' : 'bg-green-500'
+    return status.toLowerCase().includes('progress')
+      ? 'bg-yellow-400'
+      : 'bg-green-500'
   }
 
   return (
