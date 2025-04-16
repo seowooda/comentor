@@ -4,12 +4,15 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Loader2 } from 'lucide-react'
 import { DetailProjectProps, ProjectData } from './types'
+import { useRouter } from 'next/navigation'
 
 // 컴포넌트 및 UI
 import ProjectHeader from './ui/ProjectHeader'
 import CodeSelectionTab from './code-selection'
 import CSQuestionsTab from './cs-questions'
 import QuestionHistoryTab from './question-history'
+import { ProjectEditModal } from '../ProjectEditModal'
+import { DeleteConfirmDialog } from '../DashboardCard/DeleteConfirmDialog'
 
 // API 서비스
 import {
@@ -18,6 +21,8 @@ import {
   submitCSAnswer,
   saveCSQuestion,
   bookmarkCSQuestion,
+  useProjectUpdate,
+  useProjectDelete,
 } from '@/api'
 
 /**
@@ -25,6 +30,7 @@ import {
  * 프로젝트 정보와 탭 컨텐츠(코드 선택, CS 질문, 질문 기록)를 표시합니다.
  */
 export const DetailProject = ({ params }: DetailProjectProps) => {
+  const router = useRouter()
   const [selectedTab, setSelectedTab] = useState('code-select')
   const [projectId, setProjectId] = useState<string>('')
   const [loading, setLoading] = useState(true)
@@ -33,6 +39,16 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const [questionHistory, setQuestionHistory] = useState<any | null>(null)
   const [selectedCodeSnippet, setSelectedCodeSnippet] = useState<string>('')
   const [selectedFileName, setSelectedFileName] = useState<string>('')
+
+  // 수정 및 삭제 관련 상태
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+
+  // 프로젝트 수정 및 삭제 훅 설정
+  const { mutateAsync: updateProject } = useProjectUpdate(Number(projectId))
+  const { mutateAsync: deleteProject } = useProjectDelete(Number(projectId))
 
   // 프로젝트 ID를 가져오고 데이터 로드
   useEffect(() => {
@@ -127,6 +143,51 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
     setSelectedTab('code-select')
   }, [])
 
+  // 프로젝트 수정 핸들러
+  const handleEditProject = useCallback(() => {
+    setIsEditModalOpen(true)
+  }, [])
+
+  // 프로젝트 수정 성공 핸들러
+  const handleEditSuccess = useCallback(async () => {
+    try {
+      // 프로젝트 데이터 다시 불러오기
+      const updatedProject = await getProjectDetail(projectId)
+      setProjectData(updatedProject)
+    } catch (error) {
+      console.error('업데이트된 프로젝트 정보를 불러오는 중 오류 발생:', error)
+    }
+  }, [projectId])
+
+  // 프로젝트 삭제 핸들러
+  const handleDeleteProject = useCallback(() => {
+    setIsDeleteDialogOpen(true)
+  }, [])
+
+  // 프로젝트 삭제 확인 핸들러
+  const handleConfirmDelete = useCallback(async () => {
+    setDeleteLoading(true)
+    setDeleteError(null)
+
+    try {
+      await deleteProject()
+      setDeleteLoading(false)
+      setIsDeleteDialogOpen(false)
+
+      // 대시보드로 이동 시 완전히 새로 고침하도록 강제
+      // 추가 쿼리 매개변수(refresh)를 사용하여 새로운 상태를 보장
+      const timestamp = new Date().getTime()
+      window.location.href = `/dashboard?refresh=${timestamp}`
+    } catch (error) {
+      setDeleteLoading(false)
+      setDeleteError(
+        error instanceof Error
+          ? error.message
+          : '프로젝트 삭제 중 오류가 발생했습니다',
+      )
+    }
+  }, [deleteProject])
+
   // 로딩 상태 처리
   if (loading) {
     return (
@@ -156,8 +217,8 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
     <div className="container mx-auto flex w-full max-w-[1368px] flex-col gap-8 px-4 py-6 md:px-6">
       <ProjectHeader
         project={projectData}
-        onEdit={() => console.log('프로젝트 편집')}
-        onDelete={() => console.log('프로젝트 삭제')}
+        onEdit={handleEditProject}
+        onDelete={handleDeleteProject}
       />
 
       <Tabs
@@ -216,6 +277,32 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
           />
         </TabsContent>
       </Tabs>
+
+      {/* 프로젝트 수정 모달 */}
+      {isEditModalOpen && projectData && (
+        <ProjectEditModal
+          projectId={Number(projectId)}
+          initialData={{
+            description: projectData.description,
+            role: projectData.role,
+            status: projectData.status.toLowerCase().includes('progress')
+              ? 'PROGRESS'
+              : 'DONE',
+          }}
+          onClose={() => setIsEditModalOpen(false)}
+          onSubmit={handleEditSuccess}
+        />
+      )}
+
+      {/* 프로젝트 삭제 확인 대화상자 - DeleteConfirmDialog 재사용 */}
+      <DeleteConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        projectTitle={projectData.title}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteLoading}
+        error={deleteError ? { message: deleteError } : undefined}
+      />
     </div>
   )
 }

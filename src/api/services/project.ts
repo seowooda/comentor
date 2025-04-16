@@ -25,11 +25,7 @@ export const getProjectDetail = async (projectId: string): Promise<Project> => {
       title: response.result?.name || '',
       description: response.result?.description || '',
       role: response.result?.role || '',
-      techStack: Array.isArray(response.result?.stack)
-        ? response.result.stack
-        : response.result?.stack
-          ? [response.result.stack]
-          : [],
+      techStack: response.result?.language ? [response.result.language] : [],
       status: response.result?.status || 'active',
       updatedAt: response.result?.updatedAt || new Date().toISOString(),
       files: response.result?.files || [],
