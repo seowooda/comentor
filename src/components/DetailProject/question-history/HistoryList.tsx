@@ -11,6 +11,7 @@ interface HistoryListProps {
   selectedQuestionId?: number
   bookmarkedQuestions: number[]
   onSelectQuestion: (question: QuestionHistoryItem) => void
+  onAnswer?: (question: QuestionHistoryItem) => void
 }
 
 /**
@@ -22,6 +23,7 @@ const HistoryList: React.FC<HistoryListProps> = ({
   selectedQuestionId,
   bookmarkedQuestions,
   onSelectQuestion,
+  onAnswer,
 }) => {
   // 각 날짜별 열림/닫힘 상태 관리
   const [expandedDates, setExpandedDates] = useState<Record<string, boolean>>(
@@ -70,9 +72,9 @@ const HistoryList: React.FC<HistoryListProps> = ({
             </div>
 
             {expandedDates[date] && (
-              <div className="p-3">
+              <div className="px-3 pt-2 pb-3">
                 {questionsCount > 0 ? (
-                  <div className="space-y-2">
+                  <div className="custom-scrollbar max-h-[400px] space-y-2 overflow-y-auto pr-2">
                     {questions.map((question, index) => {
                       // ID 값 확인하고 보정
                       const questionId =
@@ -97,18 +99,25 @@ const HistoryList: React.FC<HistoryListProps> = ({
                       const statusText = isDone ? '답변됨' : '답변필요'
                       const statusColor = isDone ? 'green' : 'yellow'
 
+                      // QuestionItem 생성
+                      const questionItem = {
+                        id: questionId,
+                        answered: isAnswered,
+                        question: question.question || '질문 내용 없음',
+                        codeSnippet: question.codeSnippet || '',
+                        folderName: (question as any).folderName || '',
+                        status: isDone ? 'DONE' : 'TODO',
+                        userAnswer: question.answer || '',
+                        feedback: question.feedback || '',
+                      }
+
                       return (
                         <QuestionCard
                           key={questionId || `question-${date}-${index}`}
-                          question={{
-                            ...question,
-                            id: questionId,
-                            answered: isAnswered,
-                            question: question.question || '질문 내용 없음',
-                            codeSnippet: question.codeSnippet || '',
-                            fileName: (question as any).fileName || '',
-                          }}
-                          isSelected={selectedQuestionId === questionId}
+                          question={questionItem}
+                          isSelected={
+                            Number(selectedQuestionId) === Number(questionId)
+                          }
                           isBookmarked={bookmarkedQuestions.includes(
                             questionId,
                           )}
@@ -116,11 +125,25 @@ const HistoryList: React.FC<HistoryListProps> = ({
                             onSelectQuestion({
                               ...question,
                               id: questionId,
-                              fileName: (question as any).fileName,
+                              folderName: (question as any).folderName,
                             })
                           }
                           statusText={statusText}
                           statusColor={statusColor}
+                          onAnswer={
+                            onAnswer
+                              ? () =>
+                                  onAnswer({
+                                    ...question,
+                                    id: questionId,
+                                    question:
+                                      question.question || '질문 내용 없음',
+                                    fileName: (question as any).fileName || '',
+                                    folderName:
+                                      (question as any).folderName || '',
+                                  })
+                              : undefined
+                          }
                         />
                       )
                     })}

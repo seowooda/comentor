@@ -30,13 +30,18 @@ export interface CSQuestion {
 // 질문 이력 아이템 타입
 export interface QuestionHistoryItem {
   id: number
-  csQuestionId?: number // API 응답에서 사용될 수 있는 필드
   question: string
-  answer: string
-  feedback: string
-  codeSnippet: string
+  codeSnippet?: string
+  fileName?: string
+  status?: string
+  // API 응답에서 가능한 필드
+  csQuestionId?: number
+  answer?: string
+  feedback?: string
   answered?: boolean
-  status?: 'Todo' | 'Done'
+  concept?: string
+  date?: string
+  userCode?: string
 }
 
 // 날짜별 질문 이력 타입

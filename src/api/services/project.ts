@@ -120,14 +120,14 @@ export const getProjectFiles = async (
  */
 export const getFileCode = async (
   projectId: string,
-  fileName: string,
+  folderName: string,
 ): Promise<string> => {
   try {
     // GitHub 저장소 정보 가져오기
     const { owner, repo, branch } = await getGitHubRepoInfo(projectId)
 
     // GitHub API를 사용하여 파일 내용 가져오기
-    const content = await fetchGitHubFile(owner, repo, fileName, branch)
+    const content = await fetchGitHubFile(owner, repo, folderName, branch)
 
     return content
   } catch (error) {
@@ -142,7 +142,7 @@ export const getFileCode = async (
 export const generateCSQuestions = async (
   projectId: string,
   code: string,
-  fileName: string,
+  folderName: string,
 ): Promise<CSQuestion[]> => {
   try {
     const response = await fetcher<{
@@ -156,7 +156,7 @@ export const generateCSQuestions = async (
         body: JSON.stringify({
           projectId,
           userCode: code,
-          fileName,
+          folderName,
         }),
       },
       true,

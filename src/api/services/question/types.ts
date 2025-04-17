@@ -9,7 +9,7 @@ import {
 export interface CreateProjectCsQuestionRequest {
   projectId: number
   userCode: string
-  fileName?: string
+  folderName?: string
 }
 
 // 피드백 요청 타입 정의

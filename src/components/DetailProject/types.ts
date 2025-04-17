@@ -2,9 +2,7 @@ import {
   Project,
   CSQuestion,
   HistoryByDate as ImportedHistoryByDate,
-  QuestionHistoryItem as ImportedQuestionHistoryItem,
 } from '@/api/mocks/handlers/project'
-import { RefObject } from 'react'
 
 // 프로젝트 데이터 타입
 export interface ProjectData extends Project {}
@@ -27,26 +25,32 @@ export interface ProjectHeaderProps {
 export interface CodeSelectionTabProps {
   projectId: string
   files?: string[]
-  onSelectCodeSnippet: (snippet: string, fileName: string) => void
+  onSelectCodeSnippet: (snippet: string, folderName: string) => void
+}
+
+// CS 질문 관련 타입 (공통 속성)
+interface BaseQuestion {
+  id: number
+  question: string
+  codeSnippet?: string
+  fileName?: string
+  folderName?: string
+  status?: string
 }
 
 // CS 질문 관련 타입
-export interface QuestionItem {
-  id: number
-  question: string
+export interface QuestionItem extends BaseQuestion {
   bestAnswer?: string
   answered?: boolean
   userAnswer?: string
   feedback?: string
-  codeSnippet?: string
-  fileName?: string
 }
 
 // CS 질문 탭 props
 export interface CSQuestionsTabProps {
   projectId: string
   codeSnippet?: string
-  fileName?: string
+  folderName?: string
   onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
   onSaveQuestion?: (questionId: number) => Promise<boolean | undefined>
   onChooseAnotherCode?: () => void
@@ -60,6 +64,10 @@ export interface QuestionHistoryTabProps {
   projectId: string
   initialHistory?: HistoryByDate
   onBookmarkQuestion?: (questionId: number) => Promise<boolean>
+  onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
+  onTabChange?: (tabId: string) => void
+  activeTab?: string
+  activeCSQuestionIds?: number[]
 }
 
 // 재사용 가능한 UI 컴포넌트 props
@@ -78,18 +86,41 @@ export interface QuestionCardProps {
   statusText?: string
   statusColor?: 'green' | 'yellow' | 'red' | 'blue'
   onClick?: () => void
+  onAnswer?: (question: QuestionItem) => void
 }
 
-// 질문 이력 아이템 타입 (확장)
-export interface QuestionHistoryItem extends ImportedQuestionHistoryItem {
-  // API 응답에서 가능한 필드
-  fileName?: string
-  concept?: string
-  date?: string
+// 질문 이력 아이템 기본 타입
+export interface QuestionHistoryItem extends BaseQuestion {
+  answer?: string
+  feedback?: string
+  answered?: boolean
+  createdAt?: string
   questionId?: number
   csQuestionId?: number
-  userCode?: string
+
+  [key: string]: any
 }
 
 // 날짜별 질문 이력 타입
 export interface HistoryByDate extends ImportedHistoryByDate {}
+
+// 탭 컴포넌트 공통 속성
+export interface TabProps {
+  projectId: string
+  onTabChange?: (tabId: string) => void
+}
+
+// CS 질문 탭 컴포넌트 속성
+export interface CSQuestionsTabProps extends TabProps {
+  codeSnippet?: string
+  folderName?: string
+  onAnswerSubmit?: (answer: string, questionId: number) => Promise<string>
+  onSaveQuestion?: (questionId: number) => Promise<boolean | undefined>
+  onQuestionsLoad?: (questions: any[]) => void
+}
+
+// 코드 선택 탭 컴포넌트 속성
+export interface CodeSelectionTabProps extends TabProps {
+  onSelectedCode?: (code: string) => void
+  onFinish?: () => void
+}

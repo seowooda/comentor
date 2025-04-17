@@ -50,7 +50,6 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
         // 경로에 따라 GitHub API 호출
         // 참고: GitHub API는 폴더별로 별도 요청이 필요함
         const fileItems = await getProjectFiles(projectId, undefined, path)
-        console.log('현재 경로 항목:', fileItems)
 
         setFiles(fileItems)
 

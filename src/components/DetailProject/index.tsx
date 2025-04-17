@@ -4,7 +4,6 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Loader2 } from 'lucide-react'
 import { DetailProjectProps, ProjectData } from './types'
-import { useRouter } from 'next/navigation'
 
 // 컴포넌트 및 UI
 import ProjectHeader from './ui/ProjectHeader'
@@ -21,7 +20,6 @@ import {
   submitCSAnswer,
   saveCSQuestion,
   bookmarkCSQuestion,
-  useProjectUpdate,
   useProjectDelete,
 } from '@/api'
 
@@ -30,7 +28,6 @@ import {
  * 프로젝트 정보와 탭 컨텐츠(코드 선택, CS 질문, 질문 기록)를 표시합니다.
  */
 export const DetailProject = ({ params }: DetailProjectProps) => {
-  const router = useRouter()
   const [selectedTab, setSelectedTab] = useState('code-select')
   const [projectId, setProjectId] = useState<string>('')
   const [loading, setLoading] = useState(true)
@@ -38,7 +35,7 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const [error, setError] = useState<string | null>(null)
   const [questionHistory, setQuestionHistory] = useState<any | null>(null)
   const [selectedCodeSnippet, setSelectedCodeSnippet] = useState<string>('')
-  const [selectedFileName, setSelectedFileName] = useState<string>('')
+  const [selectedFolderName, setSelectedFolderName] = useState<string>('')
 
   // 수정 및 삭제 관련 상태
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -46,9 +43,11 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
-  // 프로젝트 수정 및 삭제 훅 설정
-  const { mutateAsync: updateProject } = useProjectUpdate(Number(projectId))
+  // 프로젝트 삭제 훅 설정
   const { mutateAsync: deleteProject } = useProjectDelete(Number(projectId))
+
+  // CS 질문 탭에서 사용 중인 질문 ID 목록 상태 추가
+  const [activeCSQuestionIds, setActiveCSQuestionIds] = useState<number[]>([])
 
   // 프로젝트 ID를 가져오고 데이터 로드
   useEffect(() => {
@@ -90,9 +89,9 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
 
   // CS 질문 생성 핸들러
   const handleGenerateQuestions = useCallback(
-    (code: string, fileName: string) => {
+    (code: string, folderName: string) => {
       setSelectedCodeSnippet(code)
-      setSelectedFileName(fileName)
+      setSelectedFolderName(folderName)
       // 질문 생성 후 CS 질문 탭으로 전환
       setSelectedTab('cs-questions')
     },
@@ -188,6 +187,15 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
     }
   }, [deleteProject])
 
+  // CS 질문 컴포넌트로부터 현재 사용 중인 질문 ID 목록을 받아옴
+  const handleCSQuestionsLoaded = useCallback((questions: any[]) => {
+    if (questions && questions.length > 0) {
+      // 모든 질문 ID를 추출하여 저장
+      const questionIds = questions.map((q) => q.id || 0).filter((id) => id > 0)
+      setActiveCSQuestionIds(questionIds)
+    }
+  }, [])
+
   // 로딩 상태 처리
   if (loading) {
     return (
@@ -259,13 +267,14 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
           <CSQuestionsTab
             projectId={projectId}
             codeSnippet={selectedCodeSnippet}
-            fileName={selectedFileName}
+            folderName={selectedFolderName}
             onAnswerSubmit={handleAnswerSubmit}
             onSaveQuestion={handleSaveQuestion}
             onChooseAnotherCode={handleChooseAnotherCode}
             onGenerateMoreQuestions={() => console.log('더 많은 질문 생성')}
             onFinish={() => setSelectedTab('question-history')}
             onTabChange={(tabId) => setSelectedTab(tabId)}
+            onQuestionsLoad={handleCSQuestionsLoaded}
           />
         </TabsContent>
 
@@ -274,6 +283,10 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
             projectId={projectId}
             initialHistory={questionHistory}
             onBookmarkQuestion={handleBookmarkQuestion}
+            onAnswerSubmit={handleAnswerSubmit}
+            onTabChange={setSelectedTab}
+            activeTab={selectedTab}
+            activeCSQuestionIds={activeCSQuestionIds}
           />
         </TabsContent>
       </Tabs>
