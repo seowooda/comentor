@@ -72,9 +72,9 @@ const HistoryList: React.FC<HistoryListProps> = ({
             </div>
 
             {expandedDates[date] && (
-              <div className="p-3">
+              <div className="px-3 pt-2 pb-3">
                 {questionsCount > 0 ? (
-                  <div className="space-y-2">
+                  <div className="custom-scrollbar max-h-[400px] space-y-2 overflow-y-auto pr-2">
                     {questions.map((question, index) => {
                       // ID 값 확인하고 보정
                       const questionId =
