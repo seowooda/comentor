@@ -214,10 +214,6 @@ export default function useCSQuestions({
         )
 
         setFeedback(result)
-        // 완료된 질문을 저장된 질문 목록에 추가
-        if (!savedQuestions.includes(selectedQuestionId)) {
-          setSavedQuestions((prev) => [...prev, selectedQuestionId])
-        }
       } catch (error) {
         console.error('답변 제출 중 오류 발생:', error)
         setFeedback('답변 제출 중 오류가 발생했습니다.')
@@ -225,7 +221,7 @@ export default function useCSQuestions({
         setLoading(false)
       }
     },
-    [selectedQuestionId, answer, savedQuestions],
+    [selectedQuestionId, answer],
   )
 
   const handleSaveQuestion = useCallback(
