@@ -1,7 +1,7 @@
 'use client'
 
 import { useModalStore } from '@/store/modalStore'
-import { DeleteFolderModal, EditFolderModal } from './Folder'
+import { CreateFolderModal, DeleteFolderModal, EditFolderModal } from './Folder'
 import { useEffect, useState } from 'react'
 import { ModalProps } from '@/types/modal'
 
@@ -45,6 +45,14 @@ const GlobalModal = () => {
         {modalType === 'deleteFolder' && (
           <DeleteFolderModal
             folderId={(modalProps as ModalProps['deleteFolder']).folderId}
+            onClose={closeModal}
+          />
+        )}
+        {modalType === 'createFolder' && (
+          <CreateFolderModal
+            csQuestionId={
+              (modalProps as ModalProps['createFolder']).csQuestionId
+            }
             onClose={closeModal}
           />
         )}

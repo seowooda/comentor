@@ -34,7 +34,14 @@ export const EditFolderModal = ({ folder, onClose }: FolderModalProps) => {
           queryClient.invalidateQueries({ queryKey: ['folders'] })
         },
         onError: (error) => {
-          console.error('Error updating folder:', error)
+          if (error.message === 'API Error: 400') {
+            form.setError('fileName', {
+              type: 'manual',
+              message: '중복된 폴더 이름입니다.',
+            })
+          } else {
+            console.error('Error updating folder:', error)
+          }
         },
       },
     )
@@ -52,11 +59,18 @@ export const EditFolderModal = ({ folder, onClose }: FolderModalProps) => {
         {...form.register('fileName')}
         required
       />
+      {form.formState.errors.fileName && (
+        <p className="mt-1 text-sm text-red-500">
+          {form.formState.errors.fileName.message}
+        </p>
+      )}
       <div className="mt-4 flex justify-end gap-2">
         <Button type="button" onClick={onClose}>
           취소
         </Button>
-        <Button type="submit">저장</Button>
+        <Button type="submit" disabled={!form.watch('fileName')}>
+          저장
+        </Button>
       </div>
     </form>
   )
