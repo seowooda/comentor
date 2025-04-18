@@ -46,3 +46,11 @@ export interface QuestionHistoryItem {
 export interface HistoryByDate {
   [key: string]: QuestionHistoryItem[]
 }
+
+// 파일 및 폴더 정보 인터페이스 (깃허브 파일 호출용)
+export interface FileItem {
+  name: string
+  path: string
+  type: 'file' | 'dir'
+  url?: string
+}

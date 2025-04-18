@@ -6,7 +6,7 @@ export { stackNames } from '@/api/services/user/model'
 // PROJECT
 //====================
 // Types
-export type { FileItem } from '@/api/services/project'
+export type { FileItem } from '@/api/services/project/model'
 export type {
   ProjectCreateResponse,
   ProjectCreateRequest,
@@ -17,13 +17,6 @@ export type {
   ProjectDeleteResponse,
 } from '@/api/services/project/index'
 // Functions
-export {
-  getProjectDetail,
-  getCommitPeriods,
-  getProjectFiles,
-  getFileCode,
-  generateCSQuestions,
-} from '@/api/services/project'
 
 export {
   useProjectList,
@@ -79,11 +72,22 @@ export {
 } from '@/api/services/question/query'
 
 //github
+export type {
+  GithubRepo,
+  GithubRepoResponse,
+} from '@/api/services/github/githubRepo'
 export {
   fetchGitHubContents,
   fetchGitHubFile,
-} from '@/api/services/github/githubService'
-export { useGithubRepos } from '@/api/services/github'
+} from '@/api/services/github/githubApi'
+export { useGithubRepos } from '@/api/services/github/githubRepo'
+export {
+  getProjectDetail,
+  getCommitPeriods,
+  getProjectFiles,
+  getFileCode,
+  generateCSQuestions,
+} from '@/api/services/github/projectGithubService'
 
 //folder
 export type {
