@@ -1,4 +1,4 @@
-import { Project, CSQuestion } from '@/api/mocks/handlers/project'
+import { Project, CSQuestion } from '@/api/services/project/model'
 import { fetcher } from '@/api/lib/fetcher'
 import { fetchGitHubContents, fetchGitHubFile } from './github/githubService'
 

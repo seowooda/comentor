@@ -1,8 +1,7 @@
 import {
   Project,
-  CSQuestion,
   HistoryByDate as ImportedHistoryByDate,
-} from '@/api/mocks/handlers/project'
+} from '@/api/services/project/model'
 
 // 프로젝트 데이터 타입
 export interface ProjectData extends Project {}
