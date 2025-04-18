@@ -18,28 +18,45 @@ export interface Commit {
   commitDate: string
 }
 
-// CS 질문 타입
+// CS 질문 응답 DTO (Data Transfer Object) - 백엔드 API 응답 타입
+export interface CSQuestionDTO {
+  questionId: number
+  question: string
+  relatedCode?: string
+  csCategory?: string
+}
+
+// 핵심 도메인 모델 - 앱 내부에서 사용하는 기본 타입
 export interface CSQuestion {
   id: number
   question: string
-  bestAnswer: string
+  relatedCode?: string
+  csCategory?: string
+}
+
+// DTO에서 도메인 모델로 변환하는 헬퍼 함수
+export function mapDtoToCSQuestion(dto: CSQuestionDTO): CSQuestion {
+  return {
+    id: dto.questionId,
+    question: dto.question,
+    relatedCode: dto.relatedCode,
+    csCategory: dto.csCategory,
+  }
 }
 
 // 질문 이력 아이템 타입
 export interface QuestionHistoryItem {
   id: number
   question: string
-  codeSnippet?: string
+  relatedCode?: string
   fileName?: string
   status?: string
-  // API 응답에서 가능한 필드
   csQuestionId?: number
   answer?: string
   feedback?: string
-  answered?: boolean
-  concept?: string
   date?: string
   userCode?: string
+  answered?: boolean
 }
 
 // 날짜별 질문 이력 타입

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { QuestionItem } from '../types'
-import { generateCSQuestions } from '@/api'
+import { generateCodeCSQuestions } from '@/api'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { CSQuestion } from '@/api'
 
@@ -61,7 +61,7 @@ export default function useCSQuestions({
     error,
   } = useQuery<CSQuestion[]>({
     queryKey: ['csQuestions', projectId, codeSnippet, folderName],
-    queryFn: () => generateCSQuestions(projectId, codeSnippet, folderName),
+    queryFn: () => generateCodeCSQuestions(projectId, codeSnippet, folderName),
     enabled: !!projectId && !!codeSnippet,
     staleTime: 1000 * 60 * 30, // 30분간 데이터 유지
     gcTime: 1000 * 60 * 60, // 60분간 캐시 유지
@@ -106,7 +106,6 @@ export default function useCSQuestions({
         answered: false, // 기본값은 미답변
         userAnswer: '',
         feedback: '',
-        codeSnippet: codeSnippet.substring(0, 100) + '...',
         folderName: folderName, // folderName 저장
       }))
 

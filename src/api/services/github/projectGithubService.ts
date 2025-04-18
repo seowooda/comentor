@@ -1,4 +1,10 @@
-import { Project, CSQuestion, FileItem } from '@/api/services/project/model'
+import {
+  Project,
+  CSQuestion,
+  FileItem,
+  CSQuestionDTO,
+  mapDtoToCSQuestion,
+} from '@/api/services/project/model'
 import { fetcher } from '@/api/lib/fetcher'
 import { fetchGitHubContents, fetchGitHubFile } from './githubApi'
 
@@ -102,7 +108,7 @@ export const getFileCode = async (
 }
 
 /**
- * CS 질문 생성
+ * CS 질문 생성 post 요청
  */
 export const generateCSQuestions = async (
   projectId: string,
@@ -113,7 +119,7 @@ export const generateCSQuestions = async (
     const response = await fetcher<{
       code: number
       message: string
-      result: any[]
+      result: CSQuestionDTO[]
     }>(
       '/question/project',
       {
@@ -123,11 +129,8 @@ export const generateCSQuestions = async (
       true,
     )
     if (response.result && Array.isArray(response.result)) {
-      return response.result.map((item) => ({
-        id: item.questionId,
-        question: item.question,
-        bestAnswer: '',
-      }))
+      // DTO에서 도메인 모델로 변환
+      return response.result.map(mapDtoToCSQuestion)
     }
     return []
   } catch (error) {

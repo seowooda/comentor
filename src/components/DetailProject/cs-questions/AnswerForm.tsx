@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 interface AnswerFormProps {
   question: string
   codeSnippet?: string
+  relatedCode?: string
   questionIndex?: number
   totalQuestions?: number
   answer: string
@@ -23,7 +24,7 @@ interface AnswerFormProps {
 
 export default function AnswerForm({
   question,
-  codeSnippet = '',
+  relatedCode = '',
   questionIndex = 1,
   totalQuestions = 1,
   answer,
@@ -76,17 +77,14 @@ export default function AnswerForm({
         <div className="bg-card rounded-lg border p-4">
           <h3 className="font-medium">{question}</h3>
 
-          {codeSnippet && (
+          {relatedCode && (
             <div className="mt-3 space-y-1">
               <div className="text-muted-foreground flex items-center gap-1 text-xs">
                 <Code className="h-3.5 w-3.5" />
                 <span>관련 코드</span>
               </div>
               <pre className="bg-muted overflow-auto rounded-md p-2 text-xs">
-                {codeSnippet.length > 300
-                  ? codeSnippet.substring(0, 300) + '...'
-                  : codeSnippet}
-                {/* todo 선택한 코드 중 ai가 질문과 관련된 코드만 선택하여 제공하게 수정 필요 */}
+                {relatedCode}
               </pre>
             </div>
           )}

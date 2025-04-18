@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetcher, useGetQuery } from '@/api/lib/fetcher'
 import {
-  CSQuestion,
   CSQuestionResponse,
   CSQuestionListResponse,
   RecentCSQuestionsResponse,

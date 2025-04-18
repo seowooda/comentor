@@ -3,15 +3,16 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { QuestionHistoryItem } from '../types'
+import { UIQuestionHistoryItem } from '../types'
 import { FileCode, MessageSquareText, Loader2, AlertCircle } from 'lucide-react'
+import { Code } from 'lucide-react'
 
 interface QuestionDetailProps {
-  question: QuestionHistoryItem | null
+  question: UIQuestionHistoryItem | null
   isBookmarked: boolean
   onBookmark: (questionId: number) => void
   onAnswer?: (
-    question: QuestionHistoryItem,
+    question: UIQuestionHistoryItem,
     answer: string,
   ) => Promise<string | undefined>
   activeCSQuestionIds?: number[] // CS 질문 탭에서 활성화된 질문 ID 목록
@@ -91,11 +92,14 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
             <span>{question.fileName}</span>
           </div>
         )}
-
-        {question.codeSnippet && (
+        <div className="text-muted-foreground flex items-center gap-1 text-xs">
+          <Code className="h-3.5 w-3.5" />
+          <span>관련 코드</span>
+        </div>
+        {question.relatedCode && (
           <div className="mt-2 overflow-auto rounded-md bg-slate-100 p-3">
             <pre className="text-xs whitespace-pre-wrap text-slate-700">
-              {question.codeSnippet}
+              {question.relatedCode}
             </pre>
           </div>
         )}
