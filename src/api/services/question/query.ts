@@ -100,7 +100,7 @@ export const getQuestionDetail = async (
       id: data.result.questionId || data.result.id || data.result.csQuestionId,
       question: data.result.question || '',
       codeSnippet: data.result.userCode || '',
-      fileName: data.result.fileName || '',
+
       concept: data.result.concept || '',
       answer: userAnswer || data.result.answer || '',
       feedback: aiAnswer || data.result.feedback || '',

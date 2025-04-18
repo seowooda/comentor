@@ -46,12 +46,10 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         )}
       </div>
 
-      {(question.fileName || question.folderName) && (
+      {question.folderName && (
         <div className="mt-2 flex items-center text-xs text-blue-600">
           <FileCode className="mr-1 h-3 w-3" />
-          <span className="truncate">
-            {question.fileName || question.folderName}
-          </span>
+          <span className="truncate">{question.folderName}</span>
         </div>
       )}
 

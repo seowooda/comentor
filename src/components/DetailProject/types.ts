@@ -46,7 +46,6 @@ export interface CodeSelectionTabProps extends TabProps {
 
 // UI 기본 질문 타입 (도메인 모델 확장)
 export interface BaseQuestion extends DomainCSQuestion {
-  fileName?: string
   folderName?: string
   status?: string
   codeSnippet?: string

@@ -138,7 +138,6 @@ const HistoryList: React.FC<HistoryListProps> = ({
                                     id: questionId,
                                     question:
                                       question.question || '질문 내용 없음',
-                                    fileName: (question as any).fileName || '',
                                     folderName:
                                       (question as any).folderName || '',
                                   })

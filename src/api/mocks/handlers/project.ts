@@ -158,7 +158,7 @@ const mockQuestionHistory: HistoryByDate = {
         'React Hook은 함수형 컴포넌트에서 상태 관리와 사이드 이펙트를 처리하기 위해 도입되었습니다. 이 코드에서는 useState와 useEffect를 사용하고 있습니다.',
       feedback:
         '좋은 시도입니다! React Hook의 구체적인 사용 사례를 더 설명해보세요.',
-      fileName: 'UserProfile.jsx',
+
       answered: true,
       status: 'Done',
     },
@@ -170,7 +170,7 @@ const mockQuestionHistory: HistoryByDate = {
         'fetch API는 네트워크 요청 실패 시 HTTP 에러를 받을 수 있어 response.ok를 확인해야 합니다.',
       feedback:
         '네트워크 오류 처리에 대한 설명이 좋습니다. 개선 방안도 추가해보세요.',
-      fileName: 'UserProfile.jsx',
+
       answered: true,
       status: 'Done',
     },
@@ -182,7 +182,7 @@ const mockQuestionHistory: HistoryByDate = {
         '상태 관리 관점에서 이 컴포넌트의 특징과 성능 최적화 방법을 논의해주세요.',
       answer: '이 컴포넌트는 여러 상태를 관리하며 API 호출을 처리합니다.',
       feedback: '성능 최적화 방법에 대해 더 자세히 설명해주세요.',
-      fileName: 'App.js',
+
       answered: true,
       status: 'Done',
     },
@@ -194,7 +194,7 @@ const mockQuestionHistory: HistoryByDate = {
         'React에서 상태 관리 라이브러리를 사용하는 이유와 장단점을 설명해주세요.',
       answer: '',
       feedback: '',
-      fileName: 'App.js',
+
       answered: false,
       status: 'Todo',
     },
@@ -206,7 +206,7 @@ const mockQuestionHistory: HistoryByDate = {
         'TypeScript의 주요 기능과 JavaScript와의 차이점을 설명해주세요.',
       answer: '',
       feedback: '',
-      fileName: 'index.ts',
+
       answered: false,
       status: 'Todo',
     },

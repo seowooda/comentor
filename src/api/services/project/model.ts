@@ -49,7 +49,6 @@ export interface QuestionHistoryItem {
   id: number
   question: string
   relatedCode?: string
-  fileName?: string
   status?: string
   csQuestionId?: number
   answer?: string
