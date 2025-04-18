@@ -3,6 +3,7 @@
 import React from 'react'
 import { Edit3, Trash2 } from 'lucide-react'
 import { ProjectHeaderProps } from '../types'
+import { formatDate } from '@/utils/updated_date'
 
 /**
  * 프로젝트 헤더 컴포넌트
@@ -57,7 +58,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
 
       {project.updatedAt && (
         <div className="text-xs text-gray-600">
-          최근 업데이트: {project.updatedAt}
+          최근 업데이트: {formatDate(project.updatedAt)}
         </div>
       )}
 

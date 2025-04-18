@@ -3,6 +3,7 @@
 import { Pen, Trash2, Loader2 } from 'lucide-react'
 import { CardType } from './DashboardCard'
 import { useRouter } from 'next/navigation'
+import { formatDate } from '@/utils/updated_date'
 
 interface CardContentProps {
   card: CardType
@@ -25,12 +26,6 @@ export const CardContent = ({
   onCloseError,
 }: CardContentProps) => {
   const router = useRouter()
-
-  // 날짜에서 시간을 제외하고 YYYY. MM. DD 형식으로 변환
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return `${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, '0')}. ${String(date.getDate()).padStart(2, '0')}`
-  }
 
   // 상태값 표시 텍스트 변환
   const getStatusText = (status: string) => {
