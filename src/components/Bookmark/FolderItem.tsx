@@ -1,36 +1,43 @@
-import { ModalType } from '@/types/modal'
+import { Folder } from '@/api'
+import { useModalStore } from '@/store/modalStore'
+import { ModalProps, ModalType } from '@/types/modal'
 import { FolderIcon, Pencil, Trash } from 'lucide-react'
 import React from 'react'
 
 interface FolderItemProps {
-  folder: { id: number; folder_name: string }
+  folder: Folder
   isSelected: boolean
   onSelect: (id: number) => void
-  openModal: (type: ModalType, props: { folderId: number }) => void
+  openModal: <T extends ModalType>(type: T, props: ModalProps[T]) => void
 }
 
 export const FolderItem = React.memo(
   ({ folder, isSelected, onSelect, openModal }: FolderItemProps) => {
     const handleEdit = (e: React.MouseEvent) => {
       e.stopPropagation()
-      openModal('editFolder', { folderId: folder.id })
+      openModal('editFolder', {
+        folder: {
+          folderId: folder.folderId,
+          fileName: folder.fileName,
+        },
+      })
     }
 
     const handleDelete = (e: React.MouseEvent) => {
       e.stopPropagation()
-      openModal('deleteFolder', { folderId: folder.id })
+      openModal('deleteFolder', { folderId: folder.folderId })
     }
 
     return (
       <div
-        onClick={() => onSelect(folder.id)}
+        onClick={() => onSelect(folder.folderId)}
         className={`group cursor-pointer rounded-md transition-colors hover:bg-sky-50 ${
           isSelected ? 'bg-sky-100' : ''
         }`}
       >
         <div className="flex items-center gap-4 p-3">
           <FolderIcon size={18} />
-          <span className="flex-1">{folder.folder_name}</span>
+          <span className="flex-1">{folder.fileName}</span>
 
           <div className="flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
             <button

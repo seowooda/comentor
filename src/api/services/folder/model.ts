@@ -1,11 +1,16 @@
+export enum QuestionStatus {
+  Done = 'DONE',
+  Progress = 'PROGRESS',
+}
+
 export interface DefaultResponse {
   code: number
   message: string
 }
 
 export interface Folder {
-  id: number
-  folder_name: string
+  folderId: number
+  fileName: string
 }
 
 export interface FolderResponse {
@@ -14,21 +19,20 @@ export interface FolderResponse {
   result: Folder[]
 }
 
-export interface FolderDetail {
-  id: number
-  folderId: number
-  question: string
-  date: string
-  answer: string
-  feedback: string
+export interface FolderBookmark {
+  fileName: string
+  csQuestionId: number
 }
 
-export interface FolderDetailResponse {
+export interface Questions {
+  fileName: string
+  questionId: number
+  question: string
+  questionStatus: QuestionStatus
+}
+
+export interface FolderQuestionResponse {
   code: number
   message: string
-  result: FolderDetail[]
-}
-
-export interface FolderUpdate {
-  folder_name: string
+  result: Questions[]
 }

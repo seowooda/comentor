@@ -4,29 +4,40 @@ import { folderUpdate } from '@/api/services/folder/quries'
 import { Button } from '../../ui/button'
 import { Input } from '../../ui/input'
 import { useForm } from 'react-hook-form'
+import { Folder } from '@/api'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface FolderModalProps {
-  folderId: number | null
+  folder: Folder
   onClose: () => void
 }
 
 interface FormData {
-  folder_name: string
+  fileName: string
 }
 
-export const EditFolderModal = ({ folderId, onClose }: FolderModalProps) => {
-  const { mutate } = folderUpdate(folderId as number)
+export const EditFolderModal = ({ folder, onClose }: FolderModalProps) => {
+  const { mutate } = folderUpdate()
   const form = useForm<FormData>()
+  const queryClient = useQueryClient()
 
   const onSubmit = (data: FormData) => {
-    mutate(data, {
-      onSuccess: () => {
-        onClose()
+    mutate(
+      {
+        folderId: folder.folderId,
+        fileName: data.fileName,
       },
-      onError: (error) => {
-        console.error('Error updating folder:', error)
+      {
+        onSuccess: () => {
+          onClose()
+
+          queryClient.invalidateQueries({ queryKey: ['folders'] })
+        },
+        onError: (error) => {
+          console.error('Error updating folder:', error)
+        },
       },
-    })
+    )
   }
 
   return (
@@ -37,8 +48,8 @@ export const EditFolderModal = ({ folderId, onClose }: FolderModalProps) => {
       <h2 className="mb-4 text-lg font-semibold">폴더 이름 수정</h2>
       <Input
         type="text"
-        name="folder_name"
         placeholder="새 폴더 이름"
+        {...form.register('fileName')}
         required
       />
       <div className="mt-4 flex justify-end gap-2">

@@ -2,6 +2,7 @@
 
 import { folderDelete } from '@/api/services/folder/quries'
 import { Button } from '../../ui/button'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface FolderModalProps {
   folderId: number | null
@@ -10,11 +11,14 @@ interface FolderModalProps {
 
 export const DeleteFolderModal = ({ folderId, onClose }: FolderModalProps) => {
   const { mutate } = folderDelete(folderId as number)
+  const queryClient = useQueryClient()
 
   const handleDelete = () => {
     mutate(undefined, {
       onSuccess: () => {
         onClose()
+
+        queryClient.invalidateQueries({ queryKey: ['folders'] })
       },
       onError: (error) => {
         console.error('Error deleting folder:', error)

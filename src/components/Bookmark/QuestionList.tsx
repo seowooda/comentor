@@ -1,12 +1,12 @@
 'use client'
 
-import { folderDetailInfo } from '@/api/services/folder/quries'
+import { Folder } from '@/api'
 import { Bookmark } from 'lucide-react'
 import { useState } from 'react'
 
 interface QuestionListProps {
   folderId: number | null
-  folders: { id: number; folder_name: string }[]
+  folders: Folder[]
 }
 
 export const QuestionList = ({ folderId, folders }: QuestionListProps) => {
@@ -33,7 +33,7 @@ export const QuestionList = ({ folderId, folders }: QuestionListProps) => {
 
   const filteredQuestions = questions?.filter((q) => q.folderId === folderId)
 
-  const currentFolder = folders?.find((f) => f.id === folderId)
+  const currentFolder = folders?.find((f) => f.folderId === folderId)
 
   const handleRemoveQuestion = (id: number) => {
     setQuestions((prev) => prev.filter((q) => q.id !== id))
@@ -42,7 +42,7 @@ export const QuestionList = ({ folderId, folders }: QuestionListProps) => {
   return (
     <section className="flex w-full min-w-2xl flex-col gap-5 px-7 py-3">
       <h2 className="text-[18px] font-semibold">
-        {currentFolder?.folder_name}의 질문 목록
+        {currentFolder?.fileName}의 질문 목록
       </h2>
       {filteredQuestions.length > 0 ? (
         filteredQuestions?.map((item) => (

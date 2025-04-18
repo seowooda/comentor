@@ -86,8 +86,11 @@ export {
 export { useGithubRepos } from '@/api/services/github'
 
 //folder
-export type {
-  FolderResponse,
-  FolderDetailResponse,
-  DefaultResponse,
-} from '@/api/services/folder/model'
+export type { Folder } from '@/api/services/folder/model'
+
+export {
+  folderInfo,
+  folderUpdate,
+  folderDelete,
+  folderQuestions,
+} from '@/api/services/folder/quries'

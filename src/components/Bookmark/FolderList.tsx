@@ -2,11 +2,12 @@
 
 import { useModalStore } from '@/store/modalStore'
 import { FolderItem } from './FolderItem'
+import { Folder } from '@/api'
 
 interface FolderListProps {
   folderId: number | null
   setFolderId: (id: number) => void
-  folders: { id: number; folder_name: string }[]
+  folders: Folder[]
   isLoading: boolean
 }
 
@@ -25,7 +26,7 @@ export const FolderList = ({
         <h3 className="text-[18px] leading-5 font-medium">폴더 목록</h3>
         <div className="flex flex-col gap-2">
           {isLoading
-            ? Array.from({ length: folders.length || 0 }).map((_, i) => (
+            ? Array.from({ length: folders.length }).map((_, i) => (
                 <div
                   key={i}
                   className="flex animate-pulse items-center gap-4 rounded-md bg-slate-100 p-3"
@@ -36,9 +37,9 @@ export const FolderList = ({
               ))
             : folders.map((folder) => (
                 <FolderItem
-                  key={folder.id}
+                  key={folder.folderId}
                   folder={folder}
-                  isSelected={folderId === folder.id}
+                  isSelected={folderId === folder.folderId}
                   onSelect={setFolderId}
                   openModal={openModal}
                 />

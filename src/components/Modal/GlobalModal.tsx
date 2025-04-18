@@ -3,6 +3,7 @@
 import { useModalStore } from '@/store/modalStore'
 import { DeleteFolderModal, EditFolderModal } from './Folder'
 import { useEffect, useState } from 'react'
+import { ModalProps } from '@/types/modal'
 
 const GlobalModal = () => {
   const { isOpen, modalType, modalProps, closeModal } = useModalStore()
@@ -37,13 +38,13 @@ const GlobalModal = () => {
       >
         {modalType === 'editFolder' && (
           <EditFolderModal
-            folderId={modalProps?.folderId || null}
+            folder={(modalProps as ModalProps['editFolder']).folder}
             onClose={closeModal}
           />
         )}
         {modalType === 'deleteFolder' && (
           <DeleteFolderModal
-            folderId={modalProps?.folderId || null}
+            folderId={(modalProps as ModalProps['deleteFolder']).folderId}
             onClose={closeModal}
           />
         )}
