@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Info } from 'lucide-react'
 import DateRangePicker from './DateRangePicker'
 import FileList from './FileList'
 import CodeViewer from './CodeViewer'
@@ -10,7 +10,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Info } from 'lucide-react'
 import { DateRange } from 'react-day-picker'
 import { FileItem } from '@/api'
 
@@ -135,13 +134,9 @@ export default function CodeSelectionTab({
                   <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                     {error}
                   </div>
-                ) : loading ? (
-                  <div className="flex justify-center p-10">
-                    <Loader2 className="text-primary h-6 w-6 animate-spin" />
-                  </div>
-                ) : files.length === 0 ? (
+                ) : files.length === 0 && !loading ? (
                   <div className="bg-muted rounded-md border p-4 text-sm">
-                    파일 목록을 가져오는 중입니다...
+                    파일이 없습니다. 날짜 범위를 변경해보세요.
                   </div>
                 ) : (
                   <FileList
@@ -181,8 +176,9 @@ export default function CodeSelectionTab({
                 <CodeViewer
                   code={code}
                   selectedCode={selectedCode}
-                  onSelectCode={handleSelectCode}
                   codeTextareaRef={codeTextareaRef}
+                  onSelectCode={handleSelectCode}
+                  loading={loading}
                   className="min-h-[400px] md:min-h-[500px]"
                 />
               </div>
