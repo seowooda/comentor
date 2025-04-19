@@ -12,6 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { DateRange } from 'react-day-picker'
 import { FileItem } from '@/api'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface CodeSelectionTabProps {
   projectId: string
@@ -27,6 +34,9 @@ export default function CodeSelectionTab({
   const {
     dateRange,
     handleDateRangeChange,
+    selectedBranch,
+    availableBranches,
+    handleBranchChange,
     files,
     currentPath,
     selectedFile,
@@ -101,6 +111,28 @@ export default function CodeSelectionTab({
                 <p className="text-muted-foreground mb-4 text-sm">
                   특정 기간에 변경된 파일만 보려면 날짜 범위를 선택하세요.
                 </p>
+
+                <div className="mb-4">
+                  <label className="mb-1 block text-sm font-medium">
+                    브랜치 선택
+                  </label>
+                  <Select
+                    value={selectedBranch}
+                    onValueChange={handleBranchChange}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="브랜치 선택" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableBranches.map((branch) => (
+                        <SelectItem key={branch} value={branch}>
+                          {branch}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <DateRangePicker
                   dateRange={dateRange}
                   onDateRangeChange={handleDateChange}

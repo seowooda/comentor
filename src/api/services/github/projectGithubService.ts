@@ -52,7 +52,10 @@ export const getCommitPeriods = async (projectId: string) => {
 /**
  * 내부: 깃허브 저장소 정보 추출
  */
-async function getGitHubRepoInfo(projectId: string) {
+async function getGitHubRepoInfo(
+  projectId: string,
+  branch: string = 'develop',
+) {
   try {
     const response = await fetcher<any>(
       `/project/info?projectId=${projectId}`,
@@ -62,13 +65,13 @@ async function getGitHubRepoInfo(projectId: string) {
     return {
       owner: response.result?.login || 'CommitMentor',
       repo: response.result?.name || 'CoMentor-Frontend',
-      branch: 'develop',
+      branch: branch,
     }
   } catch (error) {
     return {
       owner: 'CommitMentor',
       repo: 'CoMentor-Frontend',
-      branch: 'develop',
+      branch: branch,
     }
   }
 }
@@ -80,9 +83,10 @@ export const getProjectFiles = async (
   projectId: string,
   period: string = '1week',
   path: string = '',
+  branch: string = 'develop',
 ): Promise<FileItem[]> => {
   try {
-    const { owner, repo, branch } = await getGitHubRepoInfo(projectId)
+    const { owner, repo } = await getGitHubRepoInfo(projectId, branch)
     const contents = await fetchGitHubContents(owner, repo, path, branch)
     return contents.map((item: any) => ({
       name: item.name,
@@ -102,9 +106,10 @@ export const getProjectFiles = async (
 export const getFileCode = async (
   projectId: string,
   folderName: string,
+  branch: string = 'develop',
 ): Promise<string> => {
   try {
-    const { owner, repo, branch } = await getGitHubRepoInfo(projectId)
+    const { owner, repo } = await getGitHubRepoInfo(projectId, branch)
     const content = await fetchGitHubFile(owner, repo, folderName, branch)
     return content
   } catch (error) {
@@ -182,27 +187,28 @@ export const getProjectChangedFiles = async (
   projectId: string,
   since: string,
   until: string,
+  branch: string = 'develop',
 ): Promise<FileItem[]> => {
   try {
-    const { owner, repo } = await getGitHubRepoInfo(projectId)
+    const { owner, repo } = await getGitHubRepoInfo(projectId, branch)
 
     // 변경된 파일 목록 가져오기
     const files = await getChangedFiles(owner, repo, since, until)
     if (files.length === 0) {
       console.log('변경된 파일이 없어 기본 파일 목록을 조회합니다.')
       // 변경된 파일이 없으면 모든 파일 가져오기
-      return getProjectFiles(projectId, '1year', '')
+      return getProjectFiles(projectId, '1year', '', branch)
     }
 
     // 파일 목록을 디렉토리 구조로 변환
     const rootItems = organizeFilesToDirectoryStructure(files)
     return rootItems.map((item) => ({
       ...item,
-      url: `https://github.com/${owner}/${repo}/blob/develop/${item.path}`,
+      url: `https://github.com/${owner}/${repo}/blob/${branch}/${item.path}`,
     }))
   } catch (error) {
     console.error('변경된 파일 목록 조회 중 오류:', error)
     // 오류 발생 시 기본 파일 목록 가져오기 시도
-    return getProjectFiles(projectId, '1year', '')
+    return getProjectFiles(projectId, '1year', '', branch)
   }
 }

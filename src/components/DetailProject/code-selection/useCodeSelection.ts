@@ -19,6 +19,10 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
     to: new Date(), // 기본값: 오늘
   })
 
+  // 브랜치 상태 추가
+  const [selectedBranch, setSelectedBranch] = useState<string>('develop')
+  const [availableBranches] = useState<string[]>(['develop', 'main'])
+
   // 파일 관련 상태
   const [files, setFiles] = useState<FileItem[]>([])
   const [currentPath, setCurrentPath] = useState('')
@@ -37,6 +41,13 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
       fetchCommitsAndFiles()
     }
   }, [projectId])
+
+  // 브랜치 변경 핸들러
+  const handleBranchChange = useCallback((branch: string) => {
+    setSelectedBranch(branch)
+    // 브랜치 변경 시 파일 목록 새로 불러오기
+    fetchCommitsAndFiles()
+  }, [])
 
   // 날짜 범위 변경 핸들러
   const handleDateRangeChange = useCallback(
@@ -58,7 +69,12 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
       try {
         // 경로에 따라 GitHub API 호출
         // 참고: GitHub API는 폴더별로 별도 요청이 필요함
-        const fileItems = await getProjectFiles(projectId, undefined, path)
+        const fileItems = await getProjectFiles(
+          projectId,
+          undefined,
+          path,
+          selectedBranch,
+        )
 
         setFiles(fileItems)
 
@@ -74,7 +90,7 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
         setLoading(false)
       }
     },
-    [projectId],
+    [projectId, selectedBranch],
   )
 
   // 커밋 및 파일 목록 가져오기
@@ -101,10 +117,20 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
       // 기본적으로 프로젝트의 모든 파일을 가져옴
       if (dateRange.from.getFullYear() < new Date().getFullYear() - 5) {
         // 기본 범위(10년)일 경우 모든 파일을 가져옴
-        filesList = await getProjectFiles(projectId, '1year', '')
+        filesList = await getProjectFiles(
+          projectId,
+          '1year',
+          '',
+          selectedBranch,
+        )
       } else {
         // 사용자가 날짜 범위를 변경한 경우 변경 파일만 가져옴
-        filesList = await getProjectChangedFiles(projectId, since, until)
+        filesList = await getProjectChangedFiles(
+          projectId,
+          since,
+          until,
+          selectedBranch,
+        )
       }
 
       // 파일 목록 설정
@@ -122,7 +148,7 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
     } finally {
       setLoading(false)
     }
-  }, [projectId, dateRange])
+  }, [projectId, dateRange, selectedBranch])
 
   // 파일 선택 핸들러
   const handleSelectFile = useCallback(
@@ -141,7 +167,11 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
       setError(null)
 
       try {
-        const fileContent = await getFileCode(projectId, fileItem.path)
+        const fileContent = await getFileCode(
+          projectId,
+          fileItem.path,
+          selectedBranch,
+        )
         setCode(fileContent)
         setSelectedCode('') // 새 파일 선택 시 코드 선택 초기화
       } catch (err) {
@@ -152,7 +182,7 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
         setLoading(false)
       }
     },
-    [projectId, navigateToPath],
+    [projectId, navigateToPath, selectedBranch],
   )
 
   // 상위 폴더로 이동
@@ -173,6 +203,9 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
   return {
     dateRange,
     handleDateRangeChange,
+    selectedBranch,
+    availableBranches,
+    handleBranchChange,
     files,
     currentPath,
     selectedFile,
