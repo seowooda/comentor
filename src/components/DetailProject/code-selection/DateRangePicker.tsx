@@ -32,6 +32,16 @@ export default function DateRangePicker({
     dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : '',
   )
 
+  // 전체기간 설정
+  const handleSelectAllPeriod = () => {
+    const to = new Date()
+    const from = new Date()
+    from.setFullYear(from.getFullYear() - 10) // 10년 전으로 설정
+    onDateRangeChange({ from, to })
+    setFromInputValue(format(from, 'yyyy-MM-dd'))
+    setToInputValue(format(to, 'yyyy-MM-dd'))
+  }
+
   // 기간 단축 버튼
   const handleQuickSelect = (days: number) => {
     const to = new Date()
@@ -80,6 +90,21 @@ export default function DateRangePicker({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          type="button"
+          onClick={handleSelectAllPeriod}
+          className={cn(
+            'text-xs',
+            dateRange.from &&
+              dateRange.from.getFullYear() < new Date().getFullYear() - 5
+              ? 'bg-muted font-medium'
+              : '',
+          )}
+        >
+          전체기간
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -133,24 +158,6 @@ export default function DateRangePicker({
           )}
         >
           최근 1개월
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          type="button"
-          onClick={() => handleQuickSelect(90)}
-          className={cn(
-            'text-xs',
-            dateRange.from &&
-              Math.round(
-                (new Date().getTime() - dateRange.from.getTime()) /
-                  (1000 * 60 * 60 * 24),
-              ) === 90
-              ? 'bg-muted font-medium'
-              : '',
-          )}
-        >
-          최근 3개월
         </Button>
       </div>
 

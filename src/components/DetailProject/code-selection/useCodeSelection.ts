@@ -1,19 +1,21 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { getProjectFiles, getFileCode, FileItem } from '@/api'
+import { format } from 'date-fns'
+import { getProjectChangedFiles } from '@/api/services/github/projectGithubService'
 
 interface UseCodeSelectionProps {
   projectId: string
 }
 
 export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
-  // 날짜 범위
+  // 날짜 범위 (기본값: 매우 넓은 범위로 설정)
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined
     to: Date | undefined
   }>({
-    from: new Date(new Date().setDate(new Date().getDate() - 7)), // 기본값: 1주일 전
+    from: new Date(new Date().setFullYear(new Date().getFullYear() - 10)), // 기본값: 10년 전
     to: new Date(), // 기본값: 오늘
   })
 
@@ -28,6 +30,13 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
 
   // 코드 텍스트 영역 참조
   const codeTextareaRef = useRef<HTMLTextAreaElement | null>(null)
+
+  // 컴포넌트 마운트 시 자동으로 파일 로드
+  useEffect(() => {
+    if (projectId) {
+      fetchCommitsAndFiles()
+    }
+  }, [projectId])
 
   // 날짜 범위 변경 핸들러
   const handleDateRangeChange = useCallback(
@@ -78,33 +87,38 @@ export default function useCodeSelection({ projectId }: UseCodeSelectionProps) {
 
     setLoading(true)
     setError(null)
+    setCurrentPath('') // 루트 경로로 초기화
+    setSelectedFile('')
+    setCode('')
 
     try {
-      // 날짜 범위 정보는 일단 유지 (향후 필터 기능 위해)
-      const startDate = dateRange.from.toISOString().split('T')[0]
-      const endDate = dateRange.to.toISOString().split('T')[0]
+      // 날짜 범위를 ISO 형식으로 변환
+      const since = format(dateRange.from, "yyyy-MM-dd'T'HH:mm:ss'Z'")
+      const until = format(dateRange.to, "yyyy-MM-dd'T'HH:mm:ss'Z'")
 
-      // // 커스텀 기간 파라미터 생성 - URL 형식 수정 (? -> &) todo 수정필요
-      // const periodParam = `custom&startDate=${startDate}&endDate=${endDate}`
+      let filesList: FileItem[]
 
-      // // 프로젝트 파일 목록 가져오기
-      // const commitFiles = await getProjectFiles(projectId, periodParam)
-      // GitHub API는 날짜 범위와 관계없이 전체 파일을 가져옴
-      const commitFiles = await getProjectFiles(projectId, '1week', '')
+      // 기본적으로 프로젝트의 모든 파일을 가져옴
+      if (dateRange.from.getFullYear() < new Date().getFullYear() - 5) {
+        // 기본 범위(10년)일 경우 모든 파일을 가져옴
+        filesList = await getProjectFiles(projectId, '1year', '')
+      } else {
+        // 사용자가 날짜 범위를 변경한 경우 변경 파일만 가져옴
+        filesList = await getProjectChangedFiles(projectId, since, until)
+      }
 
-      // 파일 목록 설정 (최상위 항목)
-      setFiles(commitFiles)
-      setCurrentPath('') // 루트 경로로 초기화
+      // 파일 목록 설정
+      setFiles(filesList)
 
       // 파일이 없는 경우 에러 메시지 표시
-      if (commitFiles.length === 0) {
-        setError('저장소에서 파일을 찾을 수 없습니다.')
+      if (filesList.length === 0) {
+        setError('선택한 기간 동안 변경된 파일이 없습니다.')
       } else {
         setError(null)
       }
     } catch (err) {
-      console.error('파일 목록을 가져오는 중 오류 발생:', err)
-      setError('파일 목록을 가져오는데 실패했습니다.')
+      console.error('변경 파일 목록을 가져오는 중 오류 발생:', err)
+      setError('변경 파일 목록을 가져오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
