@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { HistoryByDate, QuestionHistoryItem } from '../types'
+import { HistoryByDate, UIQuestionHistoryItem } from '../types'
 import QuestionCard from '../ui/QuestionCard'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 
@@ -10,8 +10,8 @@ interface HistoryListProps {
   history: HistoryByDate
   selectedQuestionId?: number
   bookmarkedQuestions: number[]
-  onSelectQuestion: (question: QuestionHistoryItem) => void
-  onAnswer?: (question: QuestionHistoryItem) => void
+  onSelectQuestion: (question: UIQuestionHistoryItem) => void
+  onAnswer?: (question: UIQuestionHistoryItem) => void
 }
 
 /**
@@ -104,7 +104,7 @@ const HistoryList: React.FC<HistoryListProps> = ({
                         id: questionId,
                         answered: isAnswered,
                         question: question.question || '질문 내용 없음',
-                        codeSnippet: question.codeSnippet || '',
+                        relatedCode: (question as any).relatedCode || '',
                         folderName: (question as any).folderName || '',
                         status: isDone ? 'DONE' : 'TODO',
                         userAnswer: question.answer || '',
@@ -138,7 +138,6 @@ const HistoryList: React.FC<HistoryListProps> = ({
                                     id: questionId,
                                     question:
                                       question.question || '질문 내용 없음',
-                                    fileName: (question as any).fileName || '',
                                     folderName:
                                       (question as any).folderName || '',
                                   })

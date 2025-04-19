@@ -131,22 +131,19 @@ const mockCSQuestions: CSQuestion[] = [
     id: 1,
     question:
       '이 코드에서 사용된 React Hook의 목적과 라이프사이클 메서드와의 관계를 설명해주세요.',
-    bestAnswer:
-      'React Hook은 함수형 컴포넌트에서 상태 관리와 사이드 이펙트를 처리하기 위해 도입되었습니다. 이 코드에서는 useState와 useEffect를 사용하고 있는데, useState는 컴포넌트의 상태를 관리하고, useEffect는 componentDidMount, componentDidUpdate, componentWillUnmount와 같은 라이프사이클 메서드의 기능을 대체합니다.',
+    relatedCode: 'useState, useEffect',
   },
   {
     id: 2,
     question:
       'fetch API를 사용할 때 발생할 수 있는 네트워크 오류 처리 방법과 이 코드의 개선점을 설명해주세요.',
-    bestAnswer:
-      'fetch API는 네트워크 요청 실패 시 reject 대신 HTTP 에러 응답을 받을 수 있으므로, response.ok를 확인하는 것이 중요합니다. 이 코드에서는 try-catch 블록으로 네트워크 오류를 처리하고 있으며, response.ok 체크도 구현되어 있습니다. 개선점으로는 타임아웃 설정, 재시도 로직, 더 구체적인 에러 메시지 제공 등이 있을 수 있습니다.',
+    relatedCode: 'fetch, try-catch',
   },
   {
     id: 3,
     question:
       '상태 관리 관점에서 이 컴포넌트의 특징과 성능 최적화 방법을 논의해주세요.',
-    bestAnswer:
-      '이 컴포넌트는 여러 상태(user, loading, error)를 관리하며, useEffect 내에서 API 호출을 처리합니다. 성능 최적화를 위해 메모이제이션(React.memo, useMemo, useCallback), 불필요한 렌더링 방지, 데이터 페칭 라이브러리(React Query) 사용, 컴포넌트 분할 등을 고려할 수 있습니다.',
+    relatedCode: 'user, loading, error 상태',
   },
 ]
 
@@ -161,7 +158,7 @@ const mockQuestionHistory: HistoryByDate = {
         'React Hook은 함수형 컴포넌트에서 상태 관리와 사이드 이펙트를 처리하기 위해 도입되었습니다. 이 코드에서는 useState와 useEffect를 사용하고 있습니다.',
       feedback:
         '좋은 시도입니다! React Hook의 구체적인 사용 사례를 더 설명해보세요.',
-      codeSnippet: 'UserProfile.jsx',
+
       answered: true,
       status: 'Done',
     },
@@ -173,7 +170,7 @@ const mockQuestionHistory: HistoryByDate = {
         'fetch API는 네트워크 요청 실패 시 HTTP 에러를 받을 수 있어 response.ok를 확인해야 합니다.',
       feedback:
         '네트워크 오류 처리에 대한 설명이 좋습니다. 개선 방안도 추가해보세요.',
-      codeSnippet: 'UserProfile.jsx',
+
       answered: true,
       status: 'Done',
     },
@@ -185,7 +182,7 @@ const mockQuestionHistory: HistoryByDate = {
         '상태 관리 관점에서 이 컴포넌트의 특징과 성능 최적화 방법을 논의해주세요.',
       answer: '이 컴포넌트는 여러 상태를 관리하며 API 호출을 처리합니다.',
       feedback: '성능 최적화 방법에 대해 더 자세히 설명해주세요.',
-      codeSnippet: 'App.js',
+
       answered: true,
       status: 'Done',
     },
@@ -197,7 +194,7 @@ const mockQuestionHistory: HistoryByDate = {
         'React에서 상태 관리 라이브러리를 사용하는 이유와 장단점을 설명해주세요.',
       answer: '',
       feedback: '',
-      codeSnippet: 'App.js',
+
       answered: false,
       status: 'Todo',
     },
@@ -209,7 +206,7 @@ const mockQuestionHistory: HistoryByDate = {
         'TypeScript의 주요 기능과 JavaScript와의 차이점을 설명해주세요.',
       answer: '',
       feedback: '',
-      codeSnippet: 'index.ts',
+
       answered: false,
       status: 'Todo',
     },

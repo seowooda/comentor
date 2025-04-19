@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { getCSQuestionHistory, getQuestionDetail } from '@/api'
-import { HistoryByDate, QuestionHistoryItem } from '../types'
+import { HistoryByDate, UIQuestionHistoryItem } from '../types'
 
 interface UseQuestionHistoryProps {
   projectId: string
@@ -12,7 +12,7 @@ interface UseQuestionHistoryProps {
 
 // 정규화된 데이터 구조를 위한 인터페이스
 interface NormalizedQuestions {
-  byId: Record<number, QuestionHistoryItem>
+  byId: Record<number, UIQuestionHistoryItem>
   byDate: Record<string, number[]>
   allDates: string[]
 }
@@ -30,7 +30,7 @@ export default function useQuestionHistory({
       }
 
       // 초기 데이터 정규화
-      const byId: Record<number, QuestionHistoryItem> = {}
+      const byId: Record<number, UIQuestionHistoryItem> = {}
       const byDate: Record<string, number[]> = {}
       const allDates = Object.keys(initialHistory).sort(
         (a, b) => new Date(b).getTime() - new Date(a).getTime(),
@@ -40,7 +40,7 @@ export default function useQuestionHistory({
         const questions = initialHistory[date] || []
         byDate[date] = []
 
-        questions.forEach((question) => {
+        questions.forEach((question: UIQuestionHistoryItem) => {
           const id = (question as any).questionId || question.id || 0
           if (id) {
             byId[id] = question
@@ -71,7 +71,7 @@ export default function useQuestionHistory({
 
   // 메모이제이션된 현재 질문 (상세 정보 포함)
   const [currentQuestion, setCurrentQuestion] =
-    useState<QuestionHistoryItem | null>(null)
+    useState<UIQuestionHistoryItem | null>(null)
 
   // 메모이제이션된 날짜 정렬 (최신순)
   const sortedDates = useMemo(
@@ -97,7 +97,7 @@ export default function useQuestionHistory({
             codeSnippet: question.codeSnippet || '',
           }
         })
-        .filter(Boolean) as QuestionHistoryItem[]
+        .filter(Boolean) as UIQuestionHistoryItem[]
     })
 
     return result
@@ -114,7 +114,7 @@ export default function useQuestionHistory({
         const data = await getCSQuestionHistory(projectId)
 
         // 받아온 데이터 정규화
-        const byId: Record<number, QuestionHistoryItem> = {}
+        const byId: Record<number, UIQuestionHistoryItem> = {}
         const byDate: Record<string, number[]> = {}
         const allDates = Object.keys(data).sort(
           (a, b) => new Date(b).getTime() - new Date(a).getTime(),
@@ -124,7 +124,7 @@ export default function useQuestionHistory({
           const questions = data[date] || []
           byDate[date] = []
 
-          questions.forEach((question) => {
+          questions.forEach((question: UIQuestionHistoryItem) => {
             const id = (question as any).questionId || question.id || 0
             if (id) {
               byId[id] = question
@@ -146,7 +146,7 @@ export default function useQuestionHistory({
 
   // 질문 선택 핸들러 - 상세 정보 API 호출 추가
   const handleSelectQuestion = useCallback(
-    async (question: QuestionHistoryItem | null) => {
+    async (question: UIQuestionHistoryItem | null) => {
       if (!question) {
         setCurrentQuestion(null)
         setSelectedQuestionId(null)
@@ -163,7 +163,7 @@ export default function useQuestionHistory({
           ...question,
           question: question.question || '',
           answer: question.answer || '',
-          codeSnippet: question.codeSnippet || '',
+          relatedCode: question.relatedCode || '',
           feedback: question.feedback || '',
         })
 
@@ -193,7 +193,7 @@ export default function useQuestionHistory({
       const data = await getCSQuestionHistory(projectId)
 
       // 받아온 데이터 정규화
-      const byId: Record<number, QuestionHistoryItem> = {}
+      const byId: Record<number, UIQuestionHistoryItem> = {}
       const byDate: Record<string, number[]> = {}
       const allDates = Object.keys(data).sort(
         (a, b) => new Date(b).getTime() - new Date(a).getTime(),
@@ -203,7 +203,7 @@ export default function useQuestionHistory({
         const questions = data[date] || []
         byDate[date] = []
 
-        questions.forEach((question) => {
+        questions.forEach((question: UIQuestionHistoryItem) => {
           const id = (question as any).questionId || question.id || 0
           if (id) {
             byId[id] = question
@@ -224,7 +224,7 @@ export default function useQuestionHistory({
 
   // 개별 질문 업데이트 - 최적화된 업데이트 로직
   const updateQuestion = useCallback(
-    (questionId: number, updates: Partial<QuestionHistoryItem>) => {
+    (questionId: number, updates: Partial<UIQuestionHistoryItem>) => {
       setQuestionsData((prevData) => {
         // 해당 질문이 존재하지 않으면 변경 없음
         if (!prevData.byId[questionId]) return prevData
@@ -247,7 +247,9 @@ export default function useQuestionHistory({
 
       // 현재 선택된 질문이 업데이트 대상이면 현재 질문도 업데이트
       if (selectedQuestionId === questionId) {
-        setCurrentQuestion((prev) => (prev ? { ...prev, ...updates } : null))
+        setCurrentQuestion((prev: UIQuestionHistoryItem | null) =>
+          prev ? { ...prev, ...updates } : null,
+        )
       }
     },
     [selectedQuestionId],

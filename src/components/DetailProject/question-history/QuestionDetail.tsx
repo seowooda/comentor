@@ -3,15 +3,16 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { QuestionHistoryItem } from '../types'
+import { UIQuestionHistoryItem } from '../types'
 import { FileCode, MessageSquareText, Loader2, AlertCircle } from 'lucide-react'
+import { Code } from 'lucide-react'
 
 interface QuestionDetailProps {
-  question: QuestionHistoryItem | null
+  question: UIQuestionHistoryItem | null
   isBookmarked: boolean
   onBookmark: (questionId: number) => void
   onAnswer?: (
-    question: QuestionHistoryItem,
+    question: UIQuestionHistoryItem,
     answer: string,
   ) => Promise<string | undefined>
   activeCSQuestionIds?: number[] // CS 질문 탭에서 활성화된 질문 ID 목록
@@ -85,32 +86,34 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
       <div className="mb-4">
         <h3 className="font-medium text-slate-800">{question.question}</h3>
 
-        {question.fileName && (
-          <div className="mt-2 flex items-center text-xs text-blue-600">
-            <FileCode className="mr-1 h-4 w-4" />
-            <span>{question.fileName}</span>
+        {question.folderName && (
+          <div className="mt-2 flex items-center justify-between text-xs">
+            <div className="flex items-center text-blue-600">
+              <FileCode className="mr-1 h-4 w-4" />
+              <span>{question.folderName}</span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs"
+              onClick={() => onBookmark(question.id)}
+              disabled={isBookmarked}
+            >
+              {isBookmarked ? '북마크됨' : '북마크 추가'}
+            </Button>
           </div>
         )}
-
-        {question.codeSnippet && (
+        <div className="text-muted-foreground mt-3 flex items-center gap-1 text-xs">
+          <Code className="h-3.5 w-3.5" />
+          <span>관련 코드</span>
+        </div>
+        {question.relatedCode && (
           <div className="mt-2 overflow-auto rounded-md bg-slate-100 p-3">
             <pre className="text-xs whitespace-pre-wrap text-slate-700">
-              {question.codeSnippet}
+              {question.relatedCode}
             </pre>
           </div>
         )}
-
-        <div className="mt-3 flex justify-end space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-xs"
-            onClick={() => onBookmark(question.id)}
-            disabled={isBookmarked}
-          >
-            {isBookmarked ? '북마크됨' : '북마크 추가'}
-          </Button>
-        </div>
       </div>
 
       <div className="mt-6 space-y-4">

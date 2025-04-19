@@ -205,7 +205,7 @@ const CSQuestionsTab: React.FC<CSQuestionsTabProps> = ({
                   {selectedQuestion ? (
                     <AnswerForm
                       question={selectedQuestion.question}
-                      codeSnippet={selectedQuestion.codeSnippet}
+                      relatedCode={selectedQuestion.relatedCode}
                       questionIndex={currentQuestionIndex}
                       totalQuestions={questions.length}
                       answer={answer}
