@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Info } from 'lucide-react'
 import DateRangePicker from './DateRangePicker'
 import FileList from './FileList'
 import CodeViewer from './CodeViewer'
@@ -10,9 +10,15 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Info } from 'lucide-react'
 import { DateRange } from 'react-day-picker'
 import { FileItem } from '@/api'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface CodeSelectionTabProps {
   projectId: string
@@ -28,6 +34,9 @@ export default function CodeSelectionTab({
   const {
     dateRange,
     handleDateRangeChange,
+    selectedBranch,
+    availableBranches,
+    handleBranchChange,
     files,
     currentPath,
     selectedFile,
@@ -72,15 +81,16 @@ export default function CodeSelectionTab({
         <Info className="h-5 w-5 text-blue-500" />
         <AlertTitle className="font-medium text-blue-700">시작하기</AlertTitle>
         <AlertDescription className="text-blue-600">
-          코드를 분석하여 CS 질문을 생성하려면 날짜 범위를 선택하고, 파일을
-          선택한 다음 코드 영역을 선택해 주세요.
+          코드를 분석하여 CS 질문을 생성하려면 파일을 선택하고 분석할 코드
+          영역을 선택해 주세요. 필요한 경우 날짜 범위를 지정하여 특정 기간 동안
+          변경된 파일만 조회할 수 있습니다.
         </AlertDescription>
       </Alert>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4 grid w-full grid-cols-2 md:w-[400px]">
           <TabsTrigger value="calendar" className="flex items-center gap-2">
-            1. 날짜 및 파일 선택
+            1. 파일 선택
           </TabsTrigger>
           <TabsTrigger
             value="code"
@@ -95,10 +105,34 @@ export default function CodeSelectionTab({
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardContent className="p-6">
-                <h3 className="mb-2 text-lg font-semibold">날짜 범위 선택</h3>
+                <h3 className="mb-2 text-lg font-semibold">
+                  파일 필터링 (선택사항)
+                </h3>
                 <p className="text-muted-foreground mb-4 text-sm">
-                  조회할 커밋 기간을 선택해주세요.
+                  특정 기간에 변경된 파일만 보려면 날짜 범위를 선택하세요.
                 </p>
+
+                <div className="mb-4">
+                  <label className="mb-1 block text-sm font-medium">
+                    브랜치 선택
+                  </label>
+                  <Select
+                    value={selectedBranch}
+                    onValueChange={handleBranchChange}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="브랜치 선택" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableBranches.map((branch) => (
+                        <SelectItem key={branch} value={branch}>
+                          {branch}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <DateRangePicker
                   dateRange={dateRange}
                   onDateRangeChange={handleDateChange}
@@ -109,7 +143,14 @@ export default function CodeSelectionTab({
                     onClick={fetchCommitsAndFiles}
                     className="bg-primary hover:bg-primary/90"
                   >
-                    파일 가져오기
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        불러오는 중...
+                      </>
+                    ) : (
+                      '파일 필터링 적용'
+                    )}
                   </Button>
                 </div>
               </CardContent>
@@ -117,7 +158,7 @@ export default function CodeSelectionTab({
 
             <Card>
               <CardContent className="p-6">
-                <h3 className="mb-2 text-lg font-semibold">파일 선택</h3>
+                <h3 className="mb-2 text-lg font-semibold">파일 목록</h3>
                 <p className="text-muted-foreground mb-4 text-sm">
                   분석할 코드가 포함된 파일을 선택해주세요.
                 </p>
@@ -125,13 +166,9 @@ export default function CodeSelectionTab({
                   <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                     {error}
                   </div>
-                ) : loading ? (
-                  <div className="flex justify-center p-10">
-                    <Loader2 className="text-primary h-6 w-6 animate-spin" />
-                  </div>
-                ) : files.length === 0 ? (
+                ) : files.length === 0 && !loading ? (
                   <div className="bg-muted rounded-md border p-4 text-sm">
-                    날짜 범위를 선택하고 파일을 가져와주세요.
+                    파일이 없습니다. 날짜 범위를 변경해보세요.
                   </div>
                 ) : (
                   <FileList
@@ -171,8 +208,9 @@ export default function CodeSelectionTab({
                 <CodeViewer
                   code={code}
                   selectedCode={selectedCode}
-                  onSelectCode={handleSelectCode}
                   codeTextareaRef={codeTextareaRef}
+                  onSelectCode={handleSelectCode}
+                  loading={loading}
                   className="min-h-[400px] md:min-h-[500px]"
                 />
               </div>

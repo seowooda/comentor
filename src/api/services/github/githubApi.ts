@@ -54,3 +54,57 @@ export async function fetchGitHubFile(
 
   return new TextDecoder('utf-8').decode(bytes) // UTF-8 변환 후 반환
 }
+
+// 특정 날짜 범위 내의 변경된 파일 목록 가져오기
+export async function getChangedFiles(
+  owner: string,
+  repo: string,
+  since: string,
+  until: string,
+) {
+  const { githubAccessToken } = useAuthStore.getState()
+  const headers: HeadersInit = {
+    Authorization: `Bearer ${githubAccessToken}`,
+    Accept: 'application/vnd.github.v3+json',
+  }
+
+  // 모든 커밋을 페이지네이션으로 가져오기
+  let allCommits: any[] = []
+  let page = 1
+  const perPage = 100
+  while (true) {
+    const url = `https://api.github.com/repos/${owner}/${repo}/commits?since=${since}&until=${until}&per_page=${perPage}&page=${page}`
+    const response = await fetch(url, { headers })
+    if (!response.ok) {
+      throw new Error('커밋 목록을 불러오는 데 실패했습니다.')
+    }
+    const commits = await response.json()
+    allCommits = allCommits.concat(commits)
+    if (commits.length < perPage) break
+    page++
+  }
+
+  // 각 커밋의 상세 fetch를 병렬로 처리
+  const fileSet = new Set<string>()
+  const commitFetches = allCommits.map(async (commit) => {
+    const commitUrl = `https://api.github.com/repos/${owner}/${repo}/commits/${commit.sha}`
+    try {
+      const commitResponse = await fetch(commitUrl, { headers })
+      if (!commitResponse.ok) {
+        return
+      }
+      const commitData = await commitResponse.json()
+      if (!commitData.files || !Array.isArray(commitData.files)) {
+        return
+      }
+      for (const file of commitData.files) {
+        fileSet.add(file.filename)
+      }
+    } catch (error) {
+      // 에러 발생 시 해당 커밋만 건너뜀
+    }
+  })
+  await Promise.all(commitFetches)
+
+  return Array.from(fileSet)
+}
