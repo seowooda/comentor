@@ -40,7 +40,10 @@ export const folderBookmarkCancel = () => {
 //폴더 질문 목록 조회
 export const folderQuestions = (folderId: number) => {
   return useGetQuery<FolderQuestionResponse>(
-    ['questions'],
+    ['questions', folderId.toString()],
     `/folder/questions?folderId=${folderId}`,
+    {
+      enabled: !!folderId,
+    },
   )
 }

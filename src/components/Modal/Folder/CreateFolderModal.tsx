@@ -44,14 +44,7 @@ export const CreateFolderModal = ({
 
   const handleSelect = (folderId: number, fileName: string) => {
     setValue('selected', folderId)
-    bookmark(
-      { csQuestionId, fileName },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['folders'] })
-        },
-      },
-    )
+    bookmark({ csQuestionId, fileName })
   }
 
   const onNewFolder = (formData: { newFolder: string }) => {

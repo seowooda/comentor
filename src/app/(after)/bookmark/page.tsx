@@ -1,16 +1,21 @@
 'use client'
 
-import { folderInfo } from '@/api/services/folder/quries'
+import { folderInfo, folderQuestions } from '@/api/services/folder/quries'
 import { QuestionList } from '@/components/Bookmark'
 import { FolderList } from '@/components/Bookmark/FolderList'
 import { useDelayedLoading } from '@/hooks/useDelayedLoading'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export default function Page() {
-  const [folderId, setFolderId] = useState<number | null>(null)
+  const [folderId, setFolderId] = useState<number | null>(1)
   const { data: folder, isLoading } = folderInfo()
+  const { data: question } = folderQuestions(folderId || 1)
 
   const showLoading = useDelayedLoading(isLoading, 1000)
+
+  // folderId에 해당하는 fileName 찾아서 넘겨주기
+  const selectedFolder = folder?.result.find((f) => f.folderId === folderId)
+  const fileName = selectedFolder?.fileName || 'default' 
 
   return (
     <main className="flex w-full flex-grow justify-center px-[60px] pt-10">
@@ -22,7 +27,10 @@ export default function Page() {
           isLoading={showLoading}
         />
         <div className="flex-1">
-          <QuestionList folderId={folderId} folders={folder?.result || []} />
+          <QuestionList
+            fileName={fileName}
+            questions={question?.result || []}
+          />
         </div>
       </div>
     </main>
