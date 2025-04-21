@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { Questions, QuestionStatus } from '@/api'
 import { mapCS, mapStatus } from './lib/mapEnum'
 import React from 'react'
+import { useRouter } from 'next/navigation'
 
 interface QuestionItemProps {
   question: Questions
@@ -20,11 +21,22 @@ export const QuestionItem = React.memo(
         question.questionStatus === ('TODO' as QuestionStatus),
     })
 
-    // 북마크가 되어있는지 체크하는 변수
+    const router = useRouter()
+
     const isBookmarked = true
 
+    //질문 클릭 시 질문 기록으로 이동
+    const handleClick = () => {
+      router.push(
+        `/project/1?tab=question-history&questionId=${question.questionId}`,
+      )
+    }
+
     return (
-      <div className="grid max-w-full grid-cols-[minmax(400px,3fr)_minmax(120px,1fr)_minmax(100px,1fr)_40px] items-center gap-4 border-b border-slate-300 px-6 py-5 transition hover:bg-slate-50">
+      <div
+        onClick={handleClick}
+        className="grid max-w-full cursor-pointer grid-cols-[minmax(400px,3fr)_minmax(120px,1fr)_minmax(100px,1fr)_40px] items-center gap-4 border-b border-slate-300 px-6 py-5 transition hover:bg-slate-50"
+      >
         <div className="flex flex-col gap-1">
           <p className="line-clamp-2 text-[16px]">{question.question}</p>
           <span className="flex items-center gap-1 text-sm">

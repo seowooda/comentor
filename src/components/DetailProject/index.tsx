@@ -22,6 +22,7 @@ import {
   bookmarkCSQuestion,
   useProjectDelete,
 } from '@/api'
+import { useSearchParams } from 'next/navigation'
 
 /**
  * 프로젝트 상세 페이지 컴포넌트
@@ -48,6 +49,17 @@ export const DetailProject = ({ params }: DetailProjectProps) => {
 
   // CS 질문 탭에서 사용 중인 질문 ID 목록 상태 추가
   const [activeCSQuestionIds, setActiveCSQuestionIds] = useState<number[]>([])
+
+  const searchParams = useSearchParams()
+  const tabFromURL = searchParams.get('tab') || 'question-history'
+  const idFromURL = searchParams.get('projectId') || ''
+
+  // URL에서 tab이 있다면 초기 선택 탭으로 설정
+  useEffect(() => {
+    if (tabFromURL) {
+      setSelectedTab(tabFromURL)
+    }
+  }, [tabFromURL])
 
   // 프로젝트 ID를 가져오고 데이터 로드
   useEffect(() => {
