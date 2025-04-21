@@ -9,11 +9,13 @@ import { Folder, folderBookmark, folderInfo } from '@/api'
 
 interface FolderModalProps {
   csQuestionId: number
+  onBookmarkDone?: () => void
   onClose: () => void
 }
 
 export const CreateFolderModal = ({
   csQuestionId,
+  onBookmarkDone,
   onClose,
 }: FolderModalProps) => {
   const { data } = folderInfo()
@@ -43,7 +45,14 @@ export const CreateFolderModal = ({
 
   const handleSelect = (folderId: number, fileName: string) => {
     setValue('selected', folderId)
-    bookmark({ csQuestionId, fileName })
+    bookmark(
+      { csQuestionId, fileName },
+      {
+        onSuccess: () => {
+          onBookmarkDone?.()
+        },
+      },
+    )
   }
 
   const onNewFolder = (formData: { newFolder: string }) => {
@@ -58,6 +67,7 @@ export const CreateFolderModal = ({
           setValue('creating', false)
           setValue('newFolder', '')
           queryClient.invalidateQueries({ queryKey: ['folders'] })
+          onBookmarkDone?.()
         },
       },
     )
