@@ -1,8 +1,8 @@
 'use client'
 
-import { useModalStore } from '@/store/modalStore'
 import { FolderItem } from './FolderItem'
 import { Folder } from '@/api'
+import { useCallback } from 'react'
 
 interface FolderListProps {
   folderId: number | null
@@ -17,13 +17,18 @@ export const FolderList = ({
   folders,
   isLoading,
 }: FolderListProps) => {
-  const { openModal } = useModalStore()
+  const handleSelect = useCallback(
+    (id: number) => setFolderId(id),
+    [setFolderId],
+  )
 
   return (
-    <section className="flex min-w-64 flex-col gap-9 text-slate-800">
+    <section className="flex min-w-64 flex-col gap-3 text-slate-800">
       <h2 className="text-xl font-semibold">폴더 관리</h2>
       <div className="flex flex-col gap-5">
-        <h3 className="text-[18px] leading-5 font-medium">폴더 목록</h3>
+        <h3 className="pb-3 text-[18px] leading-5 font-medium">
+          폴더 목록
+        </h3>
         <div className="flex flex-col gap-2">
           {isLoading
             ? Array.from({ length: folders.length }).map((_, i) => (
@@ -40,8 +45,7 @@ export const FolderList = ({
                   key={folder.folderId}
                   folder={folder}
                   isSelected={folderId === folder.folderId}
-                  onSelect={setFolderId}
-                  openModal={openModal}
+                  onSelect={handleSelect}
                 />
               ))}
         </div>

@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button'
 import { PlusIcon, XIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { useQueryClient } from '@tanstack/react-query'
-import { Folder, folderInfo } from '@/api'
-import { folderBookmark } from '@/api/services/folder/quries'
+import { Folder, folderBookmark, folderInfo } from '@/api'
 
 interface FolderModalProps {
   csQuestionId: number

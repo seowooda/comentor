@@ -93,4 +93,6 @@ export {
   folderUpdate,
   folderDelete,
   folderQuestions,
+  folderBookmark,
+  folderBookmarkCancel,
 } from '@/api/services/folder/quries'

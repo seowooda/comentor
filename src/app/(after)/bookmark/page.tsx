@@ -4,25 +4,35 @@ import { folderInfo, folderQuestions } from '@/api/services/folder/quries'
 import { QuestionList } from '@/components/Bookmark'
 import { FolderList } from '@/components/Bookmark/FolderList'
 import { useDelayedLoading } from '@/hooks/useDelayedLoading'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 export default function Page() {
-  const [folderId, setFolderId] = useState<number | null>(1)
+  const [folderId, setFolderId] = useState<number | null>(null)
   const { data: folder, isLoading } = folderInfo()
-  const { data: question } = folderQuestions(folderId || 1)
+  const { data: question } = folderQuestions(folderId ?? 0)
 
   const showLoading = useDelayedLoading(isLoading, 1000)
 
-  // folderId에 해당하는 fileName 찾아서 넘겨주기
+  //첫번째 폴더 선택
+  useEffect(() => {
+    if (!folderId && folder?.result?.length) {
+      setFolderId(folder.result[0].folderId)
+    }
+  }, [folder, folderId])
+
   const selectedFolder = folder?.result.find((f) => f.folderId === folderId)
-  const fileName = selectedFolder?.fileName || 'default' 
+  const fileName = selectedFolder?.fileName || 'default'
+
+  const handleSetFolderId = useCallback((id: number) => {
+    setFolderId(id)
+  }, [])
 
   return (
     <main className="flex w-full flex-grow justify-center px-[60px] pt-10">
       <div className="flex w-full max-w-screen-xl gap-8">
         <FolderList
           folderId={folderId}
-          setFolderId={setFolderId}
+          setFolderId={handleSetFolderId}
           folders={folder?.result || []}
           isLoading={showLoading}
         />

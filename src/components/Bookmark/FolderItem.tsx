@@ -1,6 +1,5 @@
 import { Folder } from '@/api'
 import { useModalStore } from '@/store/modalStore'
-import { ModalProps, ModalType } from '@/types/modal'
 import { FolderIcon, Pencil, Trash } from 'lucide-react'
 import React from 'react'
 
@@ -8,11 +7,12 @@ interface FolderItemProps {
   folder: Folder
   isSelected: boolean
   onSelect: (id: number) => void
-  openModal: <T extends ModalType>(type: T, props: ModalProps[T]) => void
 }
 
 export const FolderItem = React.memo(
-  ({ folder, isSelected, onSelect, openModal }: FolderItemProps) => {
+  ({ folder, isSelected, onSelect }: FolderItemProps) => {
+    const { openModal } = useModalStore()
+
     const handleEdit = (e: React.MouseEvent) => {
       e.stopPropagation()
       openModal('editFolder', {

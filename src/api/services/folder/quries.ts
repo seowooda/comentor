@@ -44,6 +44,7 @@ export const folderQuestions = (folderId: number) => {
     `/folder/questions?folderId=${folderId}`,
     {
       enabled: !!folderId,
+      staleTime: 0,
     },
   )
 }
