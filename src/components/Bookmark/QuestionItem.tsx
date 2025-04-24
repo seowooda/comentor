@@ -57,7 +57,10 @@ export const QuestionItem = React.memo(
         </div>
         <BookmarkIcon
           size={20}
-          onClick={() => onBookmarkCancel(question.questionId)}
+          onClick={(e) => {
+            e.stopPropagation() // ✅ 상위 div의 onClick(페이지 이동)을 막음
+            onBookmarkCancel(question.questionId)
+          }}
           className={`cursor-pointer transition duration-200 ${
             isBookmarked ? 'fill-current text-yellow-400' : 'text-slate-500'
           } hover:text-yellow-300`} // 북마크 상태에 따라 색상/아이콘 채우기 처리

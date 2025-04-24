@@ -95,4 +95,4 @@ export {
   folderQuestions,
   folderBookmark,
   folderBookmarkCancel,
-} from '@/api/services/folder/quries'
+} from '@/api/services/folder/queries'

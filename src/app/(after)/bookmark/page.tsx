@@ -1,6 +1,6 @@
 'use client'
 
-import { folderInfo, folderQuestions } from '@/api/services/folder/quries'
+import { folderInfo, folderQuestions } from '@/api/services/folder/queries'
 import { QuestionList } from '@/components/Bookmark'
 import { FolderList } from '@/components/Bookmark/FolderList'
 import { useDelayedLoading } from '@/hooks/useDelayedLoading'
@@ -9,7 +9,6 @@ import { useCallback, useEffect, useState } from 'react'
 export default function Page() {
   const [folderId, setFolderId] = useState<number | null>(null)
   const { data: folder, isLoading } = folderInfo()
-  const { data: question } = folderQuestions(folderId ?? 0)
 
   const showLoading = useDelayedLoading(isLoading, 1000)
 
@@ -37,10 +36,7 @@ export default function Page() {
           isLoading={showLoading}
         />
         <div className="flex-1">
-          <QuestionList
-            fileName={fileName}
-            questions={question?.result || []}
-          />
+          <QuestionList folderId={folderId || 1} fileName={fileName} />
         </div>
       </div>
     </main>

@@ -1,6 +1,6 @@
 'use client'
 
-import { folderDelete } from '@/api/services/folder/quries'
+import { folderDelete } from '@/api/services/folder/queries'
 import { Button } from '../../ui/button'
 import { useQueryClient } from '@tanstack/react-query'
 

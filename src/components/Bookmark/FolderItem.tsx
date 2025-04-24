@@ -31,15 +31,15 @@ export const FolderItem = React.memo(
     return (
       <div
         onClick={() => onSelect(folder.folderId)}
-        className={`group cursor-pointer rounded-md transition-colors hover:bg-sky-50 ${
-          isSelected ? 'bg-sky-100' : ''
-        }`}
+        className={`group cursor-pointer rounded-md transition-colors hover:bg-sky-50 ${isSelected ? 'bg-sky-100' : ''} `}
       >
         <div className="flex items-center gap-4 p-3">
           <FolderIcon size={18} />
           <span className="flex-1">{folder.fileName}</span>
 
-          <div className="flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+          <div
+            className={`flex gap-2 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0'} `}
+          >
             <button
               onClick={handleEdit}
               className="cursor-pointer p-1 hover:text-sky-600"

@@ -1,6 +1,6 @@
 'use client'
 
-import { folderUpdate } from '@/api/services/folder/quries'
+import { folderUpdate } from '@/api/services/folder/queries'
 import { Button } from '../../ui/button'
 import { Input } from '../../ui/input'
 import { useForm } from 'react-hook-form'
