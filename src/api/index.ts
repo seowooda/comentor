@@ -96,8 +96,13 @@ export {
 // =============== 폴더 (Folder) ===============
 
 //folder
-export type {
-  FolderResponse,
-  FolderDetailResponse,
-  DefaultResponse,
-} from '@/api/services/folder/model'
+export type { Folder, Questions } from '@/api/services/folder/model'
+export { QuestionStatus, CSCategory } from '@/api/services/folder/model'
+export {
+  folderInfo,
+  folderUpdate,
+  folderDelete,
+  folderQuestions,
+  folderBookmark,
+  folderBookmarkCancel,
+} from '@/api/services/folder/queries'

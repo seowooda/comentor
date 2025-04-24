@@ -1,8 +1,9 @@
 'use client'
 
-import { useModalStore } from '@/store/modalStore'
-import { DeleteFolderModal, EditFolderModal } from './Folder'
 import { useEffect, useState } from 'react'
+import { useModalStore } from '@/store/modalStore'
+import { CreateFolderModal, DeleteFolderModal, EditFolderModal } from './Folder'
+import { ModalProps } from '@/types/modal'
 
 const GlobalModal = () => {
   const { isOpen, modalType, modalProps, closeModal } = useModalStore()
@@ -13,16 +14,45 @@ const GlobalModal = () => {
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true)
-      // 살짝 delay줘서 열릴 때 애니메이션 보이게
       setTimeout(() => setVisible(true), 10)
     } else {
-      // 닫힐 때는 애니메이션 보여주고 나서 제거
       setVisible(false)
-      setTimeout(() => setShouldRender(false), 300) // 트랜지션 길이만큼 기다리기
+      setTimeout(() => setShouldRender(false), 300)
     }
   }, [isOpen])
 
-  if (!shouldRender) return null
+  if (!shouldRender || !modalType) return null
+
+  const renderModal = () => {
+    switch (modalType) {
+      case 'editFolder':
+        return (
+          <EditFolderModal
+            folder={(modalProps as ModalProps['editFolder']).folder}
+            onClose={closeModal}
+          />
+        )
+      case 'deleteFolder':
+        return (
+          <DeleteFolderModal
+            folderId={(modalProps as ModalProps['deleteFolder']).folderId}
+            onClose={closeModal}
+          />
+        )
+      case 'createFolder':
+        const { csQuestionId, onBookmarkDone } =
+          modalProps as ModalProps['createFolder']
+        return (
+          <CreateFolderModal
+            csQuestionId={csQuestionId}
+            onBookmarkDone={onBookmarkDone}
+            onClose={closeModal}
+          />
+        )
+      default:
+        return null
+    }
+  }
 
   return (
     <div
@@ -35,18 +65,7 @@ const GlobalModal = () => {
           visible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
       >
-        {modalType === 'editFolder' && (
-          <EditFolderModal
-            folderId={modalProps?.folderId || null}
-            onClose={closeModal}
-          />
-        )}
-        {modalType === 'deleteFolder' && (
-          <DeleteFolderModal
-            folderId={modalProps?.folderId || null}
-            onClose={closeModal}
-          />
-        )}
+        {renderModal()}
       </div>
     </div>
   )
