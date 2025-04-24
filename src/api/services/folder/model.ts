@@ -36,6 +36,7 @@ export interface FolderBookmark {
 
 export interface Questions {
   questionId: number
+  projectId: number
   question: string
   repoName: string
   fileName: string

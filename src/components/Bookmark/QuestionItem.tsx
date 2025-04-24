@@ -28,7 +28,7 @@ export const QuestionItem = React.memo(
     //질문 클릭 시 질문 기록으로 이동
     const handleClick = () => {
       router.push(
-        `/project/1?tab=question-history&questionId=${question.questionId}`,
+        `/project/${question.projectId}?tab=question-history&questionId=${question.questionId}`,
       )
     }
 
@@ -42,7 +42,7 @@ export const QuestionItem = React.memo(
           <span className="flex items-center gap-1 text-sm">
             {question.repoName} /
             <FileText size={16} className="text-blue-600" />
-            <span className="text-slate-500">{question.repoName}</span>
+            <span className="text-slate-500">{question.fileName}</span>
           </span>
         </div>
         <div>
