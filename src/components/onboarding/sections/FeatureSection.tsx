@@ -30,14 +30,17 @@ export function FeatureSection() {
   const getIconColorByCategory = (category: EFeatureCategory) => {
     switch (category) {
       case EFeatureCategory.PROJECT:
+        return 'blue'
       case EFeatureCategory.FEEDBACK:
         return 'blue'
       case EFeatureCategory.CODE:
+        return 'indigo'
       case EFeatureCategory.RECORD:
         return 'indigo'
       case EFeatureCategory.LEARNING:
-      case EFeatureCategory.ALERT:
         return 'blue'
+      case EFeatureCategory.ALERT:
+        return 'indigo'
       default:
         return 'blue'
     }
