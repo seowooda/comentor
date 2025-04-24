@@ -1,5 +1,3 @@
-'use client'
-
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ONBOARDING_TEXTS, EFeatureCategory } from '../constants'
@@ -50,16 +48,7 @@ export function FeatureSection() {
     <div className="w-full" id="features">
       <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
         <section className="py-12 md:py-16">
-          <motion.div
-            className="w-full"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, margin: '-100px' }}
-            transition={{
-              ease: 'easeOut',
-              duration: 0.8,
-            }}
-          >
+          <div className="w-full">
             <motion.h2
               className="mb-12 text-center text-3xl font-bold tracking-tight text-gray-900 md:text-4xl"
               initial={{ opacity: 0, y: 30 }}
@@ -101,7 +90,13 @@ export function FeatureSection() {
                     },
                   }}
                   whileTap={{ scale: 0.98, transition: { duration: 0.05 } }}
-                  style={{ willChange: 'transform', cursor: 'pointer' }}
+                  style={{
+                    willChange: 'transform',
+                    cursor: 'pointer',
+                    backfaceVisibility: 'hidden',
+                    WebkitFontSmoothing: 'antialiased',
+                    transformStyle: 'preserve-3d',
+                  }}
                 >
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 p-3 transition-transform duration-300 group-hover:scale-110">
                     <ModernIcon
@@ -119,7 +114,7 @@ export function FeatureSection() {
                 </motion.div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </section>
       </div>
     </div>

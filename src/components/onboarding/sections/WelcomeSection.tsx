@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
@@ -52,7 +50,7 @@ export function WelcomeSection() {
         <motion.div
           className="z-10 w-full text-center md:w-1/2 md:text-left"
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: isLoading ? 0 : 1, y: isLoading ? 30 : 0 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{
             duration: 0.7,
             delay: 0.1,
@@ -64,7 +62,7 @@ export function WelcomeSection() {
           <motion.h1
             className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-3xl font-bold tracking-tight break-keep text-transparent sm:text-4xl md:text-5xl lg:text-6xl"
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isLoading ? 0 : 1, y: isLoading ? 30 : 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.7,
               delay: 0.2,
@@ -79,7 +77,7 @@ export function WelcomeSection() {
           <motion.h2
             className="mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-xl font-bold text-transparent sm:text-2xl md:mt-3 lg:text-3xl"
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isLoading ? 0 : 1, y: isLoading ? 30 : 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.7,
               delay: 0.3,
@@ -94,7 +92,7 @@ export function WelcomeSection() {
           <motion.p
             className="mt-4 break-keep text-gray-500 md:mt-6 md:max-w-md"
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isLoading ? 0 : 1, y: isLoading ? 30 : 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.7,
               delay: 0.4,
@@ -110,7 +108,7 @@ export function WelcomeSection() {
             <motion.button
               className="mt-6 flex cursor-pointer items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-white shadow-md md:mt-8"
               initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: isLoading ? 0 : 1, y: isLoading ? 30 : 0 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{
                 duration: 0.7,
                 delay: 0.5,
