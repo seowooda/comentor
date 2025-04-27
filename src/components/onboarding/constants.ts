@@ -59,7 +59,7 @@ export const ONBOARDING_TEXTS = {
 // 애니메이션 에러 메시지
 export const ANIMATION_ERROR_MESSAGES = {
   LOADING_ERROR:
-    '애니메이션을 로드할 수 없습니다. CommitMentor는 계속해서 당신의 CS 학습을 도울 준비가 되어 있습니다.',
+    '애니메이션을 로드할 수 없습니다. 하지만 걱정하지 마세요! CommitMentor는 계속해서 당신의 CS 학습을 도울 준비가 되어 있습니다.',
 }
 
 // 온보딩 애니메이션 설정
