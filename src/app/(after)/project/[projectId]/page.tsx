@@ -1,12 +1,7 @@
-import React from 'react'
-import ProjectDetailPage from '@/components/DetailProject'
+'use client'
 
-interface PageProps {
-  params: {
-    projectId: string
-  }
-}
+import { DetailProject } from '@/components/DetailProject'
 
-export default function ProjectDetailRoute({ params }: PageProps) {
-  return <ProjectDetailPage params={Promise.resolve(params)} />
+export default function ProjectDetailPage() {
+  return <DetailProject />
 }
