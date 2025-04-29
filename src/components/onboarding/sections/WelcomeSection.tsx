@@ -37,7 +37,7 @@ export function WelcomeSection() {
   }, [])
 
   const handleGithubLogin = async () => {
-    const env = process.env.VERCEL ? 'prod' : 'dev'
+    const env = process.env.NEXT_PUBLIC_ENV || 'dev'
 
     const url = `${process.env.NEXT_PUBLIC_SOCIAL_LOGIN_GITHUB}?env=${env}`
     window.location.href = url
