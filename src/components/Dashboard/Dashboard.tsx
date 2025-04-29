@@ -1,16 +1,27 @@
-import { PlusCircle, Check } from 'lucide-react'
+import { PlusCircle, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { DashboardCard } from '../DashboardCard/DashboardCard'
 import { ProjectImportModal } from '../ProjectImportModal'
-import { useProjectList } from '@/api/services/project'
+import { useProjectList } from '@/api'
 import { ProjectFormValues } from '../ProjectImportModal/TitleSelect'
 import type { CardType } from '../DashboardCard/DashboardCard'
+import { Button } from '@/components/ui/button'
 
 const Dashboard = ({ filter }: { filter: string }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [projects, setProjects] = useState<CardType[]>([])
   const [createSuccess, setCreateSuccess] = useState(false)
-  const { data: projectsData, isLoading, refetch } = useProjectList()
+  const [currentPage, setCurrentPage] = useState<number>(0)
+  const [totalPages, setTotalPages] = useState<number>(0)
+
+  const {
+    data: projectsData,
+    isLoading,
+    refetch,
+  } = useProjectList(
+    filter !== 'all' ? (filter as 'PROGRESS' | 'DONE') : undefined,
+    currentPage,
+  )
 
   // 성공 메시지 자동 숨김 타이머
   useEffect(() => {
@@ -25,7 +36,7 @@ const Dashboard = ({ filter }: { filter: string }) => {
   // 프로젝트 데이터 변환 및 필터링
   useEffect(() => {
     if (projectsData?.result) {
-      const formattedProjects = projectsData.result.map((project) => {
+      const formattedProjects = projectsData.result.content.map((project) => {
         return {
           id: project.id, // 백엔드에서 제공하는 프로젝트 ID
           title: project.name || '제목 없음',
@@ -38,14 +49,15 @@ const Dashboard = ({ filter }: { filter: string }) => {
         }
       })
 
-      const filteredProjects =
-        filter === 'all'
-          ? formattedProjects
-          : formattedProjects.filter((project) => project.status === filter)
-
-      setProjects(filteredProjects)
+      setProjects(formattedProjects)
+      setTotalPages(projectsData.result.totalPages)
     }
   }, [projectsData, filter]) // filter가 변경되면 필터링 다시 수행
+
+  // 필터 변경 시 페이지 초기화
+  useEffect(() => {
+    setCurrentPage(0)
+  }, [filter])
 
   const handleModalOpen = () => {
     setIsModalOpen(true)
@@ -71,6 +83,10 @@ const Dashboard = ({ filter }: { filter: string }) => {
     refetch()
   }
 
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage)
+  }
+
   if (isLoading) {
     return (
       <div className="flex h-52 w-full items-center justify-center">
@@ -80,7 +96,7 @@ const Dashboard = ({ filter }: { filter: string }) => {
   }
 
   return (
-    <div className="relative flex w-full flex-wrap items-center justify-center gap-9">
+    <div className="relative flex w-full flex-col items-center justify-center gap-9">
       {/* 프로젝트 생성 성공 알림 */}
       {createSuccess && (
         <div className="fixed top-5 left-1/2 z-50 -translate-x-1/2 transform">
@@ -93,7 +109,7 @@ const Dashboard = ({ filter }: { filter: string }) => {
         </div>
       )}
 
-      <div className="card-grid-2:grid-cols-2 card-grid-3:grid-cols-3 card-grid-4:grid-cols-4 card-grid-5:grid-cols-5 grid grid-cols-1 gap-9">
+      <div className="card-grid-2:grid-cols-2 card-grid-3:grid-cols-3 card-grid-4:grid-cols-4 grid grid-cols-1 gap-9">
         {projects.length > 0 ? (
           <>
             {projects.map((project) => (
@@ -127,6 +143,42 @@ const Dashboard = ({ filter }: { filter: string }) => {
           </div>
         )}
       </div>
+
+      {/* 페이지네이션 컨트롤 */}
+      {totalPages > 1 && (
+        <div className="mt-8 flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => handlePageChange(Math.max(0, currentPage - 1))}
+            disabled={currentPage === 0}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+
+          {Array.from({ length: totalPages }, (_, i) => (
+            <Button
+              key={i}
+              variant={currentPage === i ? 'default' : 'outline'}
+              className="h-8 w-8"
+              onClick={() => handlePageChange(i)}
+            >
+              {i + 1}
+            </Button>
+          ))}
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() =>
+              handlePageChange(Math.min(totalPages - 1, currentPage + 1))
+            }
+            disabled={currentPage === totalPages - 1}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       {isModalOpen && (
         <ProjectImportModal

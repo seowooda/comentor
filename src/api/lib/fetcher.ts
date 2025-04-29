@@ -6,16 +6,18 @@ import {
   UseMutationOptions,
 } from '@tanstack/react-query'
 
-const fetcher = async <T>(
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
+export const fetcher = async <T>(
   url: string,
   options: RequestInit = {},
-  retry = true, // 🔹 재시도 여부를 판단하는 플래그 추가
+  retry = true,
 ): Promise<T> => {
   const { accessToken, refreshToken, setAccessToken, clearAuth } =
     useAuthStore.getState()
 
   const fetchRequest = async (token: string | null): Promise<T> => {
-    const response = await fetch(`/api/${url}`, {
+    const response = await fetch(`/api${url}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -24,14 +26,21 @@ const fetcher = async <T>(
       },
     })
 
-    // 🔹 401 또는 403 에러가 발생하면 토큰 갱신을 시도
-    if ((response.status === 403 || response.status === 401) && retry) {
+    // 🔹 인증 실패 시 토큰 재발급 시도
+    if (response.status === 401 || response.status === 403) {
+      if (!retry) {
+        // 이미 재시도 한 번 했는데도 실패했다면, 로그인 해제
+        clearAuth()
+        throw new Error('인증이 만료되었습니다. 다시 로그인해 주세요.')
+      }
+
+      // refreshToken 없으면 그냥 종료
       if (!refreshToken) {
         clearAuth()
         throw new Error('토큰이 만료되었습니다. 다시 로그인해 주세요.')
       }
 
-      // ✅ accessToken 갱신 요청
+      // 🔁 accessToken 재발급 시도
       const refreshResponse = await fetch('/api/user/refresh', {
         method: 'POST',
         headers: {
@@ -42,20 +51,20 @@ const fetcher = async <T>(
 
       if (!refreshResponse.ok) {
         clearAuth()
-        throw new Error('토큰이 만료되었습니다. 다시 로그인해 주세요.')
+        throw new Error('토큰 재발급 실패. 다시 로그인해 주세요.')
       }
 
       const data = await refreshResponse.json()
 
       if (!data.result) {
         clearAuth()
-        throw new Error('토큰 갱신 실패. 다시 로그인해 주세요.')
+        throw new Error('토큰 재발급 실패. 다시 로그인해 주세요.')
       }
 
-      // ✅ 새로운 accessToken 저장
+      // 🆕 새 accessToken 저장
       setAccessToken(data.result)
 
-      // ✅ 새로운 accessToken으로 원래 요청 재시도 (retry=false로 설정)
+      // ✅ 한 번만 재시도
       return await fetcher<T>(url, options, false)
     }
 
@@ -77,7 +86,7 @@ export const useGetQuery = <T>(
   return useQuery<T, Error>({
     queryKey,
     queryFn: () => fetcher<T>(url, { method: 'GET' }),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5, // 5분 캐시
     ...options,
   })
 }

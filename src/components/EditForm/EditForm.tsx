@@ -13,7 +13,7 @@ import { stackNames, User } from '@/api'
 import { useGetQuery, usePutMutation } from '@/api/lib/fetcher'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { UserResponse } from '@/api/services/user/model'
+import { UserResponse } from '@/api'
 import { useAuthStore } from '@/store/authStore'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -79,7 +79,7 @@ export const EditForm = () => {
   }
 
   return (
-    <section className="flex w-[550px] flex-col gap-10">
+    <section className="flex w-[550px] min-w-[450px] flex-col gap-10">
       <div className="flex flex-col gap-5 rounded-[15px] border border-slate-400 px-[30px] py-5 shadow">
         <h1 className="text-[25px] font-semibold text-slate-800">
           깃허브 계정

@@ -11,7 +11,8 @@ import { ModalButtons } from '../ProjectImportModal/ModalButtons'
 import { Form, FormField } from '@/components/ui/form'
 import { z } from 'zod'
 import { useState, useEffect } from 'react'
-import { useProjectUpdate, ProjectUpdateRequest } from '@/api/services/project'
+import { useProjectUpdate } from '@/api'
+import { ProjectUpdateRequest } from '@/api/services/project'
 
 // 프로젝트 수정 폼 스키마
 const ProjectEditSchema = z.object({
@@ -83,7 +84,9 @@ export const ProjectEditModal = ({
       title: '', // 폼 제출 시 필요하지만 실제로 사용하지 않음
       description: initialData.description || '',
       role: initialData.role || '',
-      status: initialData.status === 'PROGRESS' ? 'in_progress' : 'completed',
+      status: initialData.status.toLowerCase().includes('progress')
+        ? 'in_progress'
+        : 'completed',
     },
   })
 
