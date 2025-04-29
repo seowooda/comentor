@@ -3,7 +3,7 @@
 import { BookmarkIcon, FileText } from 'lucide-react'
 import clsx from 'clsx'
 import { Questions, QuestionStatus } from '@/api'
-import { mapCS, mapStatus } from './lib/mapEnum'
+import { mapCS, mapStatus } from '../../lib/mapEnum'
 import React from 'react'
 import { useRouter } from 'next/navigation'
 

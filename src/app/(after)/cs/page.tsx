@@ -1,5 +1,8 @@
+'use client'
+
 import { CSCard } from '@/components/CS/CSCard'
 import { ChevronRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function Page() {
   const contents = [
@@ -50,6 +53,8 @@ export default function Page() {
     {},
   )
 
+  const router = useRouter()
+
   return (
     <main className="flex flex-grow flex-col items-center gap-10 py-10">
       {/* 오늘의 CS 질문 */}
@@ -65,7 +70,10 @@ export default function Page() {
 
       {/* 날짜별 질문 내역 */}
       <section className="flex flex-col gap-5">
-        <div className="flex gap-1">
+        <div
+          className="flex cursor-pointer gap-1"
+          onClick={() => router.push('/cs/history')}
+        >
           <p className="text-xl leading-5 font-bold">날짜별 질문 내역 조회</p>
           <ChevronRight size={24} />
         </div>
