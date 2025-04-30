@@ -6,7 +6,6 @@
 // =============== 사용자 (User) ===============
 // 타입
 export type { User, UserResponse } from '@/api/services/user/model'
-export { stackNames } from '@/api/services/user/model'
 
 // =============== 프로젝트 (Project) ===============
 
@@ -97,7 +96,6 @@ export {
 
 //folder
 export type { Folder, Questions } from '@/api/services/folder/model'
-export { QuestionStatus, CSCategory } from '@/api/services/folder/model'
 export {
   folderInfo,
   folderUpdate,
@@ -106,3 +104,6 @@ export {
   folderBookmark,
   folderBookmarkCancel,
 } from '@/api/services/folder/queries'
+
+export type { CSQuestionList, CSQuestionDetail } from '@/api/services/CS/model'
+export { getCSQuestion, getCSQuestionDetail } from '@/api/services/CS/queries'

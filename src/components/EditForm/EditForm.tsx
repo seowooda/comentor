@@ -9,21 +9,22 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form } from '../ui/form'
 import { useForm } from 'react-hook-form'
-import { stackNames, User } from '@/api'
+import { User } from '@/api'
 import { useGetQuery, usePutMutation } from '@/api/lib/fetcher'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { UserResponse } from '@/api'
 import { useAuthStore } from '@/store/authStore'
 import { useQueryClient } from '@tanstack/react-query'
+import { Stack } from '@/api/types/common'
 
 const notificationOptions = [
   { value: 'agree', label: '알림 허용' },
   { value: 'deny', label: '알림 거부' },
 ]
 
-const techStackOptions = Object.keys(stackNames).map((key) => ({
-  id: stackNames[key as keyof typeof stackNames],
+const techStackOptions = Object.keys(Stack).map((key) => ({
+  id: Stack[key as keyof typeof Stack],
   label: key,
 }))
 

@@ -3,8 +3,13 @@ import { Tabs, TabsList, TabsTrigger } from '../ui/tabs'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import { ContentCard } from './ContentCard'
+import { CSQuestionDetail } from '@/api'
 
-export const CSSolve = () => {
+interface CSSolveProps {
+  question: CSQuestionDetail
+}
+
+export const CSSolve = ({ question }: CSSolveProps) => {
   return (
     <Tabs defaultValue="challenge" className="flex w-[800px] flex-col gap-5">
       <TabsList className="w-full">
@@ -15,7 +20,7 @@ export const CSSolve = () => {
       <TabsContent value="challenge">
         <div className="flex flex-col gap-5">
           <ContentCard title="질문">
-            <p className="font-medium">OOP의 5가지 설계 원칙은?</p>
+            <p className="font-medium">{question.question}</p>
           </ContentCard>
 
           <ContentCard title="답변">

@@ -1,4 +1,4 @@
-import { CSCategory, QuestionStatus } from '@/api'
+import { CSCategory, QuestionStatus } from '@/api/types/common'
 
 // 한글로 변환하는 함수
 export const mapCS = (category: CSCategory): string => {

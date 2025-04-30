@@ -1,17 +1,4 @@
-export enum QuestionStatus {
-  DONE = 'DONE',
-  TODO = 'TODO',
-}
-
-export enum CSCategory {
-  DATA_STRUCTURE_ALGORITHM = 'DATA_STRUCTURE_ALGORITHM',
-  OPERATING_SYSTEMS = 'OPERATING_SYSTEMS',
-  NETWORK = 'NETWORK',
-  DATABASE = 'DATABASE',
-  SECURITY = 'SECURITY',
-  LANGUAGE_AND_DEVELOPMENT_PRINCIPLES = 'LANGUAGE_AND_DEVELOPMENT_PRINCIPLES',
-  ETC = 'ETC',
-}
+import { CSCategory, QuestionStatus } from '@/api/types/common'
 
 export interface DefaultResponse {
   code: number

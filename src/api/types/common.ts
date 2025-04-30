@@ -1,0 +1,21 @@
+export enum Stack {
+  프론트엔드 = 'FRONTEND',
+  백엔드 = 'BACKEND',
+  데이터베이스 = 'DB',
+  알고리즘 = 'ALGORITHM',
+}
+
+export enum QuestionStatus {
+  DONE = 'DONE',
+  TODO = 'TODO',
+}
+
+export enum CSCategory {
+  DATA_STRUCTURE_ALGORITHM = 'DATA_STRUCTURE_ALGORITHM',
+  OPERATING_SYSTEMS = 'OPERATING_SYSTEMS',
+  NETWORK = 'NETWORK',
+  DATABASE = 'DATABASE',
+  SECURITY = 'SECURITY',
+  LANGUAGE_AND_DEVELOPMENT_PRINCIPLES = 'LANGUAGE_AND_DEVELOPMENT_PRINCIPLES',
+  ETC = 'ETC',
+}

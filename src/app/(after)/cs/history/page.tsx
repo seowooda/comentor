@@ -1,21 +1,36 @@
 'use client'
 
-import { CSCategory } from '@/api'
+import { CSCard } from '@/components/CS/CSCard'
+import { CSCategory } from '@/api/types/common'
 import { mapCS } from '@/lib/mapEnum'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { getCSQuestion } from '@/api'
 
 export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState<CSCategory | null>(
     null,
   )
+  const { data } = getCSQuestion(0)
+
+  const filteredContent = useMemo(() => {
+    if (!data?.result.content) return []
+
+    return data.result.content
+      .map(({ date, questions }) => {
+        const filteredQuestions = selectedCategory
+          ? questions.filter((q) => q.csCategory === selectedCategory)
+          : questions
+        return { date, questions: filteredQuestions }
+      })
+      .filter((group) => group.questions.length > 0) // 질문이 없는 날짜는 제거
+  }, [data, selectedCategory])
 
   return (
-    <main className="flex flex-col gap-4">
+    <main className="flex flex-col gap-6 px-40 py-10">
       <h2 className="text-2xl font-bold">날짜별 질문 내역</h2>
 
       {/* 카테고리 버튼 목록 */}
       <div className="flex flex-wrap gap-3">
-        {/* 전체 버튼 */}
         <button
           onClick={() => setSelectedCategory(null)}
           className={`rounded-[20px] px-3 py-1 text-sm ${
@@ -27,7 +42,6 @@ export default function Page() {
           전체
         </button>
 
-        {/* 개별 카테고리 버튼 */}
         {Object.values(CSCategory).map((category) => (
           <button
             key={category}
@@ -42,12 +56,6 @@ export default function Page() {
           </button>
         ))}
       </div>
-
-      {/* 선택된 필터 출력 예시 (개발 확인용) */}
-      <p className="text-sm text-slate-600">
-        현재 선택된 카테고리:{' '}
-        {selectedCategory ? mapCS(selectedCategory) : '전체'}
-      </p>
     </main>
   )
 }
