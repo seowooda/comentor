@@ -18,7 +18,8 @@ export interface FolderResponse {
 
 export interface FolderBookmark {
   fileName: string
-  csQuestionId: number
+  questionId?: number
+  csQuestionId?: number
 }
 
 export interface Questions {

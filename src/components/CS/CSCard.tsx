@@ -3,7 +3,7 @@ import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
 import { useModalStore } from '@/store/modalStore'
 import { useState } from 'react'
-import { CSQuestionList } from '@/api'
+import { CSQuestionList, folderBookmarkCancel } from '@/api'
 import { mapCS } from '@/lib/mapEnum'
 
 interface CSCardProps extends CSQuestionList {}
@@ -18,6 +18,7 @@ export const CSCard = ({
   const router = useRouter()
   const { openModal } = useModalStore()
   const [bookmarked, setBookmarked] = useState(false)
+  const { mutate: cancelBookmark } = folderBookmarkCancel()
 
   const handleClick = () => {
     router.push(`/cs/solve/${csQuestionId}`)
@@ -25,8 +26,15 @@ export const CSCard = ({
 
   const handleBookmarkClick = () => {
     if (bookmarked) {
-      setBookmarked(false)
+      // 북마크 취소 API 호출
+      cancelBookmark(
+        { csQuestionId, fileName: 'hi' },
+        {
+          onSuccess: () => setBookmarked(false),
+        },
+      )
     } else {
+      // 폴더 선택 모달 열기
       openModal('createFolder', {
         csQuestionId,
         onBookmarkDone: () => setBookmarked(true),
@@ -42,8 +50,10 @@ export const CSCard = ({
           <button className="cursor-pointer p-1">
             <Bookmark
               size={20}
-              className="text-slate-500"
               onClick={handleBookmarkClick}
+              className={`cursor-pointer ${
+                bookmarked ? 'fill-slate-500 text-slate-500' : 'text-slate-500'
+              }`}
             />
           </button>
         </div>
