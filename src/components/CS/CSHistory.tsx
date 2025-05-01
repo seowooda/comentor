@@ -38,11 +38,12 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
                         {mapCS(item.csCategory)}
                       </p>
                     </div>
-                    <BookmarkIcon
-                      onClick={() => handleBookmarkClick(item.csQuestionId)}
-                      size={18}
-                      className="cursor-pointer"
-                    />
+                    <button className="cursor-pointer p-1">
+                      <BookmarkIcon
+                        onClick={() => handleBookmarkClick(item.csQuestionId)}
+                        size={18}
+                      />
+                    </button>
                   </div>
                   <p className="pr-4 text-lg font-medium">{item.question}</p>
                 </div>

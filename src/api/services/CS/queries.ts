@@ -14,7 +14,6 @@ export const getCSQuestion = (page: number) => {
     `/question/list?page=${page}`,
     {
       enabled: page !== undefined,
-      staleTime: 0,
     },
   )
 }
@@ -35,10 +34,9 @@ export const useInfiniteQuestions = (category?: CSCategory | null) => {
       })
       if (category) query.append('csCategory', category)
 
-      return await fetcher<CSQuestionResponse>(
-        `/question/list?${query}`,
-        { method: 'GET' },
-      )
+      return await fetcher<CSQuestionResponse>(`/question/list?${query}`, {
+        method: 'GET',
+      })
     },
     getNextPageParam: (lastPage) => {
       const { currentPage, totalPages } = lastPage.result
@@ -46,6 +44,7 @@ export const useInfiniteQuestions = (category?: CSCategory | null) => {
     },
     initialPageParam: 0,
     staleTime: 1000 * 60 * 5,
+    refetchOnMount: false,
   })
 }
 

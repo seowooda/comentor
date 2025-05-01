@@ -105,5 +105,10 @@ export {
   folderBookmarkCancel,
 } from '@/api/services/folder/queries'
 
-export type { CSQuestionList, CSQuestionDetail } from '@/api/services/CS/model'
-export { getCSQuestion, getCSQuestionDetail } from '@/api/services/CS/queries'
+export type { CSQuestionList, CSQuestionDetail, CSAnswer } from '@/api/services/CS/model'
+export {
+  getCSQuestion,
+  getCSQuestionDetail,
+  useInfiniteQuestions,
+  useCSFeedback,
+} from '@/api/services/CS/queries'

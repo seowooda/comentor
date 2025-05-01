@@ -4,31 +4,30 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import { ContentCard } from './ContentCard'
-import { CSQuestionDetail, getCSQuestionDetail } from '@/api'
+import { getCSQuestionDetail, useCSFeedback } from '@/api'
 import { useState } from 'react'
-import { useCSFeedback } from '@/api/services/CS/queries'
 import { Loader2 } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
-import ReactMarkdown from 'react-markdown'
+import { AnswerList } from './AnswerList'
+import { FeedbackList } from './FeedbackList'
 
 interface CSSolveProps {
-  question: CSQuestionDetail
+  id: number
 }
 
-export const CSSolve = ({ question }: CSSolveProps) => {
+export const CSSolve = ({ id }: CSSolveProps) => {
   const [answer, setAnswer] = useState('')
   const [tab, setTab] = useState<'challenge' | 'solution'>('challenge')
   const queryClient = useQueryClient()
 
+  const { data, isLoading } = getCSQuestionDetail(id)
+  const question = data?.result
+  
   const { mutate, isPending } = useCSFeedback()
 
-  // 간단한 마크다운 문법 자동 보정
-  const formatAsMarkdown = (text: string) => {
-    return text
-      .replace(/(정확한 답변:)/g, '\n\n### $1\n\n')
-      .replace(/(보완점:)/g, '\n\n### $1\n\n')
-      .replace(/예를 들어,/g, '\n\n- 예를 들어,')
-  }
+    if (isLoading || !question) {
+      return <div>Loading...</div>
+    }
 
   const handleSubmit = () => {
     mutate(
@@ -39,7 +38,8 @@ export const CSSolve = ({ question }: CSSolveProps) => {
       {
         onSuccess: async () => {
           setAnswer('')
-          setTab('solution') 
+          setTab('solution')
+          
           // ✅ 최신 답변/피드백을 위해 데이터 강제 새로고침
           await queryClient.invalidateQueries({
             queryKey: ['cs-question', question.csQuestionId.toString()],
@@ -104,45 +104,23 @@ export const CSSolve = ({ question }: CSSolveProps) => {
       {/* 답변보기 탭 */}
       <TabsContent value="solution">
         <div className="flex flex-col gap-5">
-          <ContentCard title="질문">
-            <p className="font-medium">{question.question}</p>
-          </ContentCard>
-
           <ContentCard
-            title="답변"
+            title="질문"
             stack={
               <p className="rounded-3xl bg-green-100 px-3 py-1 text-sm text-green-600">
                 {question.stack}
               </p>
             }
           >
-            {userAnswers.length > 0 ? (
-              <div className="flex flex-col gap-2">
-                {userAnswers.map((a, idx) => (
-                  <p key={idx} className="font-medium">
-                    {a.content}
-                  </p>
-                ))}
-              </div>
-            ) : (
-              <p className="text-slate-500">아직 제출된 답변이 없습니다.</p>
-            )}
+            <p className="font-medium">{question.question}</p>
+          </ContentCard>
+
+          <ContentCard title="답변">
+            <AnswerList answers={userAnswers} />
           </ContentCard>
 
           <ContentCard title="피드백">
-            {aiFeedbacks.length > 0 ? (
-              <div className="flex flex-col gap-2">
-                {aiFeedbacks.map((a, idx) => (
-                  <ReactMarkdown key={idx}>
-                    {formatAsMarkdown(a.content)}
-                  </ReactMarkdown>
-                ))}
-              </div>
-            ) : (
-              <p className="text-slate-500">
-                📝 답변을 하고 피드백을 받아보세요.
-              </p>
-            )}
+            <FeedbackList feedbacks={aiFeedbacks} />
           </ContentCard>
         </div>
       </TabsContent>

@@ -58,16 +58,16 @@ export default function Page() {
           </button>
         ))}
       </div>
-      {/* ✅ 로딩 상태일 때 스켈레톤 보여주기 */}
-      {isLoading ? <CSHistorySkeleton /> : <CSHistory data={data} />}
+
+      {/* ✅ 처음 로딩 또는 다음 페이지 로딩 시 스켈레톤 조건부 렌더링 */}
+      {selectedCategory === null && (isLoading || isFetchingNextPage) && (
+        <CSHistorySkeleton />
+      )}
+
+      {/* ✅ 실제 데이터 렌더링 */}
+      {!isLoading && <CSHistory data={data} />}
 
       <div ref={bottomRef} />
-
-      {isFetchingNextPage && (
-        <p className="mt-2 text-center text-sm text-slate-400">
-          불러오는 중...
-        </p>
-      )}
     </main>
   )
 }
