@@ -1,6 +1,12 @@
-import { fetcher, useGetQuery } from '@/api/lib/fetcher'
-import { CSQuestionDetailResponse, CSQuestionResponse } from './model'
+import { fetcher, useGetQuery, usePostMutation } from '@/api/lib/fetcher'
+import {
+  CSFeedback,
+  CSFeedbackResponse,
+  CSQuestionDetailResponse,
+  CSQuestionResponse,
+} from './model'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { CSCategory } from '@/api/types/common'
 
 export const getCSQuestion = (page: number) => {
   return useGetQuery<CSQuestionResponse>(
@@ -20,15 +26,18 @@ export const getCSQuestionDetail = (csQuestionId: number) => {
   )
 }
 
-export const useInfiniteQuestions = () => {
+export const useInfiniteQuestions = (category?: CSCategory | null) => {
   return useInfiniteQuery<CSQuestionResponse>({
-    queryKey: ['cs-question-infinite'],
+    queryKey: ['cs-question-infinite', category],
     queryFn: async ({ pageParam = 0 }) => {
+      const query = new URLSearchParams({
+        page: pageParam as string,
+      })
+      if (category) query.append('csCategory', category)
+
       return await fetcher<CSQuestionResponse>(
-        `/question/list?page=${pageParam}`,
-        {
-          method: 'GET',
-        },
+        `/question/list?${query}`,
+        { method: 'GET' },
       )
     },
     getNextPageParam: (lastPage) => {
@@ -36,6 +45,10 @@ export const useInfiniteQuestions = () => {
       return currentPage < totalPages - 1 ? currentPage + 1 : undefined
     },
     initialPageParam: 0,
-    staleTime: 1000 * 60 * 5, // optional: 5분 캐시
+    staleTime: 1000 * 60 * 5,
   })
+}
+
+export const useCSFeedback = () => {
+  return usePostMutation<CSFeedbackResponse, CSFeedback>('/feedback/CS')
 }

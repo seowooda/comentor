@@ -4,8 +4,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import { ContentCard } from './ContentCard'
-import { CSQuestionDetail } from '@/api'
+import { CSQuestionDetail, getCSQuestionDetail } from '@/api'
 import { useState } from 'react'
+import { useCSFeedback } from '@/api/services/CS/queries'
+import { Loader2 } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
+import ReactMarkdown from 'react-markdown'
 
 interface CSSolveProps {
   question: CSQuestionDetail
@@ -13,11 +17,47 @@ interface CSSolveProps {
 
 export const CSSolve = ({ question }: CSSolveProps) => {
   const [answer, setAnswer] = useState('')
+  const [tab, setTab] = useState<'challenge' | 'solution'>('challenge')
+  const queryClient = useQueryClient()
+
+  const { mutate, isPending } = useCSFeedback()
+
+  // 간단한 마크다운 문법 자동 보정
+  const formatAsMarkdown = (text: string) => {
+    return text
+      .replace(/(정확한 답변:)/g, '\n\n### $1\n\n')
+      .replace(/(보완점:)/g, '\n\n### $1\n\n')
+      .replace(/예를 들어,/g, '\n\n- 예를 들어,')
+  }
+
+  const handleSubmit = () => {
+    mutate(
+      {
+        csQuestionId: question.csQuestionId,
+        answer: answer.trim(),
+      },
+      {
+        onSuccess: async () => {
+          setAnswer('')
+          setTab('solution') 
+          // ✅ 최신 답변/피드백을 위해 데이터 강제 새로고침
+          await queryClient.invalidateQueries({
+            queryKey: ['cs-question', question.csQuestionId.toString()],
+          })
+        },
+      },
+    )
+  }
+
   const userAnswers = question.answers.filter((a) => a.author === 'USER')
   const aiFeedbacks = question.answers.filter((a) => a.author === 'AI')
 
   return (
-    <Tabs defaultValue="challenge" className="flex w-[800px] flex-col gap-5">
+    <Tabs
+      value={tab}
+      onValueChange={(v) => setTab(v as typeof tab)}
+      className="flex w-[800px] flex-col gap-5"
+    >
       <TabsList className="w-full">
         <TabsTrigger value="challenge">도전하기</TabsTrigger>
         <TabsTrigger value="solution">답변보기</TabsTrigger>
@@ -47,8 +87,15 @@ export const CSSolve = ({ question }: CSSolveProps) => {
           </ContentCard>
 
           <div className="flex justify-end">
-            <Button className="w-24" disabled={answer.trim().length === 0}>
-              답변 제출
+            <Button
+              className="flex w-24 items-center justify-center gap-1"
+              disabled={answer.trim().length === 0 || isPending}
+              onClick={handleSubmit}
+            >
+              {isPending && (
+                <Loader2 className="animate-spin text-slate-500" size={16} />
+              )}
+              {isPending ? '제출 중...' : '답변 제출'}
             </Button>
           </div>
         </div>
@@ -82,23 +129,21 @@ export const CSSolve = ({ question }: CSSolveProps) => {
             )}
           </ContentCard>
 
-          {aiFeedbacks.length > 0 ? (
-            <ContentCard title="피드백">
+          <ContentCard title="피드백">
+            {aiFeedbacks.length > 0 ? (
               <div className="flex flex-col gap-2">
                 {aiFeedbacks.map((a, idx) => (
-                  <p key={idx} className="font-medium">
-                    {a.content}
-                  </p>
+                  <ReactMarkdown key={idx}>
+                    {formatAsMarkdown(a.content)}
+                  </ReactMarkdown>
                 ))}
               </div>
-            </ContentCard>
-          ) : (
-            <ContentCard title="피드백">
+            ) : (
               <p className="text-slate-500">
                 📝 답변을 하고 피드백을 받아보세요.
               </p>
-            </ContentCard>
-          )}
+            )}
+          </ContentCard>
         </div>
       </TabsContent>
     </Tabs>

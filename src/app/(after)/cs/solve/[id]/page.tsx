@@ -13,7 +13,7 @@ export default function SolvePage() {
   }
 
   return (
-    <main className="flex flex-grow flex-col items-center gap-5 px-40 py-5">
+    <main className="flex flex-col items-center justify-center gap-5 px-40 py-5">
       <h3 className="text-2xl font-bold">CS 연습</h3>
       <CSSolve question={data.result} />
     </main>

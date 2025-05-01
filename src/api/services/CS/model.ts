@@ -45,3 +45,14 @@ export interface CSQuestionDetailResponse {
   message: string
   result: CSQuestionDetail
 }
+
+export interface CSFeedback {
+  answer: string
+  csQuestionId: number
+}
+
+export interface CSFeedbackResponse {
+  code: number
+  message: string
+  result: string
+}

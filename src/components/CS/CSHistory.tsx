@@ -1,7 +1,7 @@
 import { BookmarkIcon } from 'lucide-react'
 import { Button } from '../ui/button'
 import { useModalStore } from '@/store/modalStore'
-import {  CSQuestionResponse } from '@/api/services/CS/model'
+import { CSQuestionResponse } from '@/api/services/CS/model'
 import { mapCS } from '@/lib/mapEnum'
 import { InfiniteData } from '@tanstack/react-query'
 
@@ -28,7 +28,7 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
             {questions.map((item) => (
               <div
                 key={item.csQuestionId}
-                className="flex w-full flex-col gap-4 border-b border-slate-300 py-4"
+                className="flex flex-col gap-4 border-b border-slate-300 py-4"
               >
                 <div className="flex flex-col gap-5 px-5">
                   <div className="flex items-center justify-between">
@@ -44,7 +44,7 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
                       className="cursor-pointer"
                     />
                   </div>
-                  <p className="text-lg font-medium">{item.question}</p>
+                  <p className="pr-4 text-lg font-medium">{item.question}</p>
                 </div>
                 <div className="flex justify-end">
                   <Button variant="ghost" className="border border-slate-300">

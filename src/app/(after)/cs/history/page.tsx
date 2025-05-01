@@ -13,7 +13,7 @@ export default function Page() {
   )
 
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuestions()
+    useInfiniteQuestions(selectedCategory)
 
   const bottomRef = useRef(null)
 
@@ -25,7 +25,7 @@ export default function Page() {
     })
     if (bottomRef.current) observer.observe(bottomRef.current)
     return () => observer.disconnect()
-  }, [hasNextPage])
+  }, [hasNextPage, isFetchingNextPage, selectedCategory])
 
   return (
     <main className="flex flex-col gap-6 px-40 py-10">
