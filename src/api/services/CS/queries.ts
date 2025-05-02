@@ -14,6 +14,7 @@ export const getCSQuestion = (page: number) => {
     `/question/list?page=${page}`,
     {
       enabled: page !== undefined,
+      refetchOnMount: true
     },
   )
 }
@@ -44,7 +45,7 @@ export const useInfiniteQuestions = (category?: CSCategory | null) => {
     },
     initialPageParam: 0,
     staleTime: 1000 * 60 * 5,
-    refetchOnMount: false,
+    refetchOnMount: true,
   })
 }
 

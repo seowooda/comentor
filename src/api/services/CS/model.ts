@@ -6,6 +6,7 @@ export interface CSQuestionList {
   stack: Stack
   csCategory: CSCategory
   questionStatus: QuestionStatus
+  fileName?: string
 }
 
 export interface CSDateGroup {
@@ -38,6 +39,7 @@ export interface CSQuestionDetail {
   stack: Stack
   csCategory: CSCategory
   answers: CSAnswer[]
+  fileName?: string
 }
 
 export interface CSQuestionDetailResponse {

@@ -2,9 +2,9 @@ import { Bookmark } from 'lucide-react'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
 import { useModalStore } from '@/store/modalStore'
-import { useState } from 'react'
 import { CSQuestionList, folderBookmarkCancel } from '@/api'
 import { mapCS } from '@/lib/mapEnum'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface CSCardProps {
   csQuestion: CSQuestionList
@@ -12,28 +12,36 @@ interface CSCardProps {
 
 export const CSCard = ({ csQuestion }: CSCardProps) => {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { openModal } = useModalStore()
-  const [bookmarked, setBookmarked] = useState(false)
   const { mutate: cancelBookmark } = folderBookmarkCancel()
+  const isBookmarked = !!csQuestion.fileName
 
   const handleClick = () => {
     router.push(`/cs/solve/${csQuestion.csQuestionId}`)
   }
 
   const handleBookmarkClick = () => {
-    if (bookmarked) {
+    if (isBookmarked) {
       // 북마크 취소 API 호출
       cancelBookmark(
-        { csQuestionId: csQuestion.csQuestionId, fileName: 'hi' },
         {
-          onSuccess: () => setBookmarked(false),
+          csQuestionId: csQuestion.csQuestionId,
+          fileName: csQuestion.fileName!,
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['CS Dashboard', '0'] })
+          },
         },
       )
     } else {
       // 폴더 선택 모달 열기
       openModal('createFolder', {
         csQuestionId: csQuestion.csQuestionId,
-        onBookmarkDone: () => setBookmarked(true),
+        onBookmarkDone: () => {
+          queryClient.invalidateQueries({ queryKey: ['CS Dashboard', '0'] })
+        },
       })
     }
   }
@@ -48,7 +56,9 @@ export const CSCard = ({ csQuestion }: CSCardProps) => {
               size={20}
               onClick={handleBookmarkClick}
               className={`cursor-pointer ${
-                bookmarked ? 'fill-slate-500 text-slate-500' : 'text-slate-500'
+                isBookmarked
+                  ? 'fill-yellow-500 text-yellow-500 hover:fill-yellow-400 hover:text-yellow-400 hover:transition-colors'
+                  : 'text-yellow-400'
               }`}
             />
           </button>
