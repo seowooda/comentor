@@ -4,6 +4,7 @@ import { useModalStore } from '@/store/modalStore'
 import { CSQuestionResponse } from '@/api/services/CS/model'
 import { mapCS } from '@/lib/mapEnum'
 import { InfiniteData } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 
 interface CSHistoryProps {
   data: InfiniteData<CSQuestionResponse> | undefined
@@ -11,12 +12,17 @@ interface CSHistoryProps {
 
 export const CSHistory = ({ data }: CSHistoryProps) => {
   const { openModal } = useModalStore()
+  const router = useRouter()
 
   const handleBookmarkClick = (csQuestionId: number) => {
     openModal('createFolder', {
       csQuestionId,
       onBookmarkDone: () => {},
     })
+  }
+
+  const handleclick = (csQuestionId: number) => {
+    router.push(`/cs/solve/${csQuestionId}`)
   }
 
   return (
@@ -48,7 +54,11 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
                   <p className="pr-4 text-lg font-medium">{item.question}</p>
                 </div>
                 <div className="flex justify-end">
-                  <Button variant="ghost" className="border border-slate-300">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleclick(item.csQuestionId)}
+                    className="border border-slate-300"
+                  >
                     {item.questionStatus === 'DONE' ? '다시 풀기' : '도전하기'}
                   </Button>
                 </div>

@@ -111,4 +111,5 @@ export {
   getCSQuestionDetail,
   useInfiniteQuestions,
   useCSFeedback,
+  useCSRetryFeedback,
 } from '@/api/services/CS/queries'

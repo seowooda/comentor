@@ -51,3 +51,7 @@ export const useInfiniteQuestions = (category?: CSCategory | null) => {
 export const useCSFeedback = () => {
   return usePostMutation<CSFeedbackResponse, CSFeedback>('/feedback/CS')
 }
+
+export const useCSRetryFeedback = () => {
+  return usePostMutation<CSFeedbackResponse, CSFeedback>('/feedback/CS/retry')
+}

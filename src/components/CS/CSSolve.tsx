@@ -4,8 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import { ContentCard } from './ContentCard'
-import { getCSQuestionDetail, useCSFeedback } from '@/api'
-import { useState } from 'react'
+import { getCSQuestionDetail, useCSFeedback, useCSRetryFeedback } from '@/api'
+import { useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { AnswerList } from './AnswerList'
@@ -18,35 +18,40 @@ interface CSSolveProps {
 export const CSSolve = ({ id }: CSSolveProps) => {
   const [answer, setAnswer] = useState('')
   const [tab, setTab] = useState<'challenge' | 'solution'>('challenge')
+  const feedbackRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
 
   const { data, isLoading } = getCSQuestionDetail(id)
   const question = data?.result
-  
-  const { mutate, isPending } = useCSFeedback()
 
-    if (isLoading || !question) {
-      return <div>Loading...</div>
-    }
+  const { mutate: submitFeedback, isPending: isSubmitting } = useCSFeedback()
+  const { mutate: retryFeedback, isPending: isRetrying } = useCSRetryFeedback()
+
+  if (isLoading || !question) return null
 
   const handleSubmit = () => {
-    mutate(
-      {
-        csQuestionId: question.csQuestionId,
-        answer: answer.trim(),
-      },
-      {
-        onSuccess: async () => {
-          setAnswer('')
-          setTab('solution')
-          
-          // ✅ 최신 답변/피드백을 위해 데이터 강제 새로고침
-          await queryClient.invalidateQueries({
-            queryKey: ['cs-question', question.csQuestionId.toString()],
-          })
-        },
-      },
-    )
+    const payload = {
+      csQuestionId: question.csQuestionId,
+      answer: answer.trim(),
+    }
+
+    const onSuccess = async () => {
+      setAnswer('')
+      setTab('solution')
+      await queryClient.invalidateQueries({
+        queryKey: ['cs-question', question.csQuestionId.toString()],
+      })
+      // ✅ 피드백 영역으로 스크롤
+      setTimeout(() => {
+        feedbackRef.current?.scrollIntoView({ behavior: 'smooth' })
+      }, 100) // 조금 기다렸다가 scroll
+    }
+
+    if (question.questionStatus === 'DONE') {
+      retryFeedback(payload, { onSuccess })
+    } else {
+      submitFeedback(payload, { onSuccess })
+    }
   }
 
   const userAnswers = question.answers.filter((a) => a.author === 'USER')
@@ -89,13 +94,15 @@ export const CSSolve = ({ id }: CSSolveProps) => {
           <div className="flex justify-end">
             <Button
               className="flex w-24 items-center justify-center gap-1"
-              disabled={answer.trim().length === 0 || isPending}
+              disabled={
+                answer.trim().length === 0 || isSubmitting || isRetrying
+              }
               onClick={handleSubmit}
             >
-              {isPending && (
+              {(isSubmitting || isRetrying) && (
                 <Loader2 className="animate-spin text-slate-500" size={16} />
               )}
-              {isPending ? '제출 중...' : '답변 제출'}
+              {isSubmitting || isRetrying ? '제출 중...' : '답변 제출'}
             </Button>
           </div>
         </div>
@@ -120,7 +127,9 @@ export const CSSolve = ({ id }: CSSolveProps) => {
           </ContentCard>
 
           <ContentCard title="피드백">
-            <FeedbackList feedbacks={aiFeedbacks} />
+            <div ref={feedbackRef}>
+              <FeedbackList feedbacks={aiFeedbacks} />
+            </div>
           </ContentCard>
         </div>
       </TabsContent>
