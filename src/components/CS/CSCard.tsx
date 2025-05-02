@@ -1,10 +1,9 @@
 import { Bookmark } from 'lucide-react'
 import { Button } from '../ui/button'
 import { useRouter } from 'next/navigation'
-import { useModalStore } from '@/store/modalStore'
-import { CSQuestionList, folderBookmarkCancel } from '@/api'
+import { CSQuestionList } from '@/api'
 import { mapCS } from '@/lib/mapEnum'
-import { useQueryClient } from '@tanstack/react-query'
+import { useBookmarkHandler } from '@/hooks/useBookmarkHandler'
 
 interface CSCardProps {
   csQuestion: CSQuestionList
@@ -12,38 +11,11 @@ interface CSCardProps {
 
 export const CSCard = ({ csQuestion }: CSCardProps) => {
   const router = useRouter()
-  const queryClient = useQueryClient()
-  const { openModal } = useModalStore()
-  const { mutate: cancelBookmark } = folderBookmarkCancel()
+  const { handleBookmarkClick } = useBookmarkHandler()
   const isBookmarked = !!csQuestion.fileName
 
   const handleClick = () => {
     router.push(`/cs/solve/${csQuestion.csQuestionId}`)
-  }
-
-  const handleBookmarkClick = () => {
-    if (isBookmarked) {
-      // 북마크 취소 API 호출
-      cancelBookmark(
-        {
-          csQuestionId: csQuestion.csQuestionId,
-          fileName: csQuestion.fileName!,
-        },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['CS Dashboard', '0'] })
-          },
-        },
-      )
-    } else {
-      // 폴더 선택 모달 열기
-      openModal('createFolder', {
-        csQuestionId: csQuestion.csQuestionId,
-        onBookmarkDone: () => {
-          queryClient.invalidateQueries({ queryKey: ['CS Dashboard', '0'] })
-        },
-      })
-    }
   }
 
   return (
@@ -54,7 +26,14 @@ export const CSCard = ({ csQuestion }: CSCardProps) => {
           <button className="cursor-pointer p-1">
             <Bookmark
               size={20}
-              onClick={handleBookmarkClick}
+              onClick={() =>
+                handleBookmarkClick({
+                  csQuestionId: csQuestion.csQuestionId,
+                  isBookmarked,
+                  fileName: csQuestion.fileName,
+                  refetchKeys: [['CS Dashboard', '0']],
+                })
+              }
               className={`cursor-pointer ${
                 isBookmarked
                   ? 'fill-yellow-500 text-yellow-500 hover:fill-yellow-400 hover:text-yellow-400 hover:transition-colors'

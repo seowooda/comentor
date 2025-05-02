@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import { ContentCard } from './ContentCard'
-import { getCSQuestionDetail, useCSFeedback, useCSRetryFeedback } from '@/api'
+import { CSQuestionDetail, useCSFeedback, useCSRetryFeedback } from '@/api'
 import { useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -12,22 +12,17 @@ import { AnswerList } from './AnswerList'
 import { FeedbackList } from './FeedbackList'
 
 interface CSSolveProps {
-  id: number
+  question: CSQuestionDetail
 }
 
-export const CSSolve = ({ id }: CSSolveProps) => {
+export const CSSolve = ({ question }: CSSolveProps) => {
   const [answer, setAnswer] = useState('')
   const [tab, setTab] = useState<'challenge' | 'solution'>('challenge')
   const feedbackRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
 
-  const { data, isLoading } = getCSQuestionDetail(id)
-  const question = data?.result
-
   const { mutate: submitFeedback, isPending: isSubmitting } = useCSFeedback()
   const { mutate: retryFeedback, isPending: isRetrying } = useCSRetryFeedback()
-
-  if (isLoading || !question) return null
 
   const handleSubmit = () => {
     const payload = {
@@ -43,8 +38,10 @@ export const CSSolve = ({ id }: CSSolveProps) => {
       })
       // ✅ 피드백 영역으로 스크롤
       setTimeout(() => {
-        feedbackRef.current?.scrollIntoView({ behavior: 'smooth' })
-      }, 100) // 조금 기다렸다가 scroll
+        feedbackRef.current?.scrollIntoView({
+          behavior: 'smooth',
+        })
+      }, 300) // 조금 기다렸다가 scroll
     }
 
     if (question.questionStatus === 'DONE') {
@@ -126,11 +123,11 @@ export const CSSolve = ({ id }: CSSolveProps) => {
             <AnswerList answers={userAnswers} />
           </ContentCard>
 
-          <ContentCard title="피드백">
-            <div ref={feedbackRef}>
+          <div ref={feedbackRef}>
+            <ContentCard title="피드백">
               <FeedbackList feedbacks={aiFeedbacks} />
-            </div>
-          </ContentCard>
+            </ContentCard>
+          </div>
         </div>
       </TabsContent>
     </Tabs>

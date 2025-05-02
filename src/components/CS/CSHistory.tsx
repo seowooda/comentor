@@ -3,12 +3,12 @@
 import { BookmarkIcon } from 'lucide-react'
 import { Button } from '../ui/button'
 import { useModalStore } from '@/store/modalStore'
-import { folderBookmarkCancel } from '@/api'
 import { mapCS } from '@/lib/mapEnum'
-import { InfiniteData, useQueryClient } from '@tanstack/react-query'
+import { InfiniteData } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { CSQuestionResponse } from '@/api/services/CS/model'
+import { useBookmarkHandler } from '@/hooks/useBookmarkHandler'
 
 interface CSHistoryProps {
   data: InfiniteData<CSQuestionResponse> | undefined
@@ -17,8 +17,7 @@ interface CSHistoryProps {
 export const CSHistory = ({ data }: CSHistoryProps) => {
   const { openModal } = useModalStore()
   const router = useRouter()
-  const queryClient = useQueryClient()
-  const { mutate: cancelBookmark } = folderBookmarkCancel()
+  const { handleBookmarkClick } = useBookmarkHandler()
 
   //북마크 상태 업데이트
   const [bookmarkedMap, setBookmarkedMap] = useState<Record<number, boolean>>(
@@ -34,30 +33,6 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
       return map
     },
   )
-
-  const handleBookmarkClick = (csQuestionId: number, fileName?: string) => {
-    if (bookmarkedMap[csQuestionId]) {
-      cancelBookmark(
-        { csQuestionId, fileName: fileName! },
-        {
-          onSuccess: () => {
-            setBookmarkedMap((prev) => ({ ...prev, [csQuestionId]: false }))
-            queryClient.invalidateQueries({
-              queryKey: ['cs-question-infinite'],
-            })
-          },
-        },
-      )
-    } else {
-      openModal('createFolder', {
-        csQuestionId,
-        onBookmarkDone: () => {
-          setBookmarkedMap((prev) => ({ ...prev, [csQuestionId]: true }))
-          queryClient.invalidateQueries({ queryKey: ['cs-question-infinite'] })
-        },
-      })
-    }
-  }
 
   const handleClick = (csQuestionId: number) => {
     router.push(`/cs/solve/${csQuestionId}`)
@@ -87,7 +62,18 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
                       <button
                         className="cursor-pointer p-1"
                         onClick={() =>
-                          handleBookmarkClick(item.csQuestionId, item.fileName)
+                          handleBookmarkClick({
+                            csQuestionId: item.csQuestionId,
+                            isBookmarked: bookmarkedMap[item.csQuestionId],
+                            fileName: item.fileName,
+                            refetchKeys: [['cs-question-infinite']],
+                            onLocalToggle: (newState) => {
+                              setBookmarkedMap((prev) => ({
+                                ...prev,
+                                [item.csQuestionId]: newState,
+                              }))
+                            },
+                          })
                         }
                       >
                         <BookmarkIcon
