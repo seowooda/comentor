@@ -72,19 +72,26 @@ export const CreateFolderModal = ({
         ...(questionId ? { questionId } : csQuestionId ? { csQuestionId } : {}),
       },
       {
-        onSuccess: () => {
-          // 2. 폴더 목록 갱신 (새로 생성된 폴더 반영)
-          queryClient.invalidateQueries({ queryKey: ['folders'] })
+        onSuccess: async () => {
+          // 1. 폴더 목록 강제 갱신
+          await queryClient.invalidateQueries({ queryKey: ['folders'] })
 
-          // 3. UI 상태 갱신
+          // 2. 폴더 목록에서 새로 생긴 마지막 폴더 선택
+          const latest = queryClient.getQueryData<{ result: Folder[] }>([
+            'folders',
+          ])
+          const lastFolder = latest?.result[latest.result.length - 1]
+
+          if (lastFolder) {
+            setValue('selected', lastFolder.folderId)
+
+            // 3. 북마크 동기화 콜백
+            onBookmarkDone?.()
+          }
+
+          // 4. UI 상태 초기화
           setValue('creating', false)
           setValue('newFolder', '')
-
-          // 4. ✅ 새 폴더를 선택된 상태로 만들기 (추가된 폴더가 마지막이라고 가정)
-          const newFolderId = Date.now() // 실제로는 서버에서 받은 folderId가 필요
-          setValue('selected', newFolderId)
-
-          onBookmarkDone?.()
         },
       },
     )
@@ -121,12 +128,7 @@ export const CreateFolderModal = ({
 
         {creating ? (
           <div className="flex items-center gap-2">
-            <input
-              type="radio"
-              checked
-              readOnly
-              className="cursor-default"
-            />
+            <input type="radio" checked readOnly className="cursor-default" />
             <Input
               {...register('newFolder')}
               placeholder="폴더 이름"
