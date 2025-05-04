@@ -14,9 +14,7 @@ export interface ProjectData extends Project {}
 
 // 프로젝트 상세 페이지 props
 export interface DetailProjectProps {
-  params: Promise<{
-    projectId: string
-  }>
+  projectId: string
 }
 
 // 프로젝트 헤더 props
