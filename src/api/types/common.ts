@@ -1,8 +1,7 @@
 export enum Stack {
   프론트엔드 = 'FRONTEND',
   백엔드 = 'BACKEND',
-  데이터베이스 = 'DB',
-  알고리즘 = 'ALGORITHM',
+  모바일 = 'ANDROID_IOS',
 }
 
 export enum QuestionStatus {
