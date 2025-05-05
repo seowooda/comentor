@@ -24,6 +24,7 @@ export interface FolderBookmark {
 
 export interface Questions {
   questionId: number
+  csQuestionId: number
   projectId: number
   question: string
   repoName: string
