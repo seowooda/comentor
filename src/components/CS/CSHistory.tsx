@@ -75,11 +75,17 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
                             },
                           })
                         }
+                        aria-label={
+                          bookmarkedMap[item.csQuestionId]
+                            ? '북마크 제거'
+                            : '북마크 추가'
+                        }
+                        aria-pressed={bookmarkedMap[item.csQuestionId]}
                       >
                         <BookmarkIcon
                           size={20}
                           className={`${
-                            isBookmarked
+                            bookmarkedMap[item.csQuestionId]
                               ? 'fill-yellow-500 text-yellow-500'
                               : 'text-yellow-400'
                           }`}

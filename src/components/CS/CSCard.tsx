@@ -23,18 +23,22 @@ export const CSCard = ({ csQuestion }: CSCardProps) => {
       <div className="flex h-full w-full flex-col gap-5">
         <div className="flex justify-between">
           <p className="text-[18px] font-semibold">{csQuestion.stack}</p>
-          <button className="cursor-pointer p-1">
+          <button
+            onClick={() =>
+              handleBookmarkClick({
+                csQuestionId: csQuestion.csQuestionId,
+                isBookmarked,
+                fileName: csQuestion.fileName,
+                refetchKeys: [['CS Dashboard', '0']],
+              })
+            }
+            aria-label={isBookmarked ? '북마크 제거' : '북마크 추가'}
+            aria-pressed={isBookmarked}
+            className="cursor-pointer p-1"
+          >
             <Bookmark
               size={20}
-              onClick={() =>
-                handleBookmarkClick({
-                  csQuestionId: csQuestion.csQuestionId,
-                  isBookmarked,
-                  fileName: csQuestion.fileName,
-                  refetchKeys: [['CS Dashboard', '0']],
-                })
-              }
-              className={`cursor-pointer ${
+              className={`${
                 isBookmarked
                   ? 'fill-yellow-500 text-yellow-500 hover:fill-yellow-400 hover:text-yellow-400 hover:transition-colors'
                   : 'text-yellow-400'

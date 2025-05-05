@@ -24,6 +24,8 @@ export default function SolvePage() {
         <h3 className="text-2xl font-bold">CS 연습</h3>
         <Button
           variant="ghost"
+          aria-label={isBookmarked ? '북마크 제거' : '북마크 추가'}
+          aria-pressed={isBookmarked}
           className="cursor-pointer"
           onClick={() =>
             handleBookmarkClick({

@@ -25,11 +25,17 @@ export const useBookmarkHandler = () => {
     onLocalToggle,
   }: HandleBookmarkParams) => {
     if (isBookmarked) {
+      // ✅ 안전한 null 체크
+      if (!fileName) {
+        console.warn('파일 이름이 없습니다.')
+        return
+      }
+
       cancelBookmark(
         {
           ...(questionId && { questionId }),
           ...(csQuestionId && { csQuestionId }),
-          fileName: fileName!, // 이미 북마크되어 있으므로 존재함
+          fileName,
         },
         {
           onSuccess: () => {
@@ -56,3 +62,4 @@ export const useBookmarkHandler = () => {
 
   return { handleBookmarkClick }
 }
+
