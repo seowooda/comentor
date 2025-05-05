@@ -10,14 +10,20 @@ import { Loader2 } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { AnswerList } from './AnswerList'
 import { FeedbackList } from './FeedbackList'
+import { useSearchParams } from 'next/navigation'
 
 interface CSSolveProps {
   question: CSQuestionDetail
 }
 
 export const CSSolve = ({ question }: CSSolveProps) => {
+  const searchParmas = useSearchParams()
+  const tabFromUrl = searchParmas.get('tab') as 'challenge' | 'solution' | null
+
   const [answer, setAnswer] = useState('')
-  const [tab, setTab] = useState<'challenge' | 'solution'>('challenge')
+  const [tab, setTab] = useState<'challenge' | 'solution'>(
+    tabFromUrl ?? 'challenge',
+  )
   const feedbackRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
 

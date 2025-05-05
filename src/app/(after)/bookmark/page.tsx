@@ -1,8 +1,7 @@
 'use client'
 
-import { folderInfo, folderQuestions } from '@/api/services/folder/queries'
-import { QuestionList } from '@/components/Bookmark'
-import { FolderList } from '@/components/Bookmark/FolderList'
+import { folderInfo } from '@/api/services/folder/queries'
+import { QuestionList, FolderList } from '@/components/Bookmark'
 import { useDelayedLoading } from '@/hooks/useDelayedLoading'
 import { useCallback, useEffect, useState } from 'react'
 
