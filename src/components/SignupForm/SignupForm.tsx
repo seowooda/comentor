@@ -11,10 +11,11 @@ import {
   RadioGroupField,
 } from '@/components/Form/index'
 import { SignupSchema } from '@/hooks'
-import { stackNames, User } from '@/api'
+import { User } from '@/api'
 import { usePostMutation } from '@/api/lib/fetcher'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { Stack } from '@/api/types/common'
 
 const notificationOptions = [
   { value: 'agree', label: '알림 허용' },
@@ -33,8 +34,8 @@ export default function SignupForm() {
   })
 
   // enum 값을 배열로 변환
-  const techStackOptions = Object.keys(stackNames).map((key) => ({
-    id: stackNames[key as keyof typeof stackNames],
+  const techStackOptions = Object.keys(Stack).map((key) => ({
+    id: Stack[key as keyof typeof Stack],
     label: key,
   }))
 

@@ -1,15 +1,15 @@
-import { CSCategory, QuestionStatus } from '@/api'
+import { CSCategory, QuestionStatus } from '@/api/types/common'
 
 // 한글로 변환하는 함수
 export const mapCS = (category: CSCategory): string => {
   switch (category) {
-    case CSCategory.DATA_STRUCTURE_ALGORITHM:
+    case CSCategory.DATA_STRUCTURES_ALGORITHMS:
       return '자료구조/알고리즘'
     case CSCategory.OPERATING_SYSTEMS:
       return '운영체제'
-    case CSCategory.NETWORK:
+    case CSCategory.NETWORKING:
       return '네트워크'
-    case CSCategory.DATABASE:
+    case CSCategory.DATABASES:
       return '데이터베이스'
     case CSCategory.SECURITY:
       return '보안'
