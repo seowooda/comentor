@@ -3,6 +3,7 @@
 import { useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
+import Cookies from 'js-cookie'
 
 export default function AuthCallback() {
   return (
@@ -18,26 +19,40 @@ const AuthCallbackContent = () => {
   const { setAccessToken, setRole, setRefreshToken, setGithubAccessToken } =
     useAuthStore()
 
-  const access = searchParams.get('accessToken')
-  const refresh = searchParams.get('refreshToken')
-  const githubAccess = searchParams.get('githubAccessToken')
-  const role =
-    (searchParams.get('role') as 'GUEST' | 'USER' | 'WITHDRAWN') || 'GUEST'
+  const env = process.env.NEXT_PUBLIC_ENV || 'dev'
 
   useEffect(() => {
-    if (access && refresh && githubAccess) {
-      setAccessToken(access)
-      setRefreshToken(refresh)
-      setGithubAccessToken(githubAccess)
-      setRole(role)
+    const role =
+      (searchParams.get('role') as 'GUEST' | 'USER' | 'WITHDRAWN') || 'GUEST'
 
-      if (role === 'GUEST' || role === 'WITHDRAWN') {
-        router.replace('/signup')
-      } else if (role === 'USER') {
-        router.replace('/dashboard')
+    if (env === 'dev') {
+      const access = searchParams.get('accessToken')
+      const refresh = searchParams.get('refreshToken')
+      const githubAccess = searchParams.get('githubAccessToken')
+
+      if (access && refresh && githubAccess) {
+        setAccessToken(access)
+        setRefreshToken(refresh)
+        setGithubAccessToken(githubAccess)
+        setRole(role)
+
+        router.replace(role === 'USER' ? '/dashboard' : '/signup')
+      }
+    } else {
+      const access = Cookies.get('accessToken')
+      const refresh = Cookies.get('refreshToken')
+      const githubAccess = Cookies.get('githubAccessToken')
+
+      if (access && refresh && githubAccess) {
+        setAccessToken(access)
+        setRefreshToken(refresh)
+        setGithubAccessToken(githubAccess)
+        setRole(role)
+
+        router.replace(role === 'USER' ? '/dashboard' : '/signup')
       }
     }
-  }, [access, refresh, role, router, setRefreshToken])
+  }, [env, searchParams, router])
 
   return null
 }

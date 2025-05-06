@@ -18,8 +18,8 @@ import { Loader2 } from 'lucide-react'
 import { Stack } from '@/api/types/common'
 
 const notificationOptions = [
-  { value: 'agree', label: '알림 허용' },
-  { value: 'deny', label: '알림 거부' },
+  { value: true, label: '알림 허용' },
+  { value: false, label: '알림 거부' },
 ]
 
 export default function SignupForm() {
@@ -29,7 +29,7 @@ export default function SignupForm() {
     defaultValues: {
       email: '',
       stackNames: [],
-      notification: 'agree',
+      notification: true,
     },
   })
 
@@ -51,7 +51,7 @@ export default function SignupForm() {
   const onSubmit = async (data: z.infer<typeof SignupSchema>) => {
     const user: User = {
       ...data,
-      notification: data.notification === 'agree',
+      notification: data.notification,
     }
 
     mutate(user)

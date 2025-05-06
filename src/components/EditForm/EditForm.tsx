@@ -19,8 +19,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Stack } from '@/api/types/common'
 
 const notificationOptions = [
-  { value: 'agree', label: '알림 허용' },
-  { value: 'deny', label: '알림 거부' },
+  { value: true, label: '알림 허용' },
+  { value: false, label: '알림 거부' },
 ]
 
 const techStackOptions = Object.keys(Stack).map((key) => ({
@@ -33,22 +33,26 @@ export const EditForm = () => {
   const queryClient = useQueryClient()
   const { clearAuth } = useAuthStore()
 
-  const { data: user } = useGetQuery<UserResponse>(['user'], '/user/info')
+  const { data: user } = useGetQuery<UserResponse>(['user'], '/user/info', {
+    refetchOnMount: true,
+  })
 
   const form = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
     defaultValues: {
       email: '',
       stackNames: [],
-      notification: 'agree',
+      notification: true,
     },
   })
 
   useEffect(() => {
     if (user) {
-      form.setValue('email', user.result.email)
-      form.setValue('stackNames', user.result.stackNames)
-      form.setValue('notification', user.result.notification ? 'agree' : 'deny')
+      form.reset({
+        email: user.result.email,
+        stackNames: user.result.stackNames,
+        notification: user.result.notification,
+      })
     }
   }, [user])
 
@@ -56,9 +60,9 @@ export const EditForm = () => {
     '/user/info',
     {
       onSuccess: () => {
-        router.push('/dashboard')
 
         queryClient.invalidateQueries({ queryKey: ['user'] })
+        router.push('/dashboard')
       },
     },
   )
@@ -68,7 +72,7 @@ export const EditForm = () => {
 
     const updatedUser: User = {
       ...data,
-      notification: data.notification === 'agree',
+      notification: data.notification,
     }
 
     mutate(updatedUser)

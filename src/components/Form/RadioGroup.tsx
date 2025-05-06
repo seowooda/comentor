@@ -12,7 +12,7 @@ interface RadioGroupFieldProps {
   name: string
   label: string
   description?: string
-  options: { value: string; label: string }[]
+  options: { value: boolean; label: string }[]
 }
 
 export function RadioGroupField({
@@ -32,16 +32,16 @@ export function RadioGroupField({
           {description && <FormDescription>{description}</FormDescription>}
           <FormControl className="flex items-center justify-between px-[106px] py-[14px]">
             <RadioGroup
-              onValueChange={field.onChange}
-              defaultValue={field.value}
+              onValueChange={(val) => field.onChange(val === 'true')}
+              value={String(field.value)}
             >
               {options.map((option) => (
                 <FormItem
-                  key={option.value}
+                  key={String(option.value)}
                   className="flex items-center gap-2"
                 >
                   <FormControl>
-                    <RadioGroupItem value={option.value} />
+                    <RadioGroupItem value={String(option.value)} />
                   </FormControl>
                   <FormLabel className="font-normal">{option.label}</FormLabel>
                 </FormItem>
