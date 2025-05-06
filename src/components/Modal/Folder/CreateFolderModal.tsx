@@ -8,12 +8,14 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Folder, folderBookmark, folderInfo } from '@/api'
 
 interface FolderModalProps {
-  csQuestionId: number
+  questionId?: number
+  csQuestionId?: number
   onBookmarkDone?: () => void
   onClose: () => void
 }
 
 export const CreateFolderModal = ({
+  questionId,
   csQuestionId,
   onBookmarkDone,
   onClose,
@@ -44,9 +46,14 @@ export const CreateFolderModal = ({
   const creating = watch('creating')
 
   const handleSelect = (folderId: number, fileName: string) => {
+    if (folderId === selected) return
+
     setValue('selected', folderId)
     bookmark(
-      { csQuestionId, fileName },
+      {
+        fileName,
+        ...(questionId ? { questionId } : csQuestionId ? { csQuestionId } : {}),
+      },
       {
         onSuccess: () => {
           onBookmarkDone?.()
@@ -56,18 +63,35 @@ export const CreateFolderModal = ({
   }
 
   const onNewFolder = (formData: { newFolder: string }) => {
-    if (!formData.newFolder.trim()) return
+    const newName = formData.newFolder.trim()
+    if (!newName) return
+
     bookmark(
       {
-        fileName: formData.newFolder,
-        csQuestionId,
+        fileName: newName,
+        ...(questionId ? { questionId } : csQuestionId ? { csQuestionId } : {}),
       },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
+          // 1. 폴더 목록 강제 갱신
+          await queryClient.invalidateQueries({ queryKey: ['folders'] })
+
+          // 2. 폴더 목록에서 새로 생긴 마지막 폴더 선택
+          const latest = queryClient.getQueryData<{ result: Folder[] }>([
+            'folders',
+          ])
+          const lastFolder = latest?.result[latest.result.length - 1]
+
+          if (lastFolder) {
+            setValue('selected', lastFolder.folderId)
+
+            // 3. 북마크 동기화 콜백
+            onBookmarkDone?.()
+          }
+
+          // 4. UI 상태 초기화
           setValue('creating', false)
           setValue('newFolder', '')
-          queryClient.invalidateQueries({ queryKey: ['folders'] })
-          onBookmarkDone?.()
         },
       },
     )
@@ -94,7 +118,7 @@ export const CreateFolderModal = ({
             className="flex cursor-pointer items-center gap-2"
           >
             <input
-              type="checkbox"
+              type="radio"
               checked={selected === folder.folderId}
               onChange={() => handleSelect(folder.folderId, folder.fileName)}
             />
@@ -104,12 +128,7 @@ export const CreateFolderModal = ({
 
         {creating ? (
           <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked
-              readOnly
-              className="cursor-default"
-            />
+            <input type="radio" checked readOnly className="cursor-default" />
             <Input
               {...register('newFolder')}
               placeholder="폴더 이름"

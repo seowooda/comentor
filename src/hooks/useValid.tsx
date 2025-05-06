@@ -1,13 +1,25 @@
 import { z } from 'zod'
 
 //이메일
-const emailField = z.string().email()
+const emailField = z
+  .string({
+    required_error: '이메일을 입력해주세요',
+    invalid_type_error: '이메일 형식이 아닙니다',
+  })
+  .email('올바른 이메일 형식이 아닙니다.')
 
 //기술 스택
-const stacksField = z.array(z.string()).min(1)
+const stacksField = z
+  .array(z.string(), {
+    required_error: '기술 스택을 선택해주세요',
+  })
+  .min(1, '기술 스택을 한 개 이상 선택해주세요.')
 
 //알림 설정
-const notificationOptions = z.enum(['agree', 'deny'])
+const notificationOptions = z.boolean({
+  required_error: '알림 수신 여부를 선택해주세요.',
+  invalid_type_error: '알림 수신 여부를 선택해주세요.',
+})
 
 /**
  * 프로젝트 폼 유효성 검증을 위한 Zod 스키마
