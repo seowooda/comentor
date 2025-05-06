@@ -1,10 +1,10 @@
 'use client'
 
-import { folderBookmarkCancel, folderQuestions, Questions } from '@/api'
+import { folderQuestions } from '@/api'
 import { QuestionItem } from './QuestionItem'
 import { useQueryClient } from '@tanstack/react-query'
 import { Bookmark } from 'lucide-react'
-import { useCallback } from 'react'
+import { useBookmarkHandler } from '@/hooks/useBookmarkHandler'
 
 interface QuestionListProps {
   folderId: number
@@ -13,27 +13,7 @@ interface QuestionListProps {
 
 export const QuestionList = ({ fileName, folderId }: QuestionListProps) => {
   const { data: questions } = folderQuestions(folderId)
-  const { mutate } = folderBookmarkCancel()
-  const queryClient = useQueryClient()
-
-  const handleBookmarkCancel = useCallback(
-    (questionId: number) => {
-      mutate(
-        {
-          fileName: fileName,
-          csQuestionId: questionId,
-        },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({
-              queryKey: ['questions', folderId.toString()],
-            })
-          },
-        },
-      )
-    },
-    [fileName, mutate, queryClient, folderId],
-  )
+  const { handleBookmarkClick } = useBookmarkHandler()
 
   return (
     <section className="flex w-full flex-col px-2 py-7 text-slate-800">
@@ -55,9 +35,19 @@ export const QuestionList = ({ fileName, folderId }: QuestionListProps) => {
       ) : (
         questions?.result.map((q) => (
           <QuestionItem
-            key={q.questionId}
+            key={
+              q.projectId ? `project-${q.questionId}` : `cs-${q.csQuestionId}`
+            }
             question={q}
-            onBookmarkCancel={handleBookmarkCancel}
+            onBookmarkClick={() =>
+              handleBookmarkClick({
+                questionId: q.projectId ? q.questionId : undefined,
+                csQuestionId: !q.projectId ? q.csQuestionId : undefined,
+                fileName,
+                isBookmarked: true,
+                refetchKeys: [['questions', folderId.toString()]],
+              })
+            }
           />
         ))
       )}

@@ -40,10 +40,11 @@ const GlobalModal = () => {
           />
         )
       case 'createFolder':
-        const { csQuestionId, onBookmarkDone } =
+        const { questionId, csQuestionId, onBookmarkDone } =
           modalProps as ModalProps['createFolder']
         return (
           <CreateFolderModal
+            questionId={questionId}
             csQuestionId={csQuestionId}
             onBookmarkDone={onBookmarkDone}
             onClose={closeModal}
