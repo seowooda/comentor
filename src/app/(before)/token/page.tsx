@@ -39,18 +39,9 @@ const AuthCallbackContent = () => {
         router.replace(role === 'USER' ? '/dashboard' : '/signup')
       }
     } else {
-      const access = Cookies.get('accessToken')
-      const refresh = Cookies.get('refreshToken')
-      const githubAccess = Cookies.get('githubAccessToken')
+      setRole(role)
 
-      if (access && refresh && githubAccess) {
-        setAccessToken(access)
-        setRefreshToken(refresh)
-        setGithubAccessToken(githubAccess)
-        setRole(role)
-
-        router.replace(role === 'USER' ? '/dashboard' : '/signup')
-      }
+      router.replace(role === 'USER' ? '/dashboard' : '/signup')
     }
   }, [env, searchParams, router])
 
