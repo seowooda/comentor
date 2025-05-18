@@ -54,9 +54,18 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   clearAuth: () => {
-    Cookies.remove('accessToken')
-    Cookies.remove('refreshToken')
-    Cookies.remove('githubToken')
+    const env = process.env.NEXT_PUBLIC_ENV
+    if (env === 'dev') {
+      Cookies.remove('accessToken')
+      Cookies.remove('refreshToken')
+      Cookies.remove('githubToken')
+    } else {
+      const options = { path: '/', domain: '.comentor.store' }
+
+      Cookies.remove('accessToken', options)
+      Cookies.remove('refreshToken', options)
+      Cookies.remove('githubToken', options)
+    }
     Cookies.remove('role')
     set({ accessToken: null, refreshToken: null, role: null })
   },

@@ -1,4 +1,15 @@
 import { useAuthStore } from '@/store/authStore'
+import Cookies from 'js-cookie'
+
+function getGithubToken() {
+  const env = process.env.NEXT_PUBLIC_ENV || 'dev'
+
+  if (env === 'prod') {
+    return Cookies.get('githubAccessToken') || null
+  }
+
+  return useAuthStore.getState().githubAccessToken || null
+}
 
 // 공통 API 호출 함수
 async function fetchGitHubAPI(
@@ -8,10 +19,11 @@ async function fetchGitHubAPI(
   branch: string,
 ) {
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`
-  const { githubAccessToken } = useAuthStore.getState()
+  const token = getGithubToken()
+  if (!token) throw new Error('GitHub Access Token이 없습니다.')
 
   const headers: HeadersInit = {
-    Authorization: `Bearer ${githubAccessToken}`,
+    Authorization: `Bearer ${token}`,
     Accept: 'application/vnd.github.v3+json',
   }
 
@@ -62,9 +74,11 @@ export async function getChangedFiles(
   since: string,
   until: string,
 ) {
-  const { githubAccessToken } = useAuthStore.getState()
+  const token = getGithubToken()
+  if (!token) throw new Error('GitHub Access Token이 없습니다.')
+
   const headers: HeadersInit = {
-    Authorization: `Bearer ${githubAccessToken}`,
+    Authorization: `Bearer ${token}`,
     Accept: 'application/vnd.github.v3+json',
   }
 

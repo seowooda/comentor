@@ -7,7 +7,7 @@ export function middleware(req: NextRequest) {
 
   if (!accessToken && !refreshToken) {
     // ✅ accessToken과 refreshToken이 모두 없을 경우에만 리디렉트
-    const res = NextResponse.redirect(new URL('/', req.url))
+    const res = NextResponse.redirect(new URL('/?reason=unauthorized', req.url))
     res.cookies.delete('accessToken')
     return res
   }

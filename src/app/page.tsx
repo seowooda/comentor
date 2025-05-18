@@ -1,11 +1,10 @@
-import OnboardingPage from '@/components/onboarding/OnboardingPage'
+import Home from '@/components/Home/Home'
+import { Suspense } from 'react'
 
-const Home = () => {
+export default function Page() {
   return (
-    <main className="flex flex-grow items-center justify-center">
-      <OnboardingPage />
-    </main>
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <Home />
+    </Suspense>
   )
 }
-
-export default Home
