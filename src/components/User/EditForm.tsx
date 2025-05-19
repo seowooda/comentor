@@ -2,21 +2,23 @@
 
 import { Github, LogOut } from 'lucide-react'
 import Image from 'next/image'
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 import { CheckboxGroup, InputField, RadioGroupField } from '../Form'
 import { SignupSchema } from '@/hooks'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form } from '../ui/form'
 import { useForm } from 'react-hook-form'
-import { User } from '@/api'
-import { useGetQuery, usePutMutation } from '@/api/lib/fetcher'
+import { User, useUserEdit } from '@/api'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { UserResponse } from '@/api'
 import { useAuthStore } from '@/store/authStore'
 import { useQueryClient } from '@tanstack/react-query'
 import { Stack } from '@/api/types/common'
+import { UserResponse } from '@/api'
+
+interface EditFormProps {
+  user: UserResponse['result']
+}
 
 const notificationOptions = [
   { value: true, label: '알림 허용' },
@@ -28,61 +30,41 @@ const techStackOptions = Object.keys(Stack).map((key) => ({
   label: key,
 }))
 
-export const EditForm = () => {
+export const EditForm = ({ user }: EditFormProps) => {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { clearAuth } = useAuthStore()
-
-  const { data: user } = useGetQuery<UserResponse>(['user'], '/user/info', {
-    refetchOnMount: true,
-  })
+  const { mutate, isPending } = useUserEdit()
 
   const form = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
     defaultValues: {
-      email: '',
-      stackNames: [],
-      notification: true,
+      email: user.email,
+      stackNames: user.stackNames,
+      notification: user.notification,
     },
   })
-
-  useEffect(() => {
-    if (user) {
-      form.reset({
-        email: user.result.email,
-        stackNames: user.result.stackNames,
-        notification: user.result.notification,
-      })
-    }
-  }, [user])
-
-  const { mutate, isPending } = usePutMutation<{ message: string }, User>(
-    '/user/info',
-    {
-      onSuccess: () => {
-
-        queryClient.invalidateQueries({ queryKey: ['user'] })
-        router.push('/dashboard')
-      },
-    },
-  )
-
-  const onSubmit = async (data: z.infer<typeof SignupSchema>) => {
-    if (!user) return
-
-    const updatedUser: User = {
-      ...data,
-      notification: data.notification,
-    }
-
-    mutate(updatedUser)
-  }
 
   const handleLogout = () => {
     clearAuth()
     router.push('/')
   }
 
+  const onSubmit = (data: z.infer<typeof SignupSchema>) => {
+    const updatedUser: User = {
+      ...data,
+      notification: data.notification,
+    }
+    mutate(updatedUser, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['user'] })
+        router.push('/dashboard')
+      },
+      onError: (error) => {
+        console.error('회원정보 수정 실패:', error)
+      },
+    })
+  }
   return (
     <section className="flex w-[550px] min-w-[450px] flex-col gap-10">
       <div className="flex flex-col gap-5 rounded-[15px] border border-slate-400 px-[30px] py-5 shadow">
@@ -91,7 +73,7 @@ export const EditForm = () => {
         </h1>
         <div className="flex items-center gap-5">
           <Image
-            src={user?.result.avatarUrl || '/images/glassdumpling.png'}
+            src={user.avatarUrl || '/images/glassdumpling.png'}
             alt="avatar"
             width={60}
             height={60}
@@ -100,7 +82,7 @@ export const EditForm = () => {
           <div className="flex flex-1 flex-col">
             <p className="flex items-center gap-2">
               <Github size={18} />
-              <span>{user?.result.userName}</span>
+              <span>{user.userName}</span>
             </p>
             <p className="text-[14px] text-slate-500">
               깃허브 계정으로 로그인됨

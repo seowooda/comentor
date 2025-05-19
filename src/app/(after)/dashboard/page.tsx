@@ -1,6 +1,6 @@
 'use client'
 import Dashboard from '@/components/Dashboard/Dashboard'
-import { DashboardSelect } from '@/components/Select/Select'
+import { DashboardSelect } from '@/components/Form/Select'
 import React from 'react'
 
 export default function Page() {

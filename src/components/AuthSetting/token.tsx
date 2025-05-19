@@ -11,22 +11,31 @@ const AutoRefreshToken = () => {
 
   useEffect(() => {
     const refreshAccessToken = async () => {
-      if (!accessToken && refreshToken) {
+      const isDev = process.env.NEXT_PUBLIC_ENV === 'dev'
+
+      const shouldTryRefresh =
+        (isDev && !accessToken && refreshToken) || // ✅ dev: Zustand 기준
+        (!isDev && !accessToken) // ✅ prod: accessToken만 없으면 시도
+
+      if (shouldTryRefresh) {
         try {
           const response = await fetch('/api/user/refresh', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${refreshToken}`,
+              ...(isDev && refreshToken
+                ? { Authorization: `Bearer ${refreshToken}` }
+                : {}), // prod에서는 서버가 쿠키에서 읽게 함
             },
+            credentials: 'include', 
           })
 
           if (response.ok) {
             const data = await response.json()
-            setAccessToken(data.result) // ✅ 새로운 accessToken 저장
+            setAccessToken(data.result)
           } else {
             clearAuth()
-            router.replace('/') // ✅ 갱신 실패 시 로그인 페이지로 이동
+            router.replace('/')
           }
         } catch (error) {
           console.error('토큰 갱신 실패:', error)

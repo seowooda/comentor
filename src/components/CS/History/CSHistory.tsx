@@ -1,7 +1,6 @@
 'use client'
 
 import { BookmarkIcon } from 'lucide-react'
-import { Button } from '../ui/button'
 import { useModalStore } from '@/store/modalStore'
 import { mapCS } from '@/lib/mapEnum'
 import { InfiniteData } from '@tanstack/react-query'
@@ -9,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { CSQuestionResponse } from '@/api/services/CS/model'
 import { useBookmarkHandler } from '@/hooks/useBookmarkHandler'
+import { Button } from '@/components/ui/button'
 
 interface CSHistoryProps {
   data: InfiniteData<CSQuestionResponse> | undefined

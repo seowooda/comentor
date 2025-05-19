@@ -1,10 +1,10 @@
 import { PlusCircle, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { DashboardCard } from '../DashboardCard/DashboardCard'
-import { ProjectImportModal } from '../ProjectImportModal'
+import { DashboardCard } from './DashboardCard/DashboardCard'
+import { ProjectImportModal } from '../Modal/ProjectImportModal'
 import { useProjectList } from '@/api'
-import { ProjectFormValues } from '../ProjectImportModal/TitleSelect'
-import type { CardType } from '../DashboardCard/DashboardCard'
+import { ProjectFormValues } from '../Modal/ProjectImportModal/TitleSelect'
+import type { CardType } from './DashboardCard/DashboardCard'
 import { Button } from '@/components/ui/button'
 
 const Dashboard = ({ filter }: { filter: string }) => {
