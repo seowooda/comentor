@@ -2,15 +2,14 @@
 
 import { Github, LogOut } from 'lucide-react'
 import Image from 'next/image'
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 import { CheckboxGroup, InputField, RadioGroupField } from '../Form'
 import { SignupSchema } from '@/hooks'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form } from '../ui/form'
 import { useForm } from 'react-hook-form'
-import { User } from '@/api'
-import { usePutMutation } from '@/api/lib/fetcher'
+import { User, useUserEdit } from '@/api'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { useQueryClient } from '@tanstack/react-query'
@@ -35,6 +34,7 @@ export const EditForm = ({ user }: EditFormProps) => {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { clearAuth } = useAuthStore()
+  const { mutate, isPending } = useUserEdit()
 
   const form = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
@@ -45,29 +45,26 @@ export const EditForm = ({ user }: EditFormProps) => {
     },
   })
 
-  const { mutate, isPending } = usePutMutation<{ message: string }, User>(
-    '/user/info',
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['user'] })
-        router.push('/dashboard')
-      },
-    },
-  )
+  const handleLogout = () => {
+    clearAuth()
+    router.push('/')
+  }
 
   const onSubmit = (data: z.infer<typeof SignupSchema>) => {
     const updatedUser: User = {
       ...data,
       notification: data.notification,
     }
-    mutate(updatedUser)
+    mutate(updatedUser, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['user'] })
+        router.push('/dashboard')
+      },
+      onError: (error) => {
+        console.error('회원정보 수정 실패:', error)
+      },
+    })
   }
-
-  const handleLogout = () => {
-    clearAuth()
-    router.push('/')
-  }
-
   return (
     <section className="flex w-[550px] min-w-[450px] flex-col gap-10">
       <div className="flex flex-col gap-5 rounded-[15px] border border-slate-400 px-[30px] py-5 shadow">

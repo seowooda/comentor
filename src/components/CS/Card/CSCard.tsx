@@ -1,5 +1,5 @@
 import { Bookmark } from 'lucide-react'
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 import { useRouter } from 'next/navigation'
 import { CSQuestionList } from '@/api'
 import { mapCS } from '@/lib/mapEnum'

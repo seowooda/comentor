@@ -1,7 +1,7 @@
 'use client'
 
 import { getCSQuestion } from '@/api'
-import { CSCard } from '@/components/CS/CSCard'
+import { CSCard } from '@/components/CS/Card/CSCard'
 import { CSCardSkeleton } from '@/components/Skeleton/CSCardSkeleton'
 import { ChevronRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'

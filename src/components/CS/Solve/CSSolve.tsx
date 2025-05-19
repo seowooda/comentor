@@ -1,8 +1,8 @@
 'use client'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
-import { Textarea } from '../ui/textarea'
-import { Button } from '../ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 import { ContentCard } from './ContentCard'
 import { CSQuestionDetail, useCSFeedback, useCSRetryFeedback } from '@/api'
 import { useRef, useState } from 'react'
