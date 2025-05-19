@@ -6,6 +6,7 @@
 // =============== 사용자 (User) ===============
 // 타입
 export type { User, UserResponse } from '@/api/services/user/model'
+export { useUserJoin, useUserEdit } from '@/api/services/user/queries'
 
 // =============== 프로젝트 (Project) ===============
 
@@ -105,7 +106,11 @@ export {
   folderBookmarkCancel,
 } from '@/api/services/folder/queries'
 
-export type { CSQuestionList, CSQuestionDetail, CSAnswer } from '@/api/services/CS/model'
+export type {
+  CSQuestionList,
+  CSQuestionDetail,
+  CSAnswer,
+} from '@/api/services/CS/model'
 export {
   getCSQuestion,
   getCSQuestionDetail,

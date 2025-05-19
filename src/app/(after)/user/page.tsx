@@ -1,9 +1,13 @@
-import { EditForm } from '@/components/EditForm/EditForm'
+import { fetchUserInfo } from '@/api/services/user/server/queries'
+import { EditForm } from '@/components/User/EditForm'
 
-export default function Page() {
+export default async function Page() {
+  const response = await fetchUserInfo()
+  const user = response.result
+
   return (
     <main className="flex flex-grow items-center justify-center px-6 py-5">
-      <EditForm />
+      <EditForm user={user} />
     </main>
   )
 }

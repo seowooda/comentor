@@ -3,9 +3,9 @@
 import { CSCategory } from '@/api/types/common'
 import { mapCS } from '@/lib/mapEnum'
 import { useState, useEffect, useRef } from 'react'
-import { CSHistory } from '@/components/CS/CSHistory'
-import { useInfiniteQuestions } from '@/api/services/CS/queries'
+import { CSHistory } from '@/components/CS/History'
 import { CSHistorySkeleton } from '@/components/Skeleton/CSHistorySkeleton'
+import { useInfiniteQuestions } from '@/api'
 
 export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState<CSCategory | null>(
