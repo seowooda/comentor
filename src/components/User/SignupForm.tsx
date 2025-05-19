@@ -11,8 +11,7 @@ import {
   RadioGroupField,
 } from '@/components/Form/index'
 import { SignupSchema } from '@/hooks'
-import { User } from '@/api'
-import { usePostMutation } from '@/api/lib/fetcher'
+import { User, useUserJoin } from '@/api'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { Stack } from '@/api/types/common'
@@ -39,22 +38,22 @@ export default function SignupForm() {
     label: key,
   }))
 
-  const { mutate, isPending } = usePostMutation<{ message: string }, User>(
-    '/user/join',
-    {
-      onSuccess: () => {
-        router.push('/dashboard')
-      },
-    },
-  )
+  const { mutate, isPending } = useUserJoin()
 
   const onSubmit = async (data: z.infer<typeof SignupSchema>) => {
-    const user: User = {
+    const signupUser: User = {
       ...data,
       notification: data.notification,
     }
 
-    mutate(user)
+    mutate(signupUser, {
+      onSuccess: () => {
+        router.push('/dashboard')
+      },
+      onError: (error) => {
+        console.error('회원가입 실패:', error)
+      },
+    })
   }
 
   return (

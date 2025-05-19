@@ -1,10 +1,9 @@
-import { Pen, Trash2, Loader2, Check } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { ProjectEditModal } from '../ProjectEditModal'
 import { useProjectDelete } from '@/api'
 import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 import { ProjectSuccessMessage } from './ProjectSuccessMessage'
 import { CardContent } from './CardContent'
+import { ProjectEditModal } from '@/components/Modal/ProjectEditModal'
 
 export type CardType = {
   id: number // 프로젝트 고유 ID (API 통신용)

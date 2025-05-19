@@ -14,7 +14,7 @@ export const getCSQuestion = (page: number) => {
     `/question/list?page=${page}`,
     {
       enabled: page !== undefined,
-      refetchOnMount: true
+      refetchOnMount: true,
     },
   )
 }

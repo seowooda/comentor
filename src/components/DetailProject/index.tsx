@@ -11,8 +11,7 @@ import ProjectHeader from './ui/ProjectHeader'
 import CodeSelectionTab from './code-selection'
 import CSQuestionsTab from './cs-questions'
 import QuestionHistoryTab from './question-history'
-import { ProjectEditModal } from '../ProjectEditModal'
-import { DeleteConfirmDialog } from '../DashboardCard/DeleteConfirmDialog'
+import { DeleteConfirmDialog } from '../Dashboard/DashboardCard/DeleteConfirmDialog'
 
 // API 서비스
 import {
@@ -23,14 +22,15 @@ import {
   bookmarkCSQuestion,
   useProjectDelete,
 } from '@/api'
+import { ProjectEditModal } from '../Modal/ProjectEditModal'
 
 export const DetailProject = () => {
   const { projectId } = useParams<{ projectId: string }>()
   const searchParams = useSearchParams()
 
-  const tabFromURL = searchParams.get('tab') || 'question-history'
+  const tabFromURL = searchParams.get('tab') || null
 
-  const [selectedTab, setSelectedTab] = useState(tabFromURL)
+  const [selectedTab, setSelectedTab] = useState(tabFromURL ?? 'code-select')
   const [loading, setLoading] = useState(true)
   const [projectData, setProjectData] = useState<ProjectData | null>(null)
   const [error, setError] = useState<string | null>(null)
