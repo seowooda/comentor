@@ -5,7 +5,11 @@ import {
   useDeleteMutation,
 } from '@/api/lib/fetcher'
 import { Project } from '@/api/services/project/model'
-
+import {
+  CategoryQuestionCountResponse,
+  CategoryCorrectStat,
+  CategoryCorrectStatsResponse,
+} from '@/api/services/project/model'
 // 프로젝트 생성 응답 타입 정의
 export interface ProjectCreateResponse {
   code: number
@@ -164,3 +168,65 @@ export const mapToProject = (data: ProjectDetailResponse): Project => {
     files: Array.isArray(result.files) ? result.files : [],
   }
 }
+
+/**
+ * 카테고리별 질문 수 조회
+ * GET /question/project/category
+ */
+export const useCategoryQuestionCount = () => {
+  return useGetQuery<CategoryQuestionCountResponse>(
+    ['category-question-count'],
+    '/question/project/category',
+  )
+}
+
+/**
+ * 카테고리별 정오답 수 조회
+ * GET /question/project/category/correct
+ */
+export const useCategoryCorrectStats = () => {
+  return useGetQuery<CategoryCorrectStatsResponse>(
+    ['category-correct-stats'],
+    '/question/project/category/correct',
+  )
+}
+
+// 질문 수 가공 (빈 카테고리는 0으로 초기화)
+export function normalizeCategoryCount(
+  raw: Record<string, number>,
+): Record<string, number> {
+  const result: Record<string, number> = {}
+  for (const key of CATEGORY_KEYS) {
+    result[key] = raw[key] ?? 0
+  }
+  return result
+}
+
+// 정오답 수 가공 (빈 카테고리는 0으로 초기화)
+export function normalizeCategoryCorrectStats(
+  raw: CategoryCorrectStat[],
+): Record<string, { correct: number; incorrect: number }> {
+  const result: Record<string, { correct: number; incorrect: number }> = {}
+  for (const key of CATEGORY_KEYS) {
+    result[key] = { correct: 0, incorrect: 0 }
+  }
+  for (const stat of raw) {
+    if (result[stat.category]) {
+      result[stat.category] = {
+        correct: stat.correctCount ?? 0,
+        incorrect: stat.incorrectCount ?? 0,
+      }
+    }
+  }
+  return result
+}
+
+export const CATEGORY_KEYS = [
+  'DATA_STRUCTURES_ALGORITHMS',
+  'ETC',
+  'SECURITY',
+  'DATABASES',
+  'LANGUAGE_AND_DEVELOPMENT_PRINCIPLES',
+  'OPERATING_SYSTEMS',
+  'NETWORKING',
+] as const

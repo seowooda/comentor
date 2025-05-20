@@ -1,9 +1,7 @@
 'use client'
 
 import PieChartComponent from '@/components/Chart/PieChart'
-import RadarChartComponent from '@/components/Chart/RadarChart'
 import StackedBarChartComponent from '@/components/Chart/StackedBarChart'
-import DistributionTable from '@/components/Chart/DistributionTable'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BookOpen } from 'lucide-react'
 
@@ -39,16 +37,6 @@ export default function ChartPage() {
                   카테고리별 정답과 오답 비율을 확인하세요
                 </p>
                 <StackedBarChartComponent />
-              </div>
-            </Card>
-          </div>
-          <div>
-            <Card>
-              <div className="flex w-full flex-col items-start md:flex-row">
-                <div className="mb-6 flex flex-1 flex-col items-center md:mr-6 md:mb-0 md:items-start">
-                  <RadarChartComponent />
-                </div>
-                <DistributionTable />
               </div>
             </Card>
           </div>
