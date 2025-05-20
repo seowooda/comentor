@@ -1,5 +1,5 @@
 import { setupWorker } from 'msw/browser'
-import { http, HttpResponse } from 'msw'
+import { http } from 'msw'
 import { handlers } from '../handlers'
 
 // MSW 워커 세팅

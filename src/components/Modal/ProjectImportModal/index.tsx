@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { TitleSelect, ProjectFormValues, Repository } from './TitleSelect'
+import { TitleSelect, ProjectFormValues } from './TitleSelect'
 import { TextareaField } from './TextareaField'
 import { StatusRadioGroup, StatusOption } from './StatusRadioGroup'
 import { ModalButtons } from './ModalButtons'

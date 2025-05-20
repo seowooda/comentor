@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { BookmarkIcon } from 'lucide-react'
 import { useBookmarkHandler } from '@/hooks/useBookmarkHandler'
-import { CSQuestionDetail } from '@/api'
+import { CSQuestionDetail, useGetCSQuestionDetail } from '@/api'
 import { CSSolve } from './Solve'
 
 interface ClientSolvePageProps {
@@ -12,8 +12,12 @@ interface ClientSolvePageProps {
 
 export const ClientSolvePage = ({ question }: ClientSolvePageProps) => {
   const { handleBookmarkClick } = useBookmarkHandler()
+  const { data: fetchedData, refetch } = useGetCSQuestionDetail(
+    question.csQuestionId,
+  )
 
   const isBookmarked = !!question.fileName
+  const mergedQuestion = fetchedData?.result ?? question
 
   return (
     <main className="flex flex-col items-center justify-center gap-5 px-40 py-5">
@@ -44,7 +48,7 @@ export const ClientSolvePage = ({ question }: ClientSolvePageProps) => {
         </Button>
       </div>
 
-      <CSSolve question={question} />
+      <CSSolve question={mergedQuestion} refetch={refetch} />
     </main>
   )
 }

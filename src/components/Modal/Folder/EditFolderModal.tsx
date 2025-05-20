@@ -1,6 +1,6 @@
 'use client'
 
-import { folderUpdate } from '@/api/services/folder/queries'
+import { useFolderUpdate } from '@/api/services/folder/queries'
 import { Button } from '../../ui/button'
 import { Input } from '../../ui/input'
 import { useForm } from 'react-hook-form'
@@ -17,7 +17,7 @@ interface FormData {
 }
 
 export const EditFolderModal = ({ folder, onClose }: FolderModalProps) => {
-  const { mutate } = folderUpdate()
+  const { mutate } = useFolderUpdate()
   const form = useForm<FormData>()
   const queryClient = useQueryClient()
 

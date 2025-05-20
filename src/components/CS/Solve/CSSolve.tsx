@@ -7,16 +7,16 @@ import { ContentCard } from './ContentCard'
 import { CSQuestionDetail, useCSFeedback, useCSRetryFeedback } from '@/api'
 import { useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
-import { useQueryClient } from '@tanstack/react-query'
 import { AnswerList } from './AnswerList'
 import { FeedbackList } from './FeedbackList'
 import { useSearchParams } from 'next/navigation'
 
 interface CSSolveProps {
   question: CSQuestionDetail
+  refetch: () => void
 }
 
-export const CSSolve = ({ question }: CSSolveProps) => {
+export const CSSolve = ({ question, refetch }: CSSolveProps) => {
   const searchParmas = useSearchParams()
   const tabFromUrl = searchParmas.get('tab') as 'challenge' | 'solution' | null
 
@@ -25,7 +25,6 @@ export const CSSolve = ({ question }: CSSolveProps) => {
     tabFromUrl ?? 'challenge',
   )
   const feedbackRef = useRef<HTMLDivElement>(null)
-  const queryClient = useQueryClient()
 
   const { mutate: submitFeedback, isPending: isSubmitting } = useCSFeedback()
   const { mutate: retryFeedback, isPending: isRetrying } = useCSRetryFeedback()
@@ -37,11 +36,10 @@ export const CSSolve = ({ question }: CSSolveProps) => {
     }
 
     const onSuccess = async () => {
+      await refetch()
       setAnswer('')
       setTab('solution')
-      await queryClient.invalidateQueries({
-        queryKey: ['cs-question', question.csQuestionId.toString()],
-      })
+
       // ✅ 피드백 영역으로 스크롤
       setTimeout(() => {
         feedbackRef.current?.scrollIntoView({

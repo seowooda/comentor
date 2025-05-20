@@ -3,7 +3,7 @@
 import { WelcomeSection } from './sections/WelcomeSection'
 import { FeatureSection } from './sections/FeatureSection'
 
-export default function OnboardingPage() {
+export const OnboardingPage = () => {
   return (
     <div className="relative w-full overflow-hidden">
       {/* 배경 효과 */}
@@ -19,3 +19,5 @@ export default function OnboardingPage() {
     </div>
   )
 }
+
+export default OnboardingPage

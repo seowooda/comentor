@@ -22,7 +22,7 @@ interface AnswerFormProps {
   onSave?: () => Promise<boolean | undefined>
 }
 
-export default function AnswerForm({
+export const AnswerForm = ({
   question,
   relatedCode = '',
   questionIndex = 1,
@@ -35,7 +35,7 @@ export default function AnswerForm({
   onAnswerChange,
   onSubmit,
   onSave,
-}: AnswerFormProps) {
+}: AnswerFormProps) => {
   if (!question) {
     return (
       <div className="bg-muted/20 text-muted-foreground flex h-40 items-center justify-center rounded-md border p-6">
@@ -140,3 +140,5 @@ export default function AnswerForm({
     </div>
   )
 }
+
+export default AnswerForm
