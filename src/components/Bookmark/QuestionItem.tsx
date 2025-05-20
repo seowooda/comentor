@@ -84,3 +84,5 @@ export const QuestionItem = React.memo(
     )
   },
 )
+
+QuestionItem.displayName = 'QuestionItem'

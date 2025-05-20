@@ -20,10 +20,10 @@ interface LearningInsightsProps {
  * 학습 인사이트 컴포넌트
  * CS 질문에 대한 사용자의 학습 현황 및 추가 정보를 표시
  */
-export default function LearningInsights({
+export const LearningInsights = ({
   questions,
   className = '',
-}: LearningInsightsProps) {
+}: LearningInsightsProps) => {
   // 답변된 질문 수
   const answeredCount = questions.filter((q) => q.answered).length
   // 학습 진행률
@@ -235,3 +235,5 @@ export default function LearningInsights({
     </div>
   )
 }
+
+export default LearningInsights

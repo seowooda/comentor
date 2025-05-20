@@ -3,9 +3,8 @@
 import { useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
-import Cookies from 'js-cookie'
 
-export default function AuthCallback() {
+const AuthCallback = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <AuthCallbackContent />
@@ -40,10 +39,19 @@ const AuthCallbackContent = () => {
       }
     } else {
       setRole(role)
-
       router.replace(role === 'USER' ? '/dashboard' : '/signup')
     }
-  }, [env, searchParams, router])
+  }, [
+    env,
+    searchParams,
+    router,
+    setAccessToken,
+    setRefreshToken,
+    setGithubAccessToken,
+    setRole,
+  ])
 
   return null
 }
+
+export default AuthCallback
