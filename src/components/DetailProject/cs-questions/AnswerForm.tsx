@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Loader2, BookmarkIcon, CheckCircle, Code } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface AnswerFormProps {
   question: string
@@ -36,12 +37,22 @@ export default function AnswerForm({
   onSubmit,
   onSave,
 }: AnswerFormProps) {
+  const queryClient = useQueryClient()
+
   if (!question) {
     return (
       <div className="bg-muted/20 text-muted-foreground flex h-40 items-center justify-center rounded-md border p-6">
         질문을 선택해주세요.
       </div>
     )
+  }
+
+  const handleSubmit = async () => {
+    await onSubmit()
+
+    // ✅ 차트 데이터 쿼리 무효화 → 자동 refetch 유도
+    queryClient.invalidateQueries({ queryKey: ['category-question-count'] })
+    queryClient.invalidateQueries({ queryKey: ['category-correct-stats'] })
   }
 
   return (
@@ -113,7 +124,7 @@ export default function AnswerForm({
 
         <div className="flex justify-end">
           <Button
-            onClick={onSubmit}
+            onClick={handleSubmit}
             disabled={isLoading || !answer.trim() || isAnswered}
             className="flex items-center gap-2"
           >

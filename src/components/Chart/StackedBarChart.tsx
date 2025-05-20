@@ -47,8 +47,10 @@ interface XAxisTickProps {
   }
 }
 
-const StackedBarChartComponent: React.FC = () => {
-  const { data, isLoading, error } = useCategoryCorrectStats()
+const StackedBarChartComponent: React.FC<{
+  refetchSignal?: number
+}> = ({ refetchSignal }) => {
+  const { data, isLoading, error, refetch } = useCategoryCorrectStats()
 
   let chartData: TBarData[] = []
   if (data && data.result) {

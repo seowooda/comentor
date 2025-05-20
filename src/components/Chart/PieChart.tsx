@@ -46,8 +46,10 @@ const COLORS = [
   '#F4A261',
 ]
 
-const PieChartComponent: React.FC = () => {
-  const { data, isLoading, error } = useCategoryQuestionCount()
+const PieChartComponent: React.FC<{
+  refetchSignal?: number
+}> = ({ refetchSignal }) => {
+  const { data, isLoading, error, refetch } = useCategoryQuestionCount()
 
   let chartData: { name: string; value: number }[] = []
   if (data && data.result) {
@@ -57,7 +59,7 @@ const PieChartComponent: React.FC = () => {
         name: CATEGORY_MAP[key as keyof typeof CATEGORY_MAP],
         value: normalized[key] ?? 0,
       }))
-      .filter((item) => item.value > 0) // ← 이 줄 추가
+      .filter((item) => item.value > 0)
   }
 
   if (isLoading) return <div>로딩 중...</div>
