@@ -11,7 +11,7 @@ import {
 // Lottie 컴포넌트를 클라이언트 사이드에서만 로드
 const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
 
-export function WelcomeSection() {
+export const WelcomeSection = () => {
   const [animationData, setAnimationData] = useState<any>(null)
   const [animationError, setAnimationError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -183,3 +183,5 @@ export function WelcomeSection() {
     </div>
   )
 }
+
+export default WelcomeSection

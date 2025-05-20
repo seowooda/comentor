@@ -3,7 +3,6 @@
 import React from 'react'
 import { Loader2, Folder, FileText, ChevronUp } from 'lucide-react'
 import { FileItem } from '@/api'
-import { generateSkeleton } from '@/lib/skeleton-generator'
 
 interface FileListProps {
   files: FileItem[]

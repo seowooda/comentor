@@ -3,7 +3,7 @@ import Dashboard from '@/components/Dashboard/Dashboard'
 import { DashboardSelect } from '@/components/Form/Select'
 import React from 'react'
 
-export default function Page() {
+const Page = () => {
   const [filter, setFilter] = React.useState('all')
 
   return (
@@ -17,3 +17,5 @@ export default function Page() {
     </main>
   )
 }
+
+export default Page

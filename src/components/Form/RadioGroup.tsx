@@ -6,22 +6,23 @@ import {
   FormLabel,
 } from '@/components/ui/form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Control, FieldValues, Path } from 'react-hook-form'
 
-interface RadioGroupFieldProps {
-  control: any
-  name: string
+interface RadioGroupFieldProps<T extends FieldValues> {
+  control: Control<T>
+  name: Path<T>
   label: string
   description?: string
   options: { value: boolean; label: string }[]
 }
 
-export function RadioGroupField({
+export const RadioGroupField = <T extends FieldValues>({
   control,
   name,
   label,
   description,
   options,
-}: RadioGroupFieldProps) {
+}: RadioGroupFieldProps<T>) => {
   return (
     <FormField
       control={control}
@@ -53,3 +54,5 @@ export function RadioGroupField({
     />
   )
 }
+
+export default RadioGroupField

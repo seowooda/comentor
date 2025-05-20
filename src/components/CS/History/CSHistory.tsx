@@ -1,7 +1,6 @@
 'use client'
 
 import { BookmarkIcon } from 'lucide-react'
-import { useModalStore } from '@/store/modalStore'
 import { mapCS } from '@/lib/mapEnum'
 import { InfiniteData } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
@@ -15,7 +14,6 @@ interface CSHistoryProps {
 }
 
 export const CSHistory = ({ data }: CSHistoryProps) => {
-  const { openModal } = useModalStore()
   const router = useRouter()
   const { handleBookmarkClick } = useBookmarkHandler()
 
@@ -45,7 +43,6 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
           <div key={date} className="flex flex-col gap-5">
             <p className="text-sm text-slate-400">{date}</p>
             {questions.map((item) => {
-              const isBookmarked = bookmarkedMap[item.csQuestionId]
               return (
                 <div
                   key={item.csQuestionId}

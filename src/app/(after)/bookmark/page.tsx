@@ -1,13 +1,13 @@
 'use client'
 
-import { folderInfo } from '@/api/services/folder/queries'
+import { useFolderInfo } from '@/api'
 import { QuestionList, FolderList } from '@/components/Bookmark'
 import { useDelayedLoading } from '@/hooks/useDelayedLoading'
 import { useCallback, useEffect, useState } from 'react'
 
-export default function Page() {
+const Page = () => {
   const [folderId, setFolderId] = useState<number | null>(null)
-  const { data: folder, isLoading } = folderInfo()
+  const { data: folder, isLoading } = useFolderInfo()
 
   const showLoading = useDelayedLoading(isLoading, 1000)
 
@@ -41,3 +41,5 @@ export default function Page() {
     </main>
   )
 }
+
+export default Page

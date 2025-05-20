@@ -27,7 +27,7 @@ const AutoRefreshToken = () => {
                 ? { Authorization: `Bearer ${refreshToken}` }
                 : {}), // prod에서는 서버가 쿠키에서 읽게 함
             },
-            credentials: 'include', 
+            credentials: 'include',
           })
 
           if (response.ok) {

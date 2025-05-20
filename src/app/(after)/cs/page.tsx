@@ -1,13 +1,13 @@
 'use client'
 
-import { getCSQuestion } from '@/api'
+import { useGetCSQuestion } from '@/api'
 import { CSCard } from '@/components/CS/Card/CSCard'
 import { CSCardSkeleton } from '@/components/Skeleton/CSCardSkeleton'
 import { ChevronRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-export default function Page() {
-  const { data, isLoading } = getCSQuestion(0)
+const Pag = () => {
+  const { data, isLoading } = useGetCSQuestion(0)
   const router = useRouter()
   const today = new Date().toISOString().slice(0, 10)
 
@@ -79,3 +79,5 @@ export default function Page() {
     </main>
   )
 }
+
+export default Pag

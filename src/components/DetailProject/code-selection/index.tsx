@@ -26,11 +26,11 @@ interface CodeSelectionTabProps {
   onSelectCodeSnippet: (snippet: string, folderName: string) => void
 }
 
-export default function CodeSelectionTab({
+export const CodeSelectionTab = ({
   projectId,
   files: initialFiles,
   onSelectCodeSnippet,
-}: CodeSelectionTabProps) {
+}: CodeSelectionTabProps) => {
   const {
     dateRange,
     handleDateRangeChange,
@@ -236,3 +236,5 @@ export default function CodeSelectionTab({
     </div>
   )
 }
+
+export default CodeSelectionTab

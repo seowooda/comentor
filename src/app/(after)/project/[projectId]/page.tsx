@@ -2,6 +2,8 @@
 
 import { DetailProject } from '@/components/DetailProject'
 
-export default function ProjectDetailPage() {
+const ProjectDetailPage = () => {
   return <DetailProject />
 }
+
+export default ProjectDetailPage

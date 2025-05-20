@@ -1,8 +1,7 @@
 'use client'
 
-import { folderQuestions } from '@/api'
+import { useFolderQuestions } from '@/api'
 import { QuestionItem } from './QuestionItem'
-import { useQueryClient } from '@tanstack/react-query'
 import { Bookmark } from 'lucide-react'
 import { useBookmarkHandler } from '@/hooks/useBookmarkHandler'
 
@@ -12,7 +11,7 @@ interface QuestionListProps {
 }
 
 export const QuestionList = ({ fileName, folderId }: QuestionListProps) => {
-  const { data: questions } = folderQuestions(folderId)
+  const { data: questions } = useFolderQuestions(folderId)
   const { handleBookmarkClick } = useBookmarkHandler()
 
   return (

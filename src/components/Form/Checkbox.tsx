@@ -6,22 +6,23 @@ import {
   FormLabel,
 } from '@/components/ui/form'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Control, FieldValues, Path } from 'react-hook-form'
 
-interface CheckboxGroupProps {
-  control: any
-  name: string
+interface CheckboxGroupProps<T extends FieldValues> {
+  control: Control<T>
+  name: Path<T>
   label: string
   description?: string
   options: { id: string; label: string }[]
 }
 
-export function CheckboxGroup({
+export const CheckboxGroup = <T extends FieldValues>({
   control,
   name,
   label,
   description,
   options,
-}: CheckboxGroupProps) {
+}: CheckboxGroupProps<T>) => {
   return (
     <FormField
       control={control}
@@ -63,3 +64,5 @@ export function CheckboxGroup({
     />
   )
 }
+
+export default CheckboxGroup
