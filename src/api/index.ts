@@ -98,12 +98,12 @@ export {
 //folder
 export type { Folder, Questions } from '@/api/services/folder/model'
 export {
-  folderInfo,
-  folderUpdate,
-  folderDelete,
-  folderQuestions,
-  folderBookmark,
-  folderBookmarkCancel,
+  useFolderInfo,
+  useFolderUpdate,
+  useFolderDelete,
+  useFolderQuestions,
+  useFolderBookmark,
+  useFolderBookmarkCancel,
 } from '@/api/services/folder/queries'
 
 export type {
@@ -112,8 +112,8 @@ export type {
   CSAnswer,
 } from '@/api/services/CS/model'
 export {
-  getCSQuestion,
-  getCSQuestionDetail,
+  useGetCSQuestion,
+  useGetCSQuestionDetail,
   useInfiniteQuestions,
   useCSFeedback,
   useCSRetryFeedback,

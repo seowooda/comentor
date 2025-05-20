@@ -1,4 +1,4 @@
-import { folderBookmarkCancel } from '@/api'
+import { useFolderBookmarkCancel } from '@/api'
 import { useModalStore } from '@/store/modalStore'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -14,7 +14,7 @@ type HandleBookmarkParams = {
 export const useBookmarkHandler = () => {
   const { openModal } = useModalStore()
   const queryClient = useQueryClient()
-  const { mutate: cancelBookmark } = folderBookmarkCancel()
+  const { mutate: cancelBookmark } = useFolderBookmarkCancel()
 
   const handleBookmarkClick = ({
     questionId,
@@ -62,4 +62,3 @@ export const useBookmarkHandler = () => {
 
   return { handleBookmarkClick }
 }
-

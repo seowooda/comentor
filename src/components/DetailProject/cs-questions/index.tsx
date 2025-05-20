@@ -53,7 +53,6 @@ const CSQuestionsTab: React.FC<CSQuestionsTabProps> = ({
     handleAnswerChange,
     handleSubmitAnswer,
     handleSaveQuestion,
-    toggleLearningInsights,
   } = useCSQuestions({ projectId, codeSnippet, folderName })
 
   // 질문 ID 문자열을 계산하고 메모이제이션

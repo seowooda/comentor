@@ -9,11 +9,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-export function DashboardSelect({
+export const DashboardSelect = ({
   setFilter,
 }: {
   setFilter: (value: string) => void
-}) {
+}) => {
   return (
     <Select defaultValue="all" onValueChange={(value) => setFilter(value)}>
       <SelectTrigger className="w-fit border-none px-2 text-base shadow-none focus:ring-0 focus-visible:ring-0 [&_svg]:!text-black [&_svg]:!opacity-80">
@@ -29,3 +29,5 @@ export function DashboardSelect({
     </Select>
   )
 }
+
+export default DashboardSelect

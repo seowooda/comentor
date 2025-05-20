@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { PlusIcon, XIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { useQueryClient } from '@tanstack/react-query'
-import { Folder, folderBookmark, folderInfo } from '@/api'
+import { Folder, useFolderBookmark, useFolderInfo } from '@/api'
 
 interface FolderModalProps {
   questionId?: number
@@ -20,8 +20,8 @@ export const CreateFolderModal = ({
   onBookmarkDone,
   onClose,
 }: FolderModalProps) => {
-  const { data } = folderInfo()
-  const { mutate: bookmark } = folderBookmark()
+  const { data } = useFolderInfo()
+  const { mutate: bookmark } = useFolderBookmark()
   const queryClient = useQueryClient()
 
   const {

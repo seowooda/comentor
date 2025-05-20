@@ -20,10 +20,10 @@ interface DateRangePickerProps {
   onDateRangeChange: (range: DateRange | undefined) => void
 }
 
-export default function DateRangePicker({
+export const DateRangePicker = ({
   dateRange,
   onDateRangeChange,
-}: DateRangePickerProps) {
+}: DateRangePickerProps) => {
   // 입력 필드 상태 관리
   const [fromInputValue, setFromInputValue] = useState(
     dateRange.from ? format(dateRange.from, 'yyyy-MM-dd') : '',
@@ -232,3 +232,5 @@ export default function DateRangePicker({
     </div>
   )
 }
+
+export default DateRangePicker

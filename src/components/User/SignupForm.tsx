@@ -21,7 +21,7 @@ const notificationOptions = [
   { value: false, label: '알림 거부' },
 ]
 
-export default function SignupForm() {
+export const SignupForm = () => {
   const router = useRouter()
   const form = useForm<z.infer<typeof SignupSchema>>({
     resolver: zodResolver(SignupSchema),
@@ -101,3 +101,5 @@ export default function SignupForm() {
     </Form>
   )
 }
+
+export default SignupForm

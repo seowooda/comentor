@@ -8,7 +8,7 @@ import {
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { CSCategory } from '@/api/types/common'
 
-export const getCSQuestion = (page: number) => {
+export const useGetCSQuestion = (page: number) => {
   return useGetQuery<CSQuestionResponse>(
     ['CS Dashboard', page.toString()],
     `/question/list?page=${page}`,
@@ -19,7 +19,7 @@ export const getCSQuestion = (page: number) => {
   )
 }
 
-export const getCSQuestionDetail = (csQuestionId: number) => {
+export const useGetCSQuestionDetail = (csQuestionId: number) => {
   return useGetQuery<CSQuestionDetailResponse>(
     ['cs-question', csQuestionId.toString()],
     `/question?csQuestionId=${csQuestionId}`,
