@@ -45,3 +45,6 @@ next-env.d.ts
 .cursor/
 commitmentor.mdc
 
+#pwa
+public/sw.js*
+public/workbox-*.js*
