@@ -118,3 +118,8 @@ export {
   useCSFeedback,
   useCSRetryFeedback,
 } from '@/api/services/CS/queries'
+
+export {
+  useRegisterFCMToken,
+  useDeleteFCMToken,
+} from '@/api/services/FCM/queries'

@@ -1,35 +1,23 @@
 'use client'
-
-import { useRegisterFCMToken } from '@/api/services/FCM/queries'
-import { requestForToken } from '@/lib/firebase/firebase'
 import { useEffect } from 'react'
+import { initFCMToken } from '@/lib/firebase/initFCMToken'
+import { useRegisterFCMToken } from '@/api'
+import { useFCMStore } from '@/store/fcmStore'
+import { useNotificationStore } from '@/store/notificationStore'
 
 const FCMInitializer = () => {
   const { mutate: registerToken } = useRegisterFCMToken()
+  const { fcmToken, setFCMToken } = useFCMStore()
+  const permission = useNotificationStore((state) => state.permission)
 
   useEffect(() => {
-    const initFCM = async () => {
-      if (!('Notification' in window)) {
-        console.log('🚫 Notification API not supported')
-        return
-      }
+    if (permission !== 'granted' || fcmToken) return
 
-      const permission = await Notification.requestPermission()
-      console.log('🔐 알림 권한 상태:', permission)
-
-      if (permission === 'granted') {
-        const token = await requestForToken()
-        if (token) {
-          console.log('📲 발급받은 FCM 토큰:', token)
-          registerToken({ fcmToken: token })
-        }
-      } else {
-        console.log('🔕 알림 권한 거부됨')
-      }
-    }
-
-    initFCM()
-  }, [])
+    initFCMToken((token) => {
+      registerToken({ fcmToken: token })
+      setFCMToken(token)
+    })
+  }, [permission])
 
   return null
 }
