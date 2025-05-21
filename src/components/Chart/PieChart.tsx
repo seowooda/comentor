@@ -1,22 +1,14 @@
 'use client'
 
 import React from 'react'
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-} from 'recharts'
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import {
   useCategoryQuestionCount,
   normalizeCategoryCount,
 } from '@/api/services/project'
 
-// 카테고리 한글 매핑 및 키 정의
 const CATEGORY_MAP = {
-  OPERATING_SYSTEM: '운영체제',
+  OPERATING_SYSTEMS: '운영체제',
   NETWORKING: '네트워크',
   DATABASES: '데이터베이스',
   SECURITY: '보안',
@@ -46,21 +38,8 @@ const COLORS = [
   '#F4A261',
 ]
 
-const PieChartComponent: React.FC<{
-  refetchSignal?: number
-}> = ({ refetchSignal }) => {
-  const { data, isLoading, error, refetch } = useCategoryQuestionCount()
-
-  let chartData: { name: string; value: number }[] = []
-  if (data && data.result) {
-    const normalized = normalizeCategoryCount(data.result)
-    chartData = CATEGORY_KEYS.filter((key) => key in CATEGORY_MAP)
-      .map((key) => ({
-        name: CATEGORY_MAP[key as keyof typeof CATEGORY_MAP],
-        value: normalized[key] ?? 0,
-      }))
-      .filter((item) => item.value > 0)
-  }
+export default function PieChartComponent() {
+  const { data, isLoading, error } = useCategoryQuestionCount()
 
   if (isLoading) return <div>로딩 중...</div>
   if (error)
@@ -68,33 +47,55 @@ const PieChartComponent: React.FC<{
       <div>에러: {error instanceof Error ? error.message : String(error)}</div>
     )
 
+  const chartData =
+    data && data.result
+      ? CATEGORY_KEYS.filter((key) => key in CATEGORY_MAP)
+          .map((key) => ({
+            name: CATEGORY_MAP[key as keyof typeof CATEGORY_MAP],
+            value: normalizeCategoryCount(data.result)[key] ?? 0,
+          }))
+          .filter((item) => item.value > 0)
+      : []
+
   return (
-    <div style={{ width: 550, height: 400 }}>
-      <ResponsiveContainer>
-        <PieChart>
-          <Pie
-            data={chartData}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={120}
-            fill="#8884d8"
-            label
-          >
-            {chartData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
-              />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend verticalAlign="bottom" height={36} />
-        </PieChart>
-      </ResponsiveContainer>
+    <div className="w-full">
+      {/* 차트 */}
+      <div className="aspect-[4/3] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={chartData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius="80%"
+              label
+            >
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Legend */}
+      <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-700">
+        {chartData.map((entry, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <div
+              className="h-3 w-3 rounded-sm"
+              style={{ backgroundColor: COLORS[index % COLORS.length] }}
+            />
+            {entry.name}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
-
-export default PieChartComponent

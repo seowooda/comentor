@@ -167,27 +167,35 @@ export default function LearningInsights({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-8 flex flex-col gap-8 md:flex-row">
-            <Card className="flex w-full flex-1 flex-col items-center justify-center gap-6 p-8 md:w-1/2">
-              <div className="flex w-full flex-col items-center md:items-start">
+          <div className="flex flex-col gap-8 min-[1250px]:flex-row">
+            <Card className="flex w-full flex-1 flex-col items-center justify-center gap-6 p-6">
+              <div className="flex h-full w-full flex-col items-center">
                 <h4 className="mb-2 text-lg font-semibold text-indigo-700">
                   카테고리 별 학습 분포
                 </h4>
                 <p className="mb-4 text-sm text-gray-600">
                   카테고리 별 학습률을 확인하세요
                 </p>
-                <PieChartComponent />
+                <div className="mx-auto w-full max-w-[500px] min-[1250px]:max-w-full">
+                  <div className="aspect-[4/3] w-full">
+                    <PieChartComponent />
+                  </div>
+                </div>
               </div>
             </Card>
-            <Card className="flex w-full flex-1 flex-col items-center justify-center gap-6 p-8 md:w-1/2">
-              <div className="flex w-full flex-col items-center md:items-start">
+            <Card className="flex w-full flex-1 flex-col items-center justify-center gap-6 p-6">
+              <div className="flex h-full w-full flex-col items-center">
                 <h4 className="mb-2 text-lg font-semibold text-indigo-700">
                   오답률이 높은 항목
                 </h4>
                 <p className="mb-4 text-sm text-gray-600">
                   카테고리별 정답과 오답 비율을 확인하세요
                 </p>
-                <StackedBarChartComponent />
+                <div className="mx-auto w-full max-w-[500px] min-[1250px]:max-w-full">
+                  <div className="aspect-[4/3] w-full">
+                    <StackedBarChartComponent />
+                  </div>
+                </div>
               </div>
             </Card>
           </div>
