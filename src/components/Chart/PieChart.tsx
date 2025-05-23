@@ -2,30 +2,12 @@
 
 import React from 'react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
-import {
-  useCategoryQuestionCount,
-  normalizeCategoryCount,
-} from '@/api/services/project'
 
-const CATEGORY_MAP = {
-  OPERATING_SYSTEMS: '운영체제',
-  NETWORKING: '네트워크',
-  DATABASES: '데이터베이스',
-  SECURITY: '보안',
-  LANGUAGE_AND_DEVELOPMENT_PRINCIPLES: '언어 및 개발 원리',
-  ETC: '기타',
-  DATA_STRUCTURES_ALGORITHMS: '자료구조/알고리즘',
-} as const
-
-const CATEGORY_KEYS = [
-  'DATA_STRUCTURES_ALGORITHMS',
-  'ETC',
-  'SECURITY',
-  'DATABASES',
-  'LANGUAGE_AND_DEVELOPMENT_PRINCIPLES',
-  'OPERATING_SYSTEMS',
-  'NETWORKING',
-] as const
+interface PieChartComponentProps {
+  data: { name: string; value: number }[]
+  isLoading: boolean
+  error: unknown
+}
 
 const COLORS = [
   '#0088FE',
@@ -38,24 +20,19 @@ const COLORS = [
   '#F4A261',
 ]
 
-export default function PieChartComponent() {
-  const { data, isLoading, error } = useCategoryQuestionCount()
-
+export default function PieChartComponent({
+  data,
+  isLoading,
+  error,
+}: PieChartComponentProps) {
   if (isLoading) return <div>로딩 중...</div>
-  if (error)
+  if (error) {
     return (
       <div>에러: {error instanceof Error ? error.message : String(error)}</div>
     )
+  }
 
-  const chartData =
-    data && data.result
-      ? CATEGORY_KEYS.filter((key) => key in CATEGORY_MAP)
-          .map((key) => ({
-            name: CATEGORY_MAP[key as keyof typeof CATEGORY_MAP],
-            value: normalizeCategoryCount(data.result)[key] ?? 0,
-          }))
-          .filter((item) => item.value > 0)
-      : []
+  if (data.length === 0) return <div>데이터가 없습니다.</div>
 
   return (
     <div className="w-full">
@@ -64,7 +41,7 @@ export default function PieChartComponent() {
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={chartData}
+              data={data}
               dataKey="value"
               nameKey="name"
               cx="50%"
@@ -72,7 +49,7 @@ export default function PieChartComponent() {
               outerRadius="80%"
               label
             >
-              {chartData.map((entry, index) => (
+              {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={COLORS[index % COLORS.length]}
@@ -86,7 +63,7 @@ export default function PieChartComponent() {
 
       {/* Legend */}
       <div className="mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-700">
-        {chartData.map((entry, index) => (
+        {data.map((entry, index) => (
           <div key={index} className="flex items-center gap-2">
             <div
               className="h-3 w-3 rounded-sm"
