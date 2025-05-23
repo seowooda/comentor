@@ -1,0 +1,19 @@
+export const CATEGORY_KEYS = [
+  'DATA_STRUCTURES_ALGORITHMS',
+  'ETC',
+  'SECURITY',
+  'DATABASES',
+  'LANGUAGE_AND_DEVELOPMENT_PRINCIPLES',
+  'OPERATING_SYSTEMS',
+  'NETWORKING',
+] as const
+
+export const CATEGORY_MAP = {
+  OPERATING_SYSTEMS: '운영체제',
+  NETWORKING: '네트워크',
+  DATABASES: '데이터베이스',
+  SECURITY: '보안',
+  LANGUAGE_AND_DEVELOPMENT_PRINCIPLES: '언어 및\n개발 원리',
+  ETC: '기타',
+  DATA_STRUCTURES_ALGORITHMS: '자료구조 및\n알고리즘',
+} as const
