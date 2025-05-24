@@ -111,12 +111,21 @@ export const usePutMutation = <T, V>(
   })
 }
 
-export const useDeleteMutation = <T>(
+export const useDeleteMutation = <T, V = void>(
   url: string,
-  options?: UseMutationOptions<T, Error, void>,
+  options?: UseMutationOptions<T, Error, V>,
 ) => {
-  return useMutation<T, Error, void>({
-    mutationFn: () => fetcher<T>(url, { method: 'DELETE' }),
+  return useMutation<T, Error, V>({
+    mutationFn: (data: V) => {
+      const hasBody = data !== undefined && data !== null
+
+      return fetcher<T>(url, {
+        method: 'DELETE',
+        ...(hasBody && {
+          body: JSON.stringify(data),
+        }),
+      })
+    },
     ...options,
   })
 }

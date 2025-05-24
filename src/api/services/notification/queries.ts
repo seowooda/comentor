@@ -3,9 +3,7 @@ import { DefaultResponse, Notification } from './model'
 import { useMutation } from '@tanstack/react-query'
 
 export const useNotifications = () => {
-  return useGetQuery<Notification[]>(['notifications'], '/notifications', {
-    enabled: false,
-  })
+  return useGetQuery<Notification[]>(['notifications'], '/notifications')
 }
 
 export const useReadNotification = () => {

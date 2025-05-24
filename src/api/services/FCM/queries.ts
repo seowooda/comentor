@@ -6,5 +6,5 @@ export const useRegisterFCMToken = () => {
 }
 
 export const useDeleteFCMToken = () => {
-  return useDeleteMutation<DefaultResponse>('/push/logout')
+  return useDeleteMutation<DefaultResponse, FCMRegisterRequest>('/push/logout')
 }

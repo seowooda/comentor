@@ -10,13 +10,11 @@ import { NotificationPermissionMessage } from './Permission/Message'
 import { useNotificationStore } from '@/store/notificationStore'
 
 export const NotificationForm = () => {
-  const permission = useNotificationStore((state) => state.permission)
-
-  const isDenied = permission === 'denied'
+  const { setPermission } = useNotificationStore.getState()
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'Notification' in window) {
-      useNotificationStore.getState().setPermission(Notification.permission)
+      setPermission(Notification.permission)
     }
   }, [])
 
@@ -41,18 +39,21 @@ export const NotificationForm = () => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <h3>알림 유형 설정</h3>
+        <h3>알림 유형 </h3>
+        <p className="text-sm text-slate-600">
+          브라우저 알림을 허용하면 아래 항목 모두에 대한 알림을 받습니다.
+        </p>
         <NotificationCard
           icon={<CircleHelp size={24} />}
-          title="질문 생성 알림"
+          title="오늘의 질문"
           description="오늘의 CS 질문 생성 알림을 받습니다."
-          right={<Switch disabled={isDenied} />}
+          right={null}
         />
         <NotificationCard
           icon={<Sparkle size={24} />}
           title="학습 리마인드"
           description="48시간 이상 미학습 시, 학습 리마인드 알림을 받습니다."
-          right={<Switch disabled={isDenied} />}
+          right={null}
         />
       </div>
 
