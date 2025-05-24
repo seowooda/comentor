@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  Bell,
   Bookmark,
   Menu,
   MessageSquareCode,
@@ -11,6 +10,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import SlideMenu from './SlideMenu'
 import { useRouter } from 'next/navigation'
+import { NotificationDropdown } from './NotificationDropdown'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -70,9 +70,9 @@ const Header = () => {
               onClick={() => router.push('/bookmark')}
             />
           </button>
-          <button className="flex h-8 w-8 items-center justify-center gap-2.5">
-            <Bell className="h-5 w-5 cursor-pointer text-slate-800" />
-          </button>
+          <div className="flex h-8 w-8 items-center justify-center gap-2.5">
+            <NotificationDropdown />
+          </div>
           <button className="flex h-8 w-8 items-center justify-center gap-2.5">
             <UserCircle className="h-5 w-5 cursor-pointer text-slate-800" />
           </button>
