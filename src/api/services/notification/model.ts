@@ -3,7 +3,7 @@ export interface Notification {
   title: string
   body: string
   isRead: boolean
-  sendAt: string
+  sentAt: string
 }
 
 export interface DefaultResponse {
