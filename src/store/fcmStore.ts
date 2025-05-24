@@ -1,13 +1,19 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-interface FCMState {
+type FCMState = {
   fcmToken: string | null
-  setFCMToken: (token: string) => void
-  clearFCMToken: () => void
+  setFCMToken: (token: string | null) => void
 }
 
-export const useFCMStore = create<FCMState>((set) => ({
-  fcmToken: null,
-  setFCMToken: (token: string) => set({ fcmToken: token }),
-  clearFCMToken: () => set({ fcmToken: null }),
-}))
+export const useFCMStore = create(
+  persist<FCMState>(
+    (set) => ({
+      fcmToken: null,
+      setFCMToken: (token) => set({ fcmToken: token }),
+    }),
+    {
+      name: 'fcm-storage',
+    },
+  ),
+)

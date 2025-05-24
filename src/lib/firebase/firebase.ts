@@ -33,7 +33,7 @@ export const requestForToken = async (): Promise<string | null> => {
     })
     return token
   } catch (error) {
-    console.error('❌ FCM 토큰 요청 실패:', error)
+    // console.error('❌ FCM 토큰 요청 실패:', error)
     return null
   }
 }

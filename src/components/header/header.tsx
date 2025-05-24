@@ -1,16 +1,11 @@
 'use client'
 
-import {
-  Bookmark,
-  Menu,
-  MessageSquareCode,
-  UserCircle,
-} from 'lucide-react'
+import { Bookmark, Menu, MessageSquareCode, UserCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import SlideMenu from './SlideMenu'
 import { useRouter } from 'next/navigation'
-import { NotificationDropdown } from './NotificationDropdown'
+import { NotificationDropdown } from './Notification/NotificationDropdown'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -50,14 +45,6 @@ const Header = () => {
             >
               <span className="text-base leading-[19.09px] font-medium text-black">
                 커뮤니티
-              </span>
-            </Link>
-            <Link
-              href="/user"
-              className="flex flex-col items-center justify-center gap-2.5 px-2.5"
-            >
-              <span className="text-base leading-[19.09px] font-medium text-black">
-                마이페이지
               </span>
             </Link>
           </nav>

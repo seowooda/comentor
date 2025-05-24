@@ -22,7 +22,7 @@ export const NotificationCard = ({
           <p className="text-xs text-slate-600">{description}</p>
         </div>
       </div>
-      {right}
+      {right && <div>{right}</div>}
     </div>
   )
 }
