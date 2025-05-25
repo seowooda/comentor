@@ -1,9 +1,14 @@
 import { fetcher, useGetQuery } from '@/api/lib/fetcher'
 import { DefaultResponse, Notification } from './model'
 import { useMutation } from '@tanstack/react-query'
+import { useAuthStore } from '@/store/authStore'
 
 export const useNotifications = () => {
-  return useGetQuery<Notification[]>(['notifications'], '/notifications')
+  const { accessToken } = useAuthStore()
+
+  return useGetQuery<Notification[]>(['notifications'], '/notifications', {
+    enabled: !!accessToken,
+  })
 }
 
 export const useReadNotification = () => {

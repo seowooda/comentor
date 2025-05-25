@@ -1,4 +1,4 @@
-export interface FCMRegisterRequest {
+export interface FCMToken {
   fcmToken: string
 }
 

@@ -22,7 +22,7 @@ const Header = () => {
             <MessageSquareCode className="h-[29px] w-[28px] text-slate-800 outline-slate-600" />
           </Link>
 
-          <nav className="hidden h-[66px] items-center justify-between md:flex lg:w-[395px] lg:px-6">
+          <nav className="hidden h-[66px] items-center gap-2 md:flex lg:w-[395px] lg:px-6">
             <Link
               href="/dashboard"
               className="flex flex-col items-center justify-center gap-2.5 px-2.5"
@@ -37,14 +37,6 @@ const Header = () => {
             >
               <span className="text-base leading-[19.09px] font-medium text-black">
                 CS
-              </span>
-            </Link>
-            <Link
-              href="/community"
-              className="flex items-center justify-center gap-2.5 px-2.5"
-            >
-              <span className="text-base leading-[19.09px] font-medium text-black">
-                커뮤니티
               </span>
             </Link>
           </nav>
