@@ -4,6 +4,7 @@ import { Bell } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -71,8 +72,9 @@ export const NotificationDropdown = () => {
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="mr-3 max-h-80 w-72 overflow-y-auto">
-        <DropdownMenuLabel className="flex items-center justify-between text-sm font-semibold text-slate-700">
+      {/* 상단 메뉴 */}
+      <DropdownMenuContent className="mr-3 w-72">
+        <DropdownMenuLabel className="flex items-center justify-between px-4 py-2 text-sm font-semibold text-slate-700">
           <p>알림</p>
           <p
             className="cursor-pointer text-xs text-blue-500 hover:underline"
@@ -83,20 +85,31 @@ export const NotificationDropdown = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {notifications.length === 0 ? (
-          <div className="px-4 py-2 text-sm text-slate-500">
-            알림이 없습니다.
-          </div>
-        ) : (
-          notifications.map((item) => (
-            <NotificationItem
-              key={item.id}
-              item={item}
-              onRead={markAsRead}
-              onNavigate={() => handleNotificationClick(item)}
-            />
-          ))
-        )}
+        {/* 알림 목록 */}
+        <div className="max-h-56 overflow-y-auto [&::-webkit-scrollbar]:hidden">
+          {notifications.length === 0 ? (
+            <div className="px-4 py-2 text-sm text-slate-500">
+              알림이 없습니다.
+            </div>
+          ) : (
+            notifications.map((item) => (
+              <NotificationItem
+                key={item.id}
+                item={item}
+                onClick={() => handleNotificationClick(item)}
+              />
+            ))
+          )}
+        </div>
+        <DropdownMenuSeparator />
+
+        {/* 하단 메뉴 */}
+        <DropdownMenuItem
+          onClick={() => router.push('/notification')}
+          className="cursor-pointer justify-center px-4 py-2 text-sm text-slate-600"
+        >
+          <span>알림 설정</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
