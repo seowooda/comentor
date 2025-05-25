@@ -5,8 +5,7 @@ import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 
 interface Props {
   item: Notification
-  onRead: (id: number) => void
-  onNavigate?: (id: number) => void
+  onClick?: () => void
 }
 
 const formatSendDate = (sentAt: string) => {
@@ -22,15 +21,10 @@ const formatSendDate = (sentAt: string) => {
   return `${date.getMonth() + 1}월 ${date.getDate()}일`
 }
 
-export const NotificationItem = ({ item, onRead, onNavigate }: Props) => {
-  const handleClick = () => {
-    if (!item.isRead) onRead(item.id)
-    if (onNavigate) onNavigate(item.id)
-  }
-
+export const NotificationItem = ({ item, onClick }: Props) => {
   return (
     <DropdownMenuItem
-      onClick={handleClick}
+      onClick={onClick}
       className="flex flex-col items-start gap-1 px-2 py-2"
     >
       <div className="flex w-full items-center justify-between">
@@ -44,9 +38,7 @@ export const NotificationItem = ({ item, onRead, onNavigate }: Props) => {
             {item.title}
           </p>
         </div>
-        <p className="text-xs whitespace-nowrap text-slate-500">
-          {formatSendDate(item.sentAt)}
-        </p>
+        <p className="text-xs text-slate-500">{formatSendDate(item.sentAt)}</p>
       </div>
       <p className="max-w-[220px] truncate pl-4 text-xs text-slate-600">
         {item.body}
