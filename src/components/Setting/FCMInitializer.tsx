@@ -1,4 +1,5 @@
 'use client'
+
 import { useEffect } from 'react'
 import { initFCMToken } from '@/lib/firebase/initFCMToken'
 import { useDeleteFCMToken, useRegisterFCMToken } from '@/api'
@@ -9,17 +10,21 @@ const FCMInitializer = () => {
   const { mutate: registerToken } = useRegisterFCMToken()
   const { mutate: deleteToken } = useDeleteFCMToken()
   const { fcmToken, setFCMToken } = useFCMStore()
-  const permission = useNotificationStore((state) => state.permission)
+  const { permission, setIsRegistering } = useNotificationStore()
 
   useEffect(() => {
-    if (permission === 'granted') {
-      if (!fcmToken) {
-        initFCMToken((token) => {
-          if (!token) return
-          registerToken({ fcmToken: token })
-          setFCMToken(token)
-        })
-      }
+    const register = async () => {
+      setIsRegistering(true)
+      initFCMToken((token) => {
+        if (!token) return
+        registerToken({ fcmToken: token })
+        setFCMToken(token)
+        setIsRegistering(false)
+      }).catch(() => setIsRegistering(false))
+    }
+
+    if (permission === 'granted' && !fcmToken) {
+      register()
     }
 
     if (permission === 'denied' && fcmToken) {
