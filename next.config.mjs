@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+
+import nextPWA from 'next-pwa'
+
 const nextConfig = {
   async rewrites() {
     return [
@@ -34,4 +37,20 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+const withPWA = nextPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+  buildExcludes: [
+    /middleware-manifest\.json$/,
+    /react-loadable-manifest\.json$/,
+    /build-manifest\.json$/,
+    /prerender-manifest\.json$/,
+    /routes-manifest\.json$/,
+    /server\/middleware-runtime\.js$/,
+    /\.map$/,
+  ],
+})
+
+export default withPWA(nextConfig)
