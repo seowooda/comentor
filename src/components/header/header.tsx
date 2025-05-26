@@ -1,16 +1,11 @@
 'use client'
 
-import {
-  Bell,
-  Bookmark,
-  Menu,
-  MessageSquareCode,
-  UserCircle,
-} from 'lucide-react'
+import { Bookmark, Menu, MessageSquareCode, UserCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import SlideMenu from './SlideMenu'
 import { useRouter } from 'next/navigation'
+import { NotificationDropdown } from './Notification/NotificationDropdown'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -27,7 +22,7 @@ const Header = () => {
             <MessageSquareCode className="h-[29px] w-[28px] text-slate-800 outline-slate-600" />
           </Link>
 
-          <nav className="hidden h-[66px] items-center justify-between md:flex lg:w-[395px] lg:px-6">
+          <nav className="hidden h-[66px] items-center gap-2 md:flex lg:w-[395px] lg:px-6">
             <Link
               href="/dashboard"
               className="flex flex-col items-center justify-center gap-2.5 px-2.5"
@@ -44,22 +39,6 @@ const Header = () => {
                 CS
               </span>
             </Link>
-            <Link
-              href="/community"
-              className="flex items-center justify-center gap-2.5 px-2.5"
-            >
-              <span className="text-base leading-[19.09px] font-medium text-black">
-                커뮤니티
-              </span>
-            </Link>
-            <Link
-              href="/user"
-              className="flex flex-col items-center justify-center gap-2.5 px-2.5"
-            >
-              <span className="text-base leading-[19.09px] font-medium text-black">
-                마이페이지
-              </span>
-            </Link>
           </nav>
         </div>
 
@@ -70,9 +49,9 @@ const Header = () => {
               onClick={() => router.push('/bookmark')}
             />
           </button>
-          <button className="flex h-8 w-8 items-center justify-center gap-2.5">
-            <Bell className="h-5 w-5 cursor-pointer text-slate-800" />
-          </button>
+          <div className="flex h-8 w-8 items-center justify-center gap-2.5">
+            <NotificationDropdown />
+          </div>
           <button className="flex h-8 w-8 items-center justify-center gap-2.5">
             <UserCircle className="h-5 w-5 cursor-pointer text-slate-800" />
           </button>
