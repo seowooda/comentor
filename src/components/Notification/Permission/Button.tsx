@@ -12,18 +12,21 @@ export const NotificationPermissionButton = () => {
   const { fcmToken, setFCMToken } = useFCMStore()
   const { permission, isRegistering, setIsRegistering } = useNotificationStore()
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (permission !== 'default' || fcmToken || isRegistering) return
 
     setIsRegistering(true)
-    initFCMToken((token) => {
+    try {
+      const token = await initFCMToken()
       if (!token) return
+
       registerToken({ fcmToken: token })
       setFCMToken(token)
+    } catch (error) {
+      console.error('FCM 토큰 등록 실패:', error)
+    } finally {
       setIsRegistering(false)
-    }).catch(() => {
-      setIsRegistering(false)
-    })
+    }
   }
 
   let icon = <Bell size={20} />

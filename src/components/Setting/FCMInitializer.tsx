@@ -15,12 +15,17 @@ const FCMInitializer = () => {
   useEffect(() => {
     const register = async () => {
       setIsRegistering(true)
-      initFCMToken((token) => {
+      try {
+        const token = await initFCMToken()
         if (!token) return
+
         registerToken({ fcmToken: token })
         setFCMToken(token)
+      } catch (error) {
+        console.error('FCM 토큰 등록 실패:', error)
+      } finally {
         setIsRegistering(false)
-      }).catch(() => setIsRegistering(false))
+      }
     }
 
     if (permission === 'granted' && !fcmToken) {
