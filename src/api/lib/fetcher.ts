@@ -89,24 +89,31 @@ export const useGetQuery = <T>(
   })
 }
 
-export const usePostMutation = <T, V>(
+export const usePostMutation = <T, V = void>(
   url: string,
   options?: UseMutationOptions<T, Error, V>,
 ) => {
   return useMutation<T, Error, V>({
     mutationFn: (data: V) =>
-      fetcher<T>(url, { method: 'POST', body: JSON.stringify(data) }),
+      fetcher<T>(url, {
+        method: 'POST',
+        ...(data !== undefined && { body: JSON.stringify(data) }),
+      }),
     ...options,
   })
 }
 
-export const usePutMutation = <T, V>(
+export const usePutMutation = <T, V = void>(
   url: string,
   options?: UseMutationOptions<T, Error, V>,
 ) => {
   return useMutation<T, Error, V>({
     mutationFn: (data: V) =>
-      fetcher<T>(url, { method: 'PUT', body: JSON.stringify(data) }),
+      fetcher<T>(url, {
+        method: 'PUT',
+        ...(data !== undefined &&
+          data !== null && { body: JSON.stringify(data) }),
+      }),
     ...options,
   })
 }
