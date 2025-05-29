@@ -13,9 +13,10 @@ interface AuthState {
   setGithubAccessToken: (token: string) => void
   setRole: (role: UserRole) => void
   clearAuth: () => void
+  isLoggedIn: () => boolean
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: Cookies.get('accessToken') || null,
   refreshToken: Cookies.get('refreshToken') || null,
   githubAccessToken: Cookies.get('githubToken') || null,
@@ -40,7 +41,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   setGithubAccessToken: (token) => {
-    Cookies.set('githubToken', token, {
+    Cookies.set('githubAccessToken', token, {
       secure: true,
       sameSite: 'Strict',
       expires: 7, // ✅ 7일 유지
@@ -58,15 +59,19 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (env === 'dev') {
       Cookies.remove('accessToken')
       Cookies.remove('refreshToken')
-      Cookies.remove('githubToken')
+      Cookies.remove('githubAccessToken')
     } else {
       const options = { path: '/', domain: '.comentor.store' }
 
       Cookies.remove('accessToken', options)
       Cookies.remove('refreshToken', options)
-      Cookies.remove('githubToken', options)
+      Cookies.remove('githubAccessToken', options)
     }
     Cookies.remove('role')
     set({ accessToken: null, refreshToken: null, role: null })
+  },
+  isLoggedIn: () => {
+    const { accessToken, role } = get()
+    return !!accessToken && role === 'USER'
   },
 }))
