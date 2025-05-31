@@ -17,3 +17,9 @@ export interface DefaultResponse {
   message: string
   result: null
 }
+
+export interface RefreshTokenResponse {
+  code: number
+  message: string
+  result: string
+}
