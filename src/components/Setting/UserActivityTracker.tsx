@@ -12,10 +12,17 @@ const UserActivityTracker = () => {
   useEffect(() => {
     if (!isLoggedIn) return
 
-    const startInterval = () => {
-      intervalRef.current = setInterval(() => mutate(), 5 * 60 * 1000)
+    // 활동 기록 전송
+    const sendActivity = () => {
+      mutate()
     }
 
+    // 탭 활성화 시 interval 시작
+    const startInterval = () => {
+      intervalRef.current = setInterval(sendActivity, 5 * 60 * 1000)
+    }
+
+    // interval 중단
     const clearIntervalIfExists = () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current)
@@ -23,19 +30,12 @@ const UserActivityTracker = () => {
       }
     }
 
+    // 창 종료 또는 새로고침 시 활동 기록 전송 (mutate는 비동기이므로 성공 보장X)
     const handleBeforeUnload = () => {
-      if (process.env.NEXT_PUBLIC_ENV === 'prod') {
-        const success = navigator.sendBeacon?.(
-          'https://comentor.store/api/user/activity',
-        )
-        if (success === false || success === undefined) {
-          mutate()
-        }
-      } else {
-        mutate()
-      }
+      sendActivity()
     }
 
+    // 탭 비활성화 시 interval 중단
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         startInterval()
@@ -44,6 +44,7 @@ const UserActivityTracker = () => {
       }
     }
 
+    // 초기에 탭이 보이면 시작
     if (document.visibilityState === 'visible') {
       startInterval()
     }

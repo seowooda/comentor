@@ -14,13 +14,28 @@ interface AuthState {
   setRole: (role: UserRole) => void
   clearAuth: () => void
   isLoggedIn: () => boolean
+  hydrate: () => void
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: Cookies.get('accessToken') || null,
   refreshToken: Cookies.get('refreshToken') || null,
-  githubAccessToken: Cookies.get('githubToken') || null,
-  role: (Cookies.get('role') as UserRole) || null,
+  githubAccessToken: Cookies.get('githubAccessToken') || null,
+  role: (Cookies.get('role') as UserRole) || 'GUEST',
+
+  hydrate: () => {
+    const accessToken = Cookies.get('accessToken') || null
+    const refreshToken = Cookies.get('refreshToken') || null
+    const githubAccessToken = Cookies.get('githubAccessToken') || null
+    const role = (Cookies.get('role') as UserRole) || 'GUEST'
+
+    set({
+      accessToken,
+      refreshToken,
+      githubAccessToken,
+      role,
+    })
+  },
 
   setAccessToken: (token) => {
     Cookies.set('accessToken', token, {
@@ -35,7 +50,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     Cookies.set('refreshToken', token, {
       secure: true,
       sameSite: 'Strict',
-      expires: 7, // ✅ 7일 유지
+      expires: 7,
     })
     set({ refreshToken: token })
   },
@@ -44,7 +59,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     Cookies.set('githubAccessToken', token, {
       secure: true,
       sameSite: 'Strict',
-      expires: 7, // ✅ 7일 유지
+      expires: 7,
     })
     set({ githubAccessToken: token })
   },
@@ -56,20 +71,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   clearAuth: () => {
     const env = process.env.NEXT_PUBLIC_ENV
-    if (env === 'dev') {
-      Cookies.remove('accessToken')
-      Cookies.remove('refreshToken')
-      Cookies.remove('githubAccessToken')
-    } else {
-      const options = { path: '/', domain: '.comentor.store' }
+    const cookieOptions =
+      env === 'dev' ? undefined : { path: '/', domain: '.comentor.store' }
 
-      Cookies.remove('accessToken', options)
-      Cookies.remove('refreshToken', options)
-      Cookies.remove('githubAccessToken', options)
-    }
+    Cookies.remove('accessToken', cookieOptions)
+    Cookies.remove('refreshToken', cookieOptions)
+    Cookies.remove('githubAccessToken', cookieOptions)
     Cookies.remove('role')
-    set({ accessToken: null, refreshToken: null, role: null })
+
+    set({
+      accessToken: null,
+      refreshToken: null,
+      githubAccessToken: null,
+      role: null,
+    })
   },
+
   isLoggedIn: () => {
     const { accessToken, role } = get()
     return !!accessToken && role === 'USER'
