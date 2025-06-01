@@ -31,11 +31,6 @@ const StreakChartModal = ({
     router.push('/cs') // CS 연습 페이지로 이동
   }
 
-  const handleStartLearningToday = () => {
-    onClose() // 모달 닫기
-    router.push('/cs/today') // CS 오늘 학습 페이지로 이동
-  }
-
   if (isLoading) {
     return (
       <div className="w-[90vw] max-w-md rounded-lg bg-white p-4 shadow-xl sm:w-[462px] sm:max-w-lg sm:p-6 md:w-[580px] lg:w-[680px]">
@@ -54,7 +49,7 @@ const StreakChartModal = ({
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
             <TrendingUp className="h-4 w-4 text-green-600" />
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
+          <div className="flex gap-2 sm:flex-row sm:items-start sm:gap-4">
             <h2 className="text-base font-semibold text-gray-900 sm:text-lg">
               학습 연속 기록
             </h2>
