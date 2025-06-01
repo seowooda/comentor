@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useModalStore } from '@/store/modalStore'
 import { CreateFolderModal, DeleteFolderModal, EditFolderModal } from './Folder'
+import StreakChartModal from '@/components/header/StreakChartModal'
 import { ModalProps } from '@/types/modal'
 
 const GlobalModal = () => {
@@ -47,6 +48,16 @@ const GlobalModal = () => {
             questionId={questionId}
             csQuestionId={csQuestionId}
             onBookmarkDone={onBookmarkDone}
+            onClose={closeModal}
+          />
+        )
+      case 'streakChart':
+        const { streakCount, learningData } =
+          modalProps as ModalProps['streakChart']
+        return (
+          <StreakChartModal
+            streakCount={streakCount}
+            learningData={learningData}
             onClose={closeModal}
           />
         )

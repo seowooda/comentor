@@ -162,31 +162,33 @@ export default function LearningInsights({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-8 min-[1250px]:flex-row">
-            <Card className="flex w-full flex-1 flex-col items-center justify-center gap-6 p-6">
-              <div className="w-full max-w-[500px]">
-                <h4 className="mb-2 text-lg font-semibold text-indigo-700">
-                  카테고리 별 학습 분포
-                </h4>
-                <PieChartComponent
-                  data={pieData}
-                  isLoading={isPieLoading}
-                  error={pieError}
-                />
-              </div>
-            </Card>
-            <Card className="flex w-full flex-1 flex-col items-center justify-center gap-6 p-6">
-              <div className="w-full max-w-[500px]">
-                <h4 className="mb-2 text-lg font-semibold text-indigo-700">
-                  오답률이 높은 항목
-                </h4>
-                <StackedBarChartComponent
-                  data={barData}
-                  isLoading={isBarLoading}
-                  error={barError}
-                />
-              </div>
-            </Card>
+          <div className="overflow-x-auto">
+            <div className="flex min-w-[640px] flex-col gap-8 min-[1250px]:flex-row">
+              <Card className="flex w-full flex-1 flex-col items-center justify-center gap-6 p-6">
+                <div className="w-full max-w-[500px]">
+                  <h4 className="mb-2 text-lg font-semibold text-indigo-700">
+                    카테고리 별 학습 분포
+                  </h4>
+                  <PieChartComponent
+                    data={pieData}
+                    isLoading={isPieLoading}
+                    error={pieError}
+                  />
+                </div>
+              </Card>
+              <Card className="flex w-full flex-1 flex-col items-center justify-center gap-6 p-6">
+                <div className="w-full max-w-[500px]">
+                  <h4 className="mb-2 text-lg font-semibold text-indigo-700">
+                    오답률이 높은 항목
+                  </h4>
+                  <StackedBarChartComponent
+                    data={barData}
+                    isLoading={isBarLoading}
+                    error={barError}
+                  />
+                </div>
+              </Card>
+            </div>
           </div>
         </CardContent>
       </Card>
