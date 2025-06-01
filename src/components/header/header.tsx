@@ -43,7 +43,10 @@ const Header = () => {
         </div>
 
         <div className="flex h-[33px] items-center justify-between">
-          <button className="hidden h-8 w-8 items-center justify-center gap-2.5 px-1 md:flex">
+          <button
+            aria-label="북마크"
+            className="hidden h-8 w-8 items-center justify-center gap-2.5 px-1 md:flex"
+          >
             <Bookmark
               className="h-5 w-5 cursor-pointer text-slate-800"
               onClick={() => router.push('/bookmark')}
@@ -52,10 +55,15 @@ const Header = () => {
           <div className="flex h-8 w-8 items-center justify-center gap-2.5">
             <NotificationDropdown />
           </div>
-          <button className="flex h-8 w-8 items-center justify-center gap-2.5">
+          <button
+            aria-label="마이페이지"
+            onClick={() => router.push('/user')}
+            className="flex h-8 w-8 items-center justify-center gap-2.5"
+          >
             <UserCircle className="h-5 w-5 cursor-pointer text-slate-800" />
           </button>
           <button
+            aria-label="메뉴 열기"
             className="flex h-8 w-8 items-center justify-center gap-2.5 md:hidden"
             onClick={() => setIsMenuOpen(true)}
           >

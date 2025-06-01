@@ -61,7 +61,7 @@ export const NotificationDropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="relative" aria-label="알림 열기">
+        <button className="relative cursor-pointer" aria-label="알림 열기">
           <Bell size={20} className="text-slate-800" />
           {hasUnread && (
             <span className="absolute -top-1 -right-1 flex h-2 w-2">
