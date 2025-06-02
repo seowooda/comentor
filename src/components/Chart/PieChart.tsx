@@ -32,7 +32,10 @@ export default function PieChartComponent({
     )
   }
 
-  if (data.length === 0) return <div>데이터가 없습니다.</div>
+  // 데이터가 없거나 모든 값이 0인지 체크
+  if (!data || data.length === 0 || !data.some((item) => item.value > 0)) {
+    return <div>데이터가 없습니다.</div>
+  }
 
   return (
     <div className="w-full">

@@ -39,7 +39,15 @@ export default function StackedBarChartComponent({
     return (
       <div>에러: {error instanceof Error ? error.message : String(error)}</div>
     )
-  if (!data || data.length === 0) return <div>데이터가 없습니다.</div>
+
+  // 데이터가 없거나 모든 값이 0인지 체크
+  if (
+    !data ||
+    data.length === 0 ||
+    !data.some((item) => item.correct > 0 || item.incorrect > 0)
+  ) {
+    return <div>데이터가 없습니다.</div>
+  }
 
   return (
     <div className="w-full">
