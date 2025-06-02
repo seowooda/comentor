@@ -204,7 +204,7 @@ export function generateSkeleton<P extends object>(
 /**
  * 기본 스켈레톤 박스 컴포넌트
  */
-export function SkeletonBox({
+const SkeletonBox = ({
   width,
   height = 16,
   className,
@@ -212,7 +212,7 @@ export function SkeletonBox({
   width?: string | number
   height?: string | number
   className?: string
-}) {
+}) => {
   const styleProps: React.CSSProperties = {}
 
   if (height !== undefined) {
@@ -228,3 +228,5 @@ export function SkeletonBox({
     style: styleProps,
   })
 }
+
+export { SkeletonBox }

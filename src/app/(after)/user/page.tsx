@@ -1,7 +1,7 @@
 import { fetchUserInfo } from '@/api/services/user/server/queries'
 import { EditForm } from '@/components/User/EditForm'
 
-export default async function Page() {
+const Page = async () => {
   const response = await fetchUserInfo()
   const user = response.result
 
@@ -11,3 +11,5 @@ export default async function Page() {
     </main>
   )
 }
+
+export default Page

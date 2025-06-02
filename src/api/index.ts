@@ -6,7 +6,12 @@
 // =============== 사용자 (User) ===============
 // 타입
 export type { User, UserResponse } from '@/api/services/user/model'
-export { useUserJoin, useUserEdit } from '@/api/services/user/queries'
+export {
+  useUserJoin,
+  useUserEdit,
+  useUserActivity,
+  useRefreshAccessToken,
+} from '@/api/services/user/queries'
 
 // =============== 사용자 학습 기록 (User Learning) ===============
 // 타입
@@ -112,12 +117,12 @@ export {
 //folder
 export type { Folder, Questions } from '@/api/services/folder/model'
 export {
-  folderInfo,
-  folderUpdate,
-  folderDelete,
-  folderQuestions,
-  folderBookmark,
-  folderBookmarkCancel,
+  useFolderInfo,
+  useFolderUpdate,
+  useFolderDelete,
+  useFolderQuestions,
+  useFolderBookmark,
+  useFolderBookmarkCancel,
 } from '@/api/services/folder/queries'
 
 export type {
@@ -126,9 +131,20 @@ export type {
   CSAnswer,
 } from '@/api/services/CS/model'
 export {
-  getCSQuestion,
-  getCSQuestionDetail,
+  useGetCSQuestion,
+  useGetCSQuestionDetail,
   useInfiniteQuestions,
   useCSFeedback,
   useCSRetryFeedback,
 } from '@/api/services/CS/queries'
+
+export {
+  useRegisterFCMToken,
+  useDeleteFCMToken,
+} from '@/api/services/FCM/queries'
+
+export type { Notification } from '@/api/services/notification/model'
+export {
+  useNotifications,
+  useReadNotification,
+} from '@/api/services/notification/queries'

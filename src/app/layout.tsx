@@ -3,8 +3,13 @@ import './globals.css'
 import Header from '@/components/header/header'
 import { MSWComponent } from '@/api/MSWComponent'
 import ReactQueryProvider from '@/providers/ReactQueryClient'
-import AutoRefreshToken from '@/components/AuthSetting/token'
+
 import GlobalModal from '@/components/Modal/GlobalModal'
+import {
+  AutoRefreshToken,
+  FCMInitializer,
+  UserActivityTracker,
+} from '@/components/Setting'
 
 export const metadata: Metadata = {
   title: 'CoMentor',
@@ -19,13 +24,14 @@ const RootLayout = ({
   return (
     <html lang="en">
       <body className="flex h-dvh flex-col antialiased">
-        <AutoRefreshToken />
-
         {process.env.NEXT_PUBLIC_MSW === 'enable' ? (
           <MSWComponent>
             <ReactQueryProvider>
-              <GlobalModal />
+              <AutoRefreshToken />
+              <FCMInitializer />
+              <UserActivityTracker />
 
+              <GlobalModal />
               <header className="mx-[60px]">
                 <Header />
               </header>
@@ -35,8 +41,11 @@ const RootLayout = ({
           </MSWComponent>
         ) : (
           <ReactQueryProvider>
-            <GlobalModal />
+            <AutoRefreshToken />
+            <FCMInitializer />
+            <UserActivityTracker />
 
+            <GlobalModal />
             <header className="mx-[60px]">
               <Header />
             </header>

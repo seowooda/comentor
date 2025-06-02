@@ -116,8 +116,7 @@ export default function AnswerForm({
         <Textarea
           value={answer}
           onChange={(e) => onAnswerChange(e.target.value)}
-          placeholder="질문에 대한
-답변을 작성해 주세요..."
+          placeholder="질문에 대한 답변을 작성해 주세요..."
           className="min-h-[150px] resize-none"
           disabled={isLoading || isAnswered}
         />

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { ONBOARDING_TEXTS, EFeatureCategory } from '../constants'
 import { ModernIcon } from '../components/ModernIcon'
 
-export function FeatureSection() {
+export const FeatureSection = () => {
   const featuresRef = useRef<HTMLDivElement>(null)
 
   const getIconTypeByCategory = (category: EFeatureCategory) => {
@@ -120,3 +120,5 @@ export function FeatureSection() {
     </div>
   )
 }
+
+export default FeatureSection

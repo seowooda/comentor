@@ -7,7 +7,7 @@ import { CSHistory } from '@/components/CS/History'
 import { CSHistorySkeleton } from '@/components/Skeleton/CSHistorySkeleton'
 import { useInfiniteQuestions } from '@/api'
 
-export default function Page() {
+const Page = () => {
   const [selectedCategory, setSelectedCategory] = useState<CSCategory | null>(
     null,
   )
@@ -71,3 +71,5 @@ export default function Page() {
     </main>
   )
 }
+
+export default Page

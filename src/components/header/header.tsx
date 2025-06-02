@@ -1,17 +1,12 @@
 'use client'
 
-import {
-  Bell,
-  Bookmark,
-  Menu,
-  MessageSquareCode,
-  UserCircle,
-} from 'lucide-react'
+import { Bookmark, Menu, MessageSquareCode, UserCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import SlideMenu from './SlideMenu'
 import DayStreak from './DayStreak'
 import { useRouter } from 'next/navigation'
+import { NotificationDropdown } from './Notification/NotificationDropdown'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -31,7 +26,7 @@ const Header = () => {
             <MessageSquareCode className="h-[18px] w-[18px] flex-shrink-0 text-slate-800 outline-slate-600 sm:h-[24px] sm:w-[24px] lg:h-[29px] lg:w-[28px]" />
           </Link>
 
-          <nav className="hidden h-[66px] items-center justify-between overflow-hidden lg:w-[395px] lg:px-6 [@media(min-width:800px)]:flex">
+          <nav className="hidden h-[66px] items-center gap-2 md:flex lg:w-[395px] lg:px-6">
             <Link
               href="/dashboard"
               className="flex flex-shrink-0 flex-col items-center justify-center gap-2.5 px-1 sm:px-2.5"
@@ -48,22 +43,6 @@ const Header = () => {
                 CS
               </span>
             </Link>
-            <Link
-              href="/community"
-              className="flex flex-shrink-0 items-center justify-center gap-2.5 px-1 sm:px-2.5"
-            >
-              <span className="text-sm leading-[19.09px] font-medium whitespace-nowrap text-black lg:text-base">
-                커뮤니티
-              </span>
-            </Link>
-            <Link
-              href="/user"
-              className="flex flex-shrink-0 flex-col items-center justify-center gap-2.5 px-1 sm:px-2.5"
-            >
-              <span className="text-sm leading-[19.09px] font-medium whitespace-nowrap text-black lg:text-base">
-                마이페이지
-              </span>
-            </Link>
           </nav>
         </div>
 
@@ -71,19 +50,27 @@ const Header = () => {
           <div className="hidden [@media(min-width:420px)]:block">
             <DayStreak />
           </div>
-          <button className="hidden h-8 w-8 flex-shrink-0 items-center justify-center [@media(min-width:800px)]:flex">
+          <button
+            aria-label="북마크"
+            className="hidden h-8 w-8 flex-shrink-0 items-center justify-center [@media(min-width:800px)]:flex"
+          >
             <Bookmark
               className="h-5 w-5 cursor-pointer text-slate-800"
               onClick={() => router.push('/bookmark')}
             />
           </button>
-          <button className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
-            <Bell className="h-5 w-5 cursor-pointer text-slate-800" />
-          </button>
-          <button className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center">
+            <NotificationDropdown />
+          </div>
+          <button
+            aria-label="마이페이지"
+            onClick={() => router.push('/user')}
+            className="flex h-8 w-8 flex-shrink-0 items-center justify-center"
+          >
             <UserCircle className="h-5 w-5 cursor-pointer text-slate-800" />
           </button>
           <button
+            aria-label="메뉴 열기"
             className="flex h-8 w-8 flex-shrink-0 items-center justify-center [@media(min-width:800px)]:hidden"
             onClick={() => setIsMenuOpen(true)}
           >

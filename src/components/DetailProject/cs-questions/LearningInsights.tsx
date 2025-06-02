@@ -50,6 +50,10 @@ const learningResources = [
   },
 ]
 
+/**
+ * 학습 인사이트 컴포넌트
+ * CS 질문에 대한 사용자의 학습 현황 및 추가 정보를 표시
+ */
 export default function LearningInsights({
   questions,
   className = '',
