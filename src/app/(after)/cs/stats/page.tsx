@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import PieChartComponent from '@/components/Chart/PieChart'
 import StackedBarChartComponent from '@/components/Chart/StackedBarChart'
 import {
@@ -9,12 +9,11 @@ import {
   normalizeCategoryCount,
   normalizeCategoryCorrectStats,
 } from '@/api/services/categoryStats/service'
-import {
-  CATEGORY_KEYS,
-  CATEGORY_MAP,
-} from '@/api/services/categoryStats/constants'
+import { mapCS } from '@/lib/mapEnum'
+import { CSCategory } from '@/api/types/common'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartColumn } from 'lucide-react'
+import { ChartCard } from '@/components/ui/ChartCard'
 
 export default function CSChartPage() {
   const {
@@ -31,16 +30,26 @@ export default function CSChartPage() {
   const pieNormalized = normalizeCategoryCount(rawPie?.result ?? {})
   const barNormalized = normalizeCategoryCorrectStats(rawBar?.result ?? [])
 
-  const pieData = CATEGORY_KEYS.map((key) => ({
-    name: CATEGORY_MAP[key],
-    value: pieNormalized[key] ?? 0,
-  })).filter((d) => d.value > 0)
+  const pieData = useMemo(
+    () =>
+      Object.values(CSCategory)
+        .map((key) => ({
+          name: mapCS(key as CSCategory),
+          value: pieNormalized[key] ?? 0,
+        }))
+        .filter((d) => d.value > 0),
+    [pieNormalized],
+  )
 
-  const barData = CATEGORY_KEYS.map((key) => ({
-    name: CATEGORY_MAP[key],
-    correct: barNormalized[key]?.correct ?? 0,
-    incorrect: barNormalized[key]?.incorrect ?? 0,
-  }))
+  const barData = useMemo(
+    () =>
+      Object.values(CSCategory).map((key) => ({
+        name: mapCS(key as CSCategory),
+        correct: barNormalized[key]?.correct ?? 0,
+        incorrect: barNormalized[key]?.incorrect ?? 0,
+      })),
+    [barNormalized],
+  )
 
   return (
     <div className="space-y-6 p-6">
@@ -54,30 +63,28 @@ export default function CSChartPage() {
         <CardContent>
           <div className="overflow-x-auto">
             <div className="flex min-w-[640px] flex-col gap-8 min-[1250px]:flex-row">
-              <Card className="flex w-full flex-1 flex-col items-center justify-center gap-6 p-6">
-                <div className="w-full max-w-[500px]">
-                  <h4 className="mb-2 text-lg font-semibold text-indigo-700">
-                    카테고리별 풀이 수
-                  </h4>
-                  <PieChartComponent
-                    data={pieData}
-                    isLoading={isPieLoading}
-                    error={pieError}
-                  />
-                </div>
-              </Card>
-              <Card className="flex w-full flex-1 flex-col items-center justify-center gap-6 p-6">
-                <div className="w-full max-w-[500px]">
-                  <h4 className="mb-2 text-lg font-semibold text-indigo-700">
-                    정오답 분포
-                  </h4>
-                  <StackedBarChartComponent
-                    data={barData}
-                    isLoading={isBarLoading}
-                    error={barError}
-                  />
-                </div>
-              </Card>
+              <ChartCard
+                title="카테고리별 풀이 수"
+                isLoading={isPieLoading}
+                error={pieError}
+              >
+                <PieChartComponent
+                  data={pieData}
+                  isLoading={isPieLoading}
+                  error={pieError}
+                />
+              </ChartCard>
+              <ChartCard
+                title="정오답 분포"
+                isLoading={isBarLoading}
+                error={barError}
+              >
+                <StackedBarChartComponent
+                  data={barData}
+                  isLoading={isBarLoading}
+                  error={barError}
+                />
+              </ChartCard>
             </div>
           </div>
         </CardContent>

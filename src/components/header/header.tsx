@@ -4,7 +4,7 @@ import { Bookmark, Menu, MessageSquareCode, UserCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import SlideMenu from './SlideMenu'
-import DayStreak from './DayStreak'
+import DayStreak from '../Modal/DayStreak/DayStreak'
 import { useRouter } from 'next/navigation'
 import { NotificationDropdown } from './Notification/NotificationDropdown'
 

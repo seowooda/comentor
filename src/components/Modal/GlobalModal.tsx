@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useModalStore } from '@/store/modalStore'
 import { CreateFolderModal, DeleteFolderModal, EditFolderModal } from './Folder'
-import StreakChartModal from '@/components/header/StreakChartModal'
+import StreakChartModal from '@/components/Modal/DayStreak/StreakChartModal'
 import { ModalProps } from '@/types/modal'
 
 const GlobalModal = () => {

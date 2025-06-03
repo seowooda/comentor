@@ -1,9 +1,11 @@
 'use client'
 
+import { useMemo } from 'react'
 import { X, TrendingUp } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import LearningChart from './LearningChart'
 import { LearningHistoryItem, useLearningHistory } from '@/api'
+import { Button } from '@/components/ui/button'
 
 interface StreakChartModalProps {
   streakCount: number
@@ -22,9 +24,15 @@ const StreakChartModal = ({
   const { data: historyData, isLoading } = useLearningHistory()
 
   // props로 전달받은 데이터가 있으면 사용, 없으면 API 데이터 사용
-  const chartData =
-    learningData.length > 0 ? learningData : historyData?.result || []
-  const totalSolved = chartData.reduce((sum, item) => sum + item.solvedCount, 0)
+  const chartData = useMemo(
+    () => (learningData.length > 0 ? learningData : historyData?.result || []),
+    [learningData, historyData?.result],
+  )
+
+  const totalSolved = useMemo(
+    () => chartData.reduce((sum, item) => sum + item.solvedCount, 0),
+    [chartData],
+  )
 
   const handleStartLearning = () => {
     onClose() // 모달 닫기
@@ -60,12 +68,14 @@ const StreakChartModal = ({
             </div>
           </div>
         </div>
-        <button
+        <Button
           onClick={onClose}
-          className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-gray-100"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 rounded-full"
         >
-          <X className="h-4 w-4 text-gray-500" />
-        </button>
+          <X className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* 통계 카드 */}
@@ -89,18 +99,12 @@ const StreakChartModal = ({
 
       {/* 액션 버튼 */}
       <div className="flex gap-2 sm:gap-3">
-        <button
-          onClick={onClose}
-          className="flex-1 rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-200 sm:px-4 sm:text-base"
-        >
+        <Button onClick={onClose} variant="secondary" className="flex-1">
           닫기
-        </button>
-        <button
-          onClick={handleStartLearning}
-          className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm text-white transition-colors hover:bg-blue-700 sm:px-4 sm:text-base"
-        >
+        </Button>
+        <Button onClick={handleStartLearning} className="flex-1">
           CS 학습하기
-        </button>
+        </Button>
       </div>
     </div>
   )

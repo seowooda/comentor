@@ -1,10 +1,10 @@
 import { useGetQuery } from '@/api/lib/fetcher'
+import { CSCategory } from '@/api/types/common'
 import {
   CategoryQuestionCountResponse,
   CategoryCorrectStatsResponse,
   CategoryCorrectStat,
 } from './model'
-import { CATEGORY_KEYS } from './constants'
 
 // CS 연습 - 카테고리별 풀이 수
 export const useCategoryQuestionCount = () => {
@@ -43,7 +43,7 @@ export function normalizeCategoryCount(
   raw: Record<string, number>,
 ): Record<string, number> {
   const result: Record<string, number> = {}
-  for (const key of CATEGORY_KEYS) {
+  for (const key of Object.values(CSCategory)) {
     result[key] = raw[key] ?? 0
   }
   return result
@@ -54,7 +54,7 @@ export function normalizeCategoryCorrectStats(
   raw: CategoryCorrectStat[],
 ): Record<string, { correct: number; incorrect: number }> {
   const result: Record<string, { correct: number; incorrect: number }> = {}
-  for (const key of CATEGORY_KEYS) {
+  for (const key of Object.values(CSCategory)) {
     result[key] = { correct: 0, incorrect: 0 }
   }
   for (const stat of raw) {

@@ -13,17 +13,10 @@ export const useLearningHistory = (startDate?: string, endDate?: string) => {
   return useGetQuery<LearningHistoryResponse>(
     ['learningHistory', startDate || '', endDate || ''],
     url,
-    {
-      enabled: true,
-      staleTime: 1000 * 60 * 5, // 5분 캐시
-    },
   )
 }
 
 // 연속 학습일 수 조회
 export const useStreakCount = () => {
-  return useGetQuery<StreakCountResponse>(['streakCount'], '/log', {
-    enabled: true,
-    staleTime: 1000 * 60 * 5, // 5분 캐시
-  })
+  return useGetQuery<StreakCountResponse>(['streakCount'], '/log')
 }
