@@ -3,7 +3,7 @@
 import { useGetCSQuestion } from '@/api'
 import { CSCard } from '@/components/CS/Card/CSCard'
 import { CSCardSkeleton } from '@/components/Skeleton/CSCardSkeleton'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, ChartColumn } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 const Pag = () => {
@@ -27,6 +27,20 @@ const Pag = () => {
         </div>
       ) : (
         <>
+          {/* CS 학습 통계 섹션 (페이지 이동 버튼) */}
+          <section className="flex w-[880px] flex-col gap-3">
+            <div
+              className="flex cursor-pointer items-center justify-between gap-2 rounded-md"
+              onClick={() => router.push('/cs/stats')}
+            >
+              <div className="flex items-center gap-2">
+                <ChartColumn className="h-5 w-5 text-indigo-500" />
+                <p className="text-xl leading-5 font-bold">나의 CS 학습 통계</p>
+              </div>
+              <ChevronRight size={24} />
+            </div>
+          </section>
+
           {/* 오늘의 CS 질문 */}
           <section className="flex w-[880px] flex-col gap-5">
             <p className="text-xl leading-5 font-bold">오늘의 CS 질문</p>

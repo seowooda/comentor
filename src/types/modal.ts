@@ -1,6 +1,10 @@
-import { Folder } from '@/api'
+import { Folder, LearningHistoryItem } from '@/api'
 
-export type ModalType = 'editFolder' | 'deleteFolder' | 'createFolder'
+export type ModalType =
+  | 'editFolder'
+  | 'deleteFolder'
+  | 'createFolder'
+  | 'streakChart'
 
 export type ModalProps = {
   editFolder: { folder: Folder }
@@ -9,5 +13,9 @@ export type ModalProps = {
     questionId?: number
     csQuestionId?: number
     onBookmarkDone?: () => void
+  }
+  streakChart: {
+    streakCount: number
+    learningData?: LearningHistoryItem[]
   }
 }

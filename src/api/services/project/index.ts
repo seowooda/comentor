@@ -5,7 +5,6 @@ import {
   useDeleteMutation,
 } from '@/api/lib/fetcher'
 import { Project } from '@/api/services/project/model'
-
 // 프로젝트 생성 응답 타입 정의
 export interface ProjectCreateResponse {
   code: number

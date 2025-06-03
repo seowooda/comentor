@@ -13,6 +13,20 @@ export {
   useRefreshAccessToken,
 } from '@/api/services/user/queries'
 
+// =============== 사용자 학습 기록 (User Learning) ===============
+// 타입
+export type {
+  LearningHistoryItem,
+  LearningHistoryResponse,
+  StreakCountResponse,
+} from '@/api/services/userStudyLog/model'
+
+// API 함수
+export {
+  useLearningHistory,
+  useStreakCount,
+} from '@/api/services/userStudyLog/service'
+
 // =============== 프로젝트 (Project) ===============
 
 // 타입
