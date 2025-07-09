@@ -1,38 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CoMentor – CommitMentor
+> “내 프로젝트로 배우고, 내 경험으로 답한다.”
 
-## Getting Started
+<br/>
 
-First, run the development server:
+## 📌 개요
+취업 준비생과 개발자는 **프로젝트에서 사용한 CS 개념을 체계적으로 정리**하거나 **면접에서 사례 중심으로 설명**하는 데 어려움을 겪습니다.  
+CoMentor는 GitHub 커밋 내역을 분석하여 코드에 녹아든 CS 개념을 추출-분류하고,  
+AI 기반의 **맞춤형 CS 질문·피드백**을 반복 제공함으로써 **프로젝트 경험 ↔ 이론 지식**을 효과적으로 연결합니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠 기술 스택
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Layer | Tech & Version | 역할 |
+|-------|---------------|------|
+| **Frontend** | React · Next.js · TypeScript · Tailwind CSS | 대시보드, PWA, Push UI |
+| **State / Data** | React Query · Zustand  | 캐싱, 전역 상태 |
+| **Backend** | Spring Boot 3.x · Java 17 | REST API, 커밋 분석 엔진 |
+| **Database** | MySQL | 사용자, 커밋, 문제·피드백 저장 |
+| **Infra / DevOps** | Docker · GitHub Actions · AWS (ECS & RDS) | CI/CD, 배포 |
+| **3rd-Party** | GitHub REST API · OpenAI GPT API · FCM | 커밋 수집, 질문 생성, 푸시 알림 |
 
-## Learn More
+<br/>
 
-To learn more about Next.js, take a look at the following resources:
+## 🎯 해결 과제 & 가치
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| 문제 | CoMentor의 해결책 | 기대 효과 |
+|------|------------------|-----------|
+| 프로젝트에 쓰인 CS 개념을 모른다 | 커밋 분석 → CS 개념 태깅 | 프로젝트와 이론의 연계 학습 |
+| “면접에서 어떻게 설명하지?” | 코드 기반 **맞춤 CS 질문** 생성 | 사례 중심 답변 준비 & 자신감 향상 |
+| 방대한 기록 관리 부담 | 자동 저장 + 대시보드 & 폴더 관리 | 복습 편의성, 지속적 학습 동기 |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<br/>
 
-## Deploy on Vercel
+## ✨ 주요 기능
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 1. 프로젝트 기반 CS 연습
+* GitHub Repo 연동 & 커밋 기간 선택  
+* 코드 영역 택 → **AI 질문 3개 생성**  
+* 실시간 답변 피드백, 기록 자동 저장
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 2. 스택 맞춤 데일리 Q&A
+* 매일 오전 10시, 선택 스택별 **4문제 추천**  
+* 즉각 피드백 → “CS 연습 기록”에 누적
 
-# CoMentor-Frontend
+### 3. 통계·인사이트 대시보드
+* Day Streak, 카테고리 분포 Pie Chart  
+* 오답률 Top 개념 하이라이트 & 재연습 링크
+
+### 4. PWA + Push 알림
+* “오늘의 질문 도착”·“48h 미학습” 리마인더  
+* 브라우저 종료/오프라인에서도 FCM 푸시 전송
+
+<br/>
+
+## 🗺 로드맵
+
+| 스프린트 | 핵심 산출물 |
+|----------|------------|
+| **1-2** | 소셜 로그인·대시보드·프로젝트 CRUD, 코드 선택 & CS 질문/피드백 흐름 |
+| **3** | PWA 등록, FCM Push 알림(질문 생성·리마인더) |
+| **4** | 학습 통계 대시보드 (연속 학습·카테고리 분포·오답 인사이트) |
+
+
