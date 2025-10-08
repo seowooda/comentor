@@ -44,10 +44,10 @@ export const CardContent = ({
 
   return (
     <article
-      className={`flex h-52 w-[306px] rounded-[8px] border ${deleteStatus === 'error' ? 'border-red-400 bg-red-50' : 'border-slate-400 bg-white'} cursor-pointer p-[21px] shadow-md transition-all hover:shadow-lg`}
+      className={`flex w-[306px] rounded-[8px] border ${deleteStatus === 'error' ? 'border-red-400 bg-red-50' : 'border-slate-400 bg-white'} cursor-pointer p-[21px] shadow-md transition-all hover:shadow-lg`}
       onClick={handleCardClick}
     >
-      <div className="flex w-full flex-col gap-[22px]">
+      <div className="flex w-full flex-col">
         {/* 오류 메시지 표시 */}
         {deleteStatus === 'error' && errorMessage && (
           <div className="absolute top-2 right-0 left-0 mx-auto w-[90%] rounded-md bg-red-100 p-2 text-center text-sm text-red-600 shadow-md">
@@ -61,32 +61,57 @@ export const CardContent = ({
           </div>
         )}
 
-        {/* Header Section */}
-        <header className="flex justify-between">
-          <h2 className="text-[20px] font-semibold">{card.title}</h2>
-          <div className="flex items-center gap-[6px]">
-            <button
-              aria-label="Edit"
-              onClick={onEditClick}
-              disabled={deleteStatus === 'loading'}
-            >
-              <Pen
-                size={14}
-                className={`cursor-pointer ${deleteStatus === 'loading' ? 'text-gray-300' : ''}`}
-              />
-            </button>
-            <button
-              aria-label="Delete"
-              onClick={onDeleteClick}
-              disabled={deleteStatus === 'loading'}
-            >
-              <Trash2
-                size={16}
-                className={`cursor-pointer ${deleteStatus === 'loading' ? 'text-gray-300' : ''}`}
-              />
-            </button>
-          </div>
-        </header>
+        <div className="flex flex-col gap-[22px]">
+          {/* Header Section */}
+          <header className="flex justify-between">
+            <h2 className="text-[20px] font-semibold">{card.title}</h2>
+            <div className="flex items-center gap-[6px]">
+              <button
+                aria-label="Edit"
+                onClick={onEditClick}
+                disabled={deleteStatus === 'loading'}
+              >
+                <Pen
+                  size={14}
+                  className={`cursor-pointer ${deleteStatus === 'loading' ? 'text-gray-300' : ''}`}
+                />
+              </button>
+              <button
+                aria-label="Delete"
+                onClick={onDeleteClick}
+                disabled={deleteStatus === 'loading'}
+              >
+                <Trash2
+                  size={16}
+                  className={`cursor-pointer ${deleteStatus === 'loading' ? 'text-gray-300' : ''}`}
+                />
+              </button>
+            </div>
+          </header>
+
+          {/* Tech Stack List */}
+          <ul className="flex flex-wrap gap-[10px]">
+            {card.personal_stack && card.personal_stack.length > 0 ? (
+              card.personal_stack.map((stack, index) => (
+                <li
+                  key={index}
+                  className="flex items-center rounded-[20px] bg-blue-100 px-2 py-1"
+                >
+                  <span className="text-[12px] text-blue-500">{stack}</span>
+                </li>
+              ))
+            ) : (
+              <li className="flex items-center rounded-[20px] bg-gray-100 px-2 py-1">
+                <span className="text-[8px] text-gray-500">기타</span>
+              </li>
+            )}
+          </ul>
+
+          {/* Description */}
+          <p className="line-clamp-2 text-[16px] font-light">
+            {card.description}
+          </p>
+        </div>
 
         {/* 로딩 상태 표시 - 아이콘만 작게 표시 */}
         {deleteStatus === 'loading' && (
@@ -95,29 +120,8 @@ export const CardContent = ({
           </div>
         )}
 
-        {/* Tech Stack List */}
-        <ul className="flex gap-[10px]">
-          {card.personal_stack && card.personal_stack.length > 0 ? (
-            card.personal_stack.map((stack, index) => (
-              <li
-                key={index}
-                className="flex items-center rounded-[20px] bg-blue-100 px-2 py-1"
-              >
-                <span className="text-[8px] text-blue-500">{stack}</span>
-              </li>
-            ))
-          ) : (
-            <li className="flex items-center rounded-[20px] bg-gray-100 px-2 py-1">
-              <span className="text-[8px] text-gray-500">기타</span>
-            </li>
-          )}
-        </ul>
-
-        {/* Description */}
-        <p className="text-[14px] font-light">{card.description}</p>
-
         {/* Status & Updated Date */}
-        <footer className="flex justify-between text-[10px] font-light">
+        <footer className="mt-auto flex justify-between pt-[22px] text-[14px] font-light">
           <div className="flex items-center gap-1">
             <span
               className={`h-[7px] w-[7px] rounded-full ${
