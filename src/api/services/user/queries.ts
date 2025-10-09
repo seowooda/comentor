@@ -1,4 +1,4 @@
-import { usePostMutation, usePutMutation } from '@/api/lib/fetcher'
+import { useGetQuery, usePostMutation, usePutMutation } from '@/api/lib/fetcher'
 import {
   RefreshTokenResponse,
   DefaultResponse,
@@ -6,12 +6,16 @@ import {
   UserResponse,
 } from './model'
 
+export const useUserInfo = () => {
+  return useGetQuery<UserResponse>(['user'], '/user/info')
+}
+
 export const useUserJoin = () => {
   return usePostMutation<UserResponse, User>('/user/join')
 }
 
 export const useUserEdit = () => {
-  return usePutMutation<UserResponse, User>('/user/edit')
+  return usePutMutation<UserResponse, User>('/user/info')
 }
 
 export const useUserActivity = (updateInterval = 5 * 60 * 1000) => {

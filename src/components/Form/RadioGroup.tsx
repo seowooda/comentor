@@ -11,7 +11,7 @@ import { Control, FieldValues, Path } from 'react-hook-form'
 interface RadioGroupFieldProps<T extends FieldValues> {
   control: Control<T>
   name: Path<T>
-  label: string
+  label?: string
   description?: string
   options: { value: boolean; label: string }[]
 }
@@ -31,7 +31,7 @@ export const RadioGroupField = <T extends FieldValues>({
         <FormItem className="w-full gap-[3px]">
           <FormLabel className="text-[16px] font-medium">{label}</FormLabel>
           {description && <FormDescription>{description}</FormDescription>}
-          <FormControl className="flex items-center justify-between px-[106px] py-[14px]">
+          <FormControl className="flex items-center justify-center gap-7 py-5">
             <RadioGroup
               onValueChange={(val) => field.onChange(val === 'true')}
               value={String(field.value)}

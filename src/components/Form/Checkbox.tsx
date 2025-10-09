@@ -11,7 +11,7 @@ import { Control, FieldValues, Path } from 'react-hook-form'
 interface CheckboxGroupProps<T extends FieldValues> {
   control: Control<T>
   name: Path<T>
-  label: string
+  label?: string
   description?: string
   options: { id: string; label: string }[]
 }
