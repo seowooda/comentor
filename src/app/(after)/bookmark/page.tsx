@@ -26,8 +26,8 @@ const Page = () => {
   }, [])
 
   return (
-    <main className="flex w-full flex-grow justify-center px-[60px] pt-10">
-      <div className="flex w-full max-w-screen-xl gap-8">
+    <main className="flex w-full flex-grow justify-center px-4 pt-6 sm:px-6 md:px-10 lg:pt-10">
+      <div className="flex w-full max-w-screen-xl flex-col gap-8 lg:flex-row">
         <FolderList
           folderId={folderId}
           setFolderId={handleSetFolderId}

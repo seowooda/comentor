@@ -57,7 +57,7 @@ export const EditFolderModal = ({ folder, onClose }: FolderModalProps) => {
         type="text"
         placeholder="새 폴더 이름"
         {...form.register('fileName')}
-        maxLength={10}
+        maxLength={9}
         required
       />
       {form.formState.errors.fileName && (

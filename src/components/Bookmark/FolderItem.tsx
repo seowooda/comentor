@@ -35,10 +35,10 @@ export const FolderItem = React.memo(
       >
         <div className="flex items-center gap-4 p-3">
           <FolderIcon size={18} />
-          <span className="flex-1">{folder.fileName}</span>
+          <span className="flex-1 text-sm md:text-base">{folder.fileName}</span>
 
           <div
-            className={`flex gap-2 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0'} `}
+            className={`flex gap-2 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100`}
           >
             <button
               onClick={handleEdit}

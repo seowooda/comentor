@@ -17,7 +17,7 @@ export const FeedbackList = ({ feedbacks }: FeedbackListProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="prose prose-slate max-w-none">
       {feedbacks.map((f, idx) => (
         <ReactMarkdown
           key={idx}
@@ -49,7 +49,7 @@ export const FeedbackList = ({ feedbacks }: FeedbackListProps) => {
               )
             },
             h2: ({ children }) => (
-              <h2 className="text-lg font-semibold text-slate-800">
+              <h2 className="text-base font-semibold text-slate-800 md:text-lg">
                 {children}
               </h2>
             ),
