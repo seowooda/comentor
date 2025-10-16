@@ -10,68 +10,69 @@ interface SlideMenuProps {
   onClose: () => void
 }
 
-type MenuItem = 'dashboard' | 'cs' | 'community' | 'mypage'
+type MenuItem = 'dashboard' | 'cs' | 'mypage'
 
 const menuItems = [
   { id: 'dashboard', label: '대시보드', href: '/dashboard' },
   { id: 'cs', label: 'CS', href: '/cs' },
-  { id: 'community', label: '커뮤니티', href: '/community' },
-  { id: 'mypage', label: '마이페이지', href: '/mypage' },
+  { id: 'mypage', label: '마이페이지', href: '/user' },
 ]
 
 const menuContents = {
   dashboard: [
-    { label: '→ 메인 기능 바로가기', color: 'text-[#007fff]', isTitle: true },
     {
-      label: '진행중인 프로젝트',
-      color: 'text-[#0f1317]',
-      href: '/dashboard/progress',
+      label: '→ 메인 기능 바로가기',
+      color: 'text-[#007fff]',
+      isTitle: true,
+      href: '/dashboard',
     },
-    {
-      label: '완료한 프로젝트',
-      color: 'text-[#0f1317]',
-      href: '/dashboard/completed',
-    },
-    {
-      label: '알림',
-      color: 'text-[#0f1317]',
-      href: '/dashboard/notifications',
-    },
-    {
-      label: '프로젝트 생성',
-      color: 'text-[#0f1317]',
-      href: '/dashboard/create',
-    },
+    // {
+    //   label: '진행중인 프로젝트',
+    //   color: 'text-[#0f1317]',
+    //   href: '/dashboard/progress',
+    // },
+    // {
+    //   label: '완료한 프로젝트',
+    //   color: 'text-[#0f1317]',
+    //   href: '/dashboard/completed',
+    // },
+    // {
+    //   label: '알림',
+    //   color: 'text-[#0f1317]',
+    //   href: '/dashboard/notifications',
+    // },
+    // {
+    //   label: '프로젝트 생성',
+    //   color: 'text-[#0f1317]',
+    //   href: '/dashboard/create',
+    // },
   ],
   cs: [
-    { label: '→ CS 학습하기', color: 'text-[#007fff]', isTitle: true },
-    { label: 'CS 개념 학습', color: 'text-[#0f1317]', href: '/cs/concepts' },
-    { label: 'CS 문제 풀기', color: 'text-[#0f1317]', href: '/cs/problems' },
-    { label: '학습 기록', color: 'text-[#0f1317]', href: '/cs/history' },
-  ],
-  community: [
-    { label: '→ 커뮤니티', color: 'text-[#007fff]', isTitle: true },
-    { label: '전체 게시글', color: 'text-[#0f1317]', href: '/community/posts' },
     {
-      label: '인기 게시글',
-      color: 'text-[#0f1317]',
-      href: '/community/popular',
+      label: '→ CS 학습하기',
+      color: 'text-[#007fff]',
+      isTitle: true,
+      href: '/cs',
     },
-    {
-      label: '내가 쓴 글',
-      color: 'text-[#0f1317]',
-      href: '/community/my-posts',
-    },
+    // { label: 'CS 개념 학습', color: 'text-[#0f1317]', href: '/cs/concepts' },
+    // { label: 'CS 문제 풀기', color: 'text-[#0f1317]', href: '/cs/problems' },
+    // { label: '학습 기록', color: 'text-[#0f1317]', href: '/cs/history' },
   ],
+
   mypage: [
-    { label: '→ 마이페이지', color: 'text-[#007fff]', isTitle: true },
-    { label: '프로필 설정', color: 'text-[#0f1317]', href: '/mypage/profile' },
     {
-      label: '알림 설정',
-      color: 'text-[#0f1317]',
-      href: '/mypage/notifications',
+      label: '→ 마이페이지',
+      color: 'text-[#007fff]',
+      isTitle: true,
+      href: '/user',
     },
-    { label: '학습 기록', color: 'text-[#0f1317]', href: '/mypage/history' },
+    // { label: '프로필 설정', color: 'text-[#0f1317]', href: '/mypage/profile' },
+    // {
+    //   label: '알림 설정',
+    //   color: 'text-[#0f1317]',
+    //   href: '/mypage/notifications',
+    // },
+    // { label: '학습 기록', color: 'text-[#0f1317]', href: '/mypage/history' },
   ],
 }
 
