@@ -47,6 +47,7 @@ export const QuestionList = ({ fileName, folderId }: QuestionListProps) => {
                 refetchKeys: [
                   ['questions', folderId.toString()],
                   ['CS Dashboard', '0'],
+                  ['cs-question-infinite'],
                 ],
               })
             }

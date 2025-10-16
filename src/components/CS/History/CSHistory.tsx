@@ -4,7 +4,7 @@ import { BookmarkIcon } from 'lucide-react'
 import { mapCS } from '@/lib/mapEnum'
 import { InfiniteData } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CSQuestionResponse } from '@/api/services/CS/model'
 import { useBookmarkHandler } from '@/hooks/useBookmarkHandler'
 import { Button } from '@/components/ui/button'
@@ -17,20 +17,23 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
   const router = useRouter()
   const { handleBookmarkClick } = useBookmarkHandler()
 
-  //북마크 상태 업데이트
   const [bookmarkedMap, setBookmarkedMap] = useState<Record<number, boolean>>(
-    () => {
-      const map: Record<number, boolean> = {}
-      data?.pages.forEach((page) => {
-        page.result.content.forEach((group) => {
-          group.questions.forEach((q) => {
-            if (q.fileName) map[q.csQuestionId] = true
-          })
+    {},
+  )
+
+  useEffect(() => {
+    const map: Record<number, boolean> = {}
+    data?.pages.forEach((page) => {
+      page.result.content.forEach((group) => {
+        group.questions.forEach((q) => {
+          if (q.fileName) {
+            map[q.csQuestionId] = true
+          }
         })
       })
-      return map
-    },
-  )
+    })
+    setBookmarkedMap(map)
+  }, [data]) // 'data'가 바뀔 때마다 이 효과를 실행합니다.
 
   const handleClick = (csQuestionId: number) => {
     router.push(`/cs/solve/${csQuestionId}`)

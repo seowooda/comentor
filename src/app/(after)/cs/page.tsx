@@ -70,7 +70,7 @@ const Pag = () => {
             <section className="flex flex-col gap-5">
               <div
                 className="flex cursor-pointer items-center gap-1"
-                onClick={() => router.push('/history')}
+                onClick={() => router.push('/cs/history')}
               >
                 <p className="text-xl leading-5 font-bold">
                   날짜별 질문 내역 조회
