@@ -25,8 +25,6 @@ const Page = () => {
     return () => observer.disconnect()
   }, [hasNextPage, isFetchingNextPage, selectedCategory])
 
-  useEffect(() => {})
-
   return (
     <main className="flex w-full justify-center py-6 sm:py-10">
       <div className="flex w-full max-w-5xl flex-col gap-6 px-4 sm:px-6">

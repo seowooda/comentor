@@ -15,7 +15,7 @@ export const truncatePath = (filePath?: string, startCount = 2): string => {
 
   // 세그먼트 개수가 (앞부분 + 뒷부분 + 생략기호) 보다 작거나 같으면 원본 경로 반환
   // 예: startCount가 2일 때, 총 4개(a/b/c/d.tsx) 이하면 줄일 필요 없음
-  if (totalSegments <= startCount + 2) {
+  if (totalSegments <= startCount + 1) {
     return filePath
   }
 

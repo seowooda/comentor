@@ -29,7 +29,7 @@ export const CheckboxGroup = <T extends FieldValues>({
       name={name}
       render={() => (
         <FormItem className="w-full gap-[3px]">
-          <FormLabel className="text-base">{label}</FormLabel>
+          {label && <FormLabel className="text-base">{label}</FormLabel>}
           {description && <FormDescription>{description}</FormDescription>}
           <div className="flex justify-between px-[10px] py-[14px]">
             {options.map((item) => (

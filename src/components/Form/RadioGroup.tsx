@@ -29,7 +29,9 @@ export const RadioGroupField = <T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className="w-full gap-[3px]">
-          <FormLabel className="text-[16px] font-medium">{label}</FormLabel>
+          {label && (
+            <FormLabel className="text-base font-medium">{label}</FormLabel>
+          )}
           {description && <FormDescription>{description}</FormDescription>}
           <FormControl className="flex items-center justify-center gap-7 py-5">
             <RadioGroup

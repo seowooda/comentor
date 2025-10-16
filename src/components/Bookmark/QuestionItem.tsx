@@ -73,7 +73,7 @@ export const QuestionItem = React.memo(
               {question.repoName} /
               <FileText size={16} className="text-blue-600" />
               <span className="text-slate-500">
-                {truncatePath(question.fileName, 1)}
+                {truncatePath(question.fileName, 2)}
               </span>
             </span>
           )}
