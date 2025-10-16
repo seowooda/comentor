@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Loader2, BookmarkIcon, CheckCircle, Code } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
+import { MarkdownRenderer } from '@/components/ui/MarkdownRenderer'
 
 interface AnswerFormProps {
   question: string
@@ -142,8 +143,8 @@ export default function AnswerForm({
       {feedback && (
         <div className="rounded-lg border bg-green-50 p-4">
           <h3 className="mb-2 font-medium text-green-800">피드백</h3>
-          <div className="text-sm whitespace-pre-line text-green-700">
-            {feedback}
+          <div className="text-sm">
+            <MarkdownRenderer content={feedback} />
           </div>
         </div>
       )}
