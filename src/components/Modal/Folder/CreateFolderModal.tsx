@@ -132,6 +132,7 @@ export const CreateFolderModal = ({
             <Input
               {...register('newFolder')}
               placeholder="폴더 이름"
+              maxLength={9}
               className="w-36"
             />
             <Button

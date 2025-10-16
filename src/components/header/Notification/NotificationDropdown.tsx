@@ -105,7 +105,7 @@ export const NotificationDropdown = () => {
 
         {/* 하단 메뉴 */}
         <DropdownMenuItem
-          onClick={() => router.push('/notification')}
+          onClick={() => router.push('/setting?tab=notifications')}
           className="cursor-pointer justify-center px-4 py-2 text-sm text-slate-600"
         >
           <span>알림 설정</span>

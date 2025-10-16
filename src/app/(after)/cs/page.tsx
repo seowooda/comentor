@@ -17,10 +17,10 @@ const Pag = () => {
     .sort((a, b) => (a.date < b.date ? 1 : -1))[0]
 
   return (
-    <main className="flex flex-grow flex-col items-center gap-10 py-10">
+    <main className="flex flex-grow flex-col items-center gap-10 px-4 py-6 sm:px-6 md:py-10">
       {isLoading ? (
         // ✅ 로딩 중에는 두 섹션 모두 스켈레톤으로 표시
-        <div className="grid w-[880px] grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid max-w-5xl grid-cols-1 gap-5 md:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <CSCardSkeleton key={i} />
           ))}
@@ -28,21 +28,23 @@ const Pag = () => {
       ) : (
         <>
           {/* CS 학습 통계 섹션 (페이지 이동 버튼) */}
-          <section className="flex w-[880px] flex-col gap-3">
+          <section className="flex w-full max-w-5xl flex-col gap-3">
             <div
               className="flex cursor-pointer items-center justify-between gap-2 rounded-md"
               onClick={() => router.push('/cs/stats')}
             >
               <div className="flex items-center gap-2">
                 <ChartColumn className="h-5 w-5 text-indigo-500" />
-                <p className="text-xl leading-5 font-bold">나의 CS 학습 통계</p>
+                <p className="text-lg font-bold sm:text-xl">
+                  나의 CS 학습 통계
+                </p>
               </div>
               <ChevronRight size={24} />
             </div>
           </section>
 
           {/* 오늘의 CS 질문 */}
-          <section className="flex w-[880px] flex-col gap-5">
+          <section className="flex flex-col gap-5">
             <p className="text-xl leading-5 font-bold">오늘의 CS 질문</p>
 
             {!todayGroup ? (
@@ -68,7 +70,7 @@ const Pag = () => {
             <section className="flex flex-col gap-5">
               <div
                 className="flex cursor-pointer items-center gap-1"
-                onClick={() => router.push('/history')}
+                onClick={() => router.push('/cs/history')}
               >
                 <p className="text-xl leading-5 font-bold">
                   날짜별 질문 내역 조회

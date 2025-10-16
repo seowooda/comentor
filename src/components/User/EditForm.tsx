@@ -1,39 +1,70 @@
 'use client'
 
-import { Github, LogOut } from 'lucide-react'
+import React from 'react'
 import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import { CheckboxGroup, InputField, RadioGroupField } from '../Form'
+import { Github } from 'lucide-react'
+import { User, UserResponse, useUserEdit } from '@/api' // 실제 UserResponse 타입 경로
+import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { SignupSchema } from '@/hooks'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Form } from '../ui/form'
-import { useForm } from 'react-hook-form'
-import { User, useUserEdit } from '@/api'
-import { useRouter } from 'next/navigation'
-import { useAuthStore } from '@/store/authStore'
-import { useQueryClient } from '@tanstack/react-query'
+import { CheckboxGroup, InputField, RadioGroupField } from '../Form'
+import { Button } from '../ui/button'
 import { Stack } from '@/api/types/common'
-import { UserResponse } from '@/api'
+import { Form } from '../ui/form'
 
-interface EditFormProps {
+interface FormSectionProps {
+  title: string
+  children: React.ReactNode
+}
+
+export const FormSection = ({ title, children }: FormSectionProps) => (
+  <div className="flex flex-col justify-center rounded-xl border border-slate-100 p-7 shadow">
+    <h3 className="mb-4 text-base font-semibold sm:text-lg lg:text-xl">
+      {title}
+    </h3>
+    {children}
+  </div>
+)
+
+interface UserProfileHeaderProps {
   user: UserResponse['result']
 }
 
-const notificationOptions = [
-  { value: true, label: '알림 허용' },
-  { value: false, label: '알림 거부' },
-]
+export const UserProfileHeader = ({ user }: UserProfileHeaderProps) => (
+  <div className="mb-5 flex items-center gap-5 rounded-xl border border-slate-100 p-7 shadow">
+    <Image
+      src={user?.avatarUrl || '/images/glassdumpling.png'}
+      alt="avatar"
+      width={60}
+      height={60}
+      className="rounded-full"
+    />
+    <div className="flex flex-1 flex-col">
+      <p className="flex items-center gap-2 font-semibold">
+        <Github size={18} />
+        <span>{user?.userName}</span>
+      </p>
+      <p className="text-sm text-slate-500">깃허브 계정으로 로그인됨</p>
+    </div>
+  </div>
+)
 
 const techStackOptions = Object.keys(Stack).map((key) => ({
   id: Stack[key as keyof typeof Stack],
   label: key,
 }))
 
-export const EditForm = ({ user }: EditFormProps) => {
+const notificationOptions = [
+  { value: true, label: '알림 허용' },
+  { value: false, label: '알림 거부' },
+]
+
+export const UserEditForm = ({ user }: { user: UserResponse['result'] }) => {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { clearAuth } = useAuthStore()
   const { mutate, isPending } = useUserEdit()
 
   const form = useForm<z.infer<typeof SignupSchema>>({
@@ -45,15 +76,9 @@ export const EditForm = ({ user }: EditFormProps) => {
     },
   })
 
-  const handleLogout = () => {
-    clearAuth()
-    router.push('/')
-  }
-
   const onSubmit = (data: z.infer<typeof SignupSchema>) => {
     const updatedUser: User = {
       ...data,
-      notification: data.notification,
     }
     mutate(updatedUser, {
       onSuccess: () => {
@@ -65,85 +90,49 @@ export const EditForm = ({ user }: EditFormProps) => {
       },
     })
   }
-  return (
-    <section className="flex w-[550px] min-w-[450px] flex-col gap-10">
-      <div className="flex flex-col gap-5 rounded-[15px] border border-slate-400 px-[30px] py-5 shadow">
-        <h1 className="text-[25px] font-semibold text-slate-800">
-          깃허브 계정
-        </h1>
-        <div className="flex items-center gap-5">
-          <Image
-            src={user.avatarUrl || '/images/glassdumpling.png'}
-            alt="avatar"
-            width={60}
-            height={60}
-            className="rounded-full border border-slate-100"
-          />
-          <div className="flex flex-1 flex-col">
-            <p className="flex items-center gap-2">
-              <Github size={18} />
-              <span>{user.userName}</span>
-            </p>
-            <p className="text-[14px] text-slate-500">
-              깃허브 계정으로 로그인됨
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={handleLogout}
-            className="cursor-pointer"
-          >
-            <LogOut size={14} />
-            <span className="text-[13px]">로그아웃</span>
-          </Button>
-        </div>
-      </div>
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-10"
-        >
-          <div className="flex flex-col gap-5 rounded-[15px] border border-slate-400 px-[30px] py-5 shadow">
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-grow flex-col justify-between"
+      >
+        <div className="flex flex-col gap-5">
+          <FormSection title="이메일">
             <InputField
               control={form.control}
               name="email"
-              label="이메일"
               placeholder="example@test.com"
-              description="이메일을 입력해주세요"
             />
             <RadioGroupField
               control={form.control}
               name="notification"
-              label="이메일 수신 설정"
-              description="매일 새로운 CS 질문이 생성되면 알림을 받습니다."
               options={notificationOptions}
             />
-          </div>
-
-          <div className="flex flex-col gap-5 rounded-[15px] border border-slate-400 px-[30px] py-5 shadow">
+          </FormSection>
+          <FormSection title="기술 스택">
             <CheckboxGroup
               control={form.control}
               name="stackNames"
-              label="기술 스택"
-              description="받고 싶은 기술 스택을 선택하세요."
               options={techStackOptions}
             />
-          </div>
+          </FormSection>
+        </div>
 
-          <div className="flex gap-[10px]">
-            <Button
-              className="flex-1 bg-slate-800"
-              onClick={() => router.push('/dashboard')}
-            >
-              취소
-            </Button>
-            <Button className="flex-1 bg-slate-800" type="submit">
-              {isPending ? '저장 중..' : '수정'}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </section>
+        <div className="mt-5 flex justify-end gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="px-9 py-5"
+            onClick={() => router.push('/dashboard')}
+          >
+            취소
+          </Button>
+          <Button type="submit" className="px-9 py-5" disabled={isPending}>
+            {isPending ? '저장 중...' : '수정'}
+          </Button>
+        </div>
+      </form>
+    </Form>
   )
 }

@@ -11,7 +11,7 @@ import { Control, FieldValues, Path } from 'react-hook-form'
 interface InputFieldProps<T extends FieldValues> {
   control: Control<T>
   name: Path<T>
-  label: string
+  label?: string
   placeholder?: string
   description?: string
 }
@@ -29,7 +29,9 @@ export const InputField = <T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem className="w-full gap-[3px]">
-          <FormLabel className="text-[16px] font-medium">{label}</FormLabel>
+          {label && (
+            <FormLabel className="text-[16px] font-medium">{label}</FormLabel>
+          )}
           {description && <FormDescription>{description}</FormDescription>}
           <FormControl>
             <Input placeholder={placeholder} {...field} />

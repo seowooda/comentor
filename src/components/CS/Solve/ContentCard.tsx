@@ -8,9 +8,11 @@ interface ContentCardProps {
 
 export const ContentCard = ({ title, stack, children }: ContentCardProps) => {
   return (
-    <div className="flex flex-col gap-5 rounded-xl border border-slate-400 bg-white p-6 shadow-md">
+    // ✅ 카드 내부 여백(padding)을 반응형으로 수정
+    <div className="flex flex-col gap-5 rounded-xl border border-slate-300 bg-white p-4 shadow-sm md:p-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">{title}</h2>
+        {/* ✅ 카드 제목 텍스트 크기를 반응형으로 수정 */}
+        <h2 className="text-lg font-semibold md:text-xl">{title}</h2>
         {stack}
       </div>
       {children}

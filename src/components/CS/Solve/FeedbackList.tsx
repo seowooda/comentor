@@ -14,7 +14,7 @@ export const FeedbackList = ({ feedbacks }: FeedbackListProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="prose prose-slate max-w-none">
       {feedbacks.map((f, idx) => (
         <MarkdownRenderer key={idx} content={f.content} />
       ))}

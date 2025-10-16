@@ -62,7 +62,7 @@ export const CSSolve = ({ question, refetch }: CSSolveProps) => {
     <Tabs
       value={tab}
       onValueChange={(v) => setTab(v as typeof tab)}
-      className="flex w-[800px] flex-col gap-5"
+      className="flex w-full max-w-4xl flex-col gap-5"
     >
       <TabsList className="w-full">
         <TabsTrigger value="challenge">도전하기</TabsTrigger>
