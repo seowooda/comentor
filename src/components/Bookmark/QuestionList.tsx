@@ -44,7 +44,10 @@ export const QuestionList = ({ fileName, folderId }: QuestionListProps) => {
                 csQuestionId: !q.projectId ? q.csQuestionId : undefined,
                 fileName,
                 isBookmarked: true,
-                refetchKeys: [['questions', folderId.toString()]],
+                refetchKeys: [
+                  ['questions', folderId.toString()],
+                  ['CS Dashboard', '0'],
+                ],
               })
             }
           />

@@ -11,10 +11,8 @@ const Page = () => {
   const [selectedCategory, setSelectedCategory] = useState<CSCategory | null>(
     null,
   )
-
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuestions(selectedCategory)
-
   const bottomRef = useRef(null)
 
   useEffect(() => {
@@ -27,47 +25,46 @@ const Page = () => {
     return () => observer.disconnect()
   }, [hasNextPage, isFetchingNextPage, selectedCategory])
 
+  useEffect(() => {})
+
   return (
-    <main className="flex flex-col gap-6 px-40 py-10">
-      <h2 className="text-2xl font-bold">날짜별 질문 내역</h2>
+    <main className="flex w-full justify-center py-6 sm:py-10">
+      <div className="flex w-full max-w-5xl flex-col gap-6 px-4 sm:px-6">
+        <h2 className="text-xl font-bold sm:text-2xl">날짜별 질문 내역</h2>
 
-      {/* 카테고리 버튼 목록 */}
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={() => setSelectedCategory(null)}
-          className={`rounded-[20px] px-3 py-1 text-sm ${
-            selectedCategory === null
-              ? 'bg-blue-100 text-blue-600'
-              : 'bg-blue-50 text-blue-300 hover:bg-blue-100 hover:transition-colors'
-          }`}
-        >
-          전체
-        </button>
-
-        {Object.values(CSCategory).map((category) => (
+        <div className="flex flex-wrap gap-3">
           <button
-            key={category}
-            onClick={() => setSelectedCategory(category)}
+            onClick={() => setSelectedCategory(null)}
             className={`rounded-[20px] px-3 py-1 text-sm ${
-              selectedCategory === category
+              selectedCategory === null
                 ? 'bg-blue-100 text-blue-600'
-                : 'bg-blue-50 text-blue-300 hover:bg-blue-100 hover:transition-colors'
+                : 'bg-blue-50 text-slate-500 hover:bg-blue-100 hover:text-blue-500 hover:transition-colors'
             }`}
           >
-            {mapCS(category)}
+            전체
           </button>
-        ))}
+          {Object.values(CSCategory).map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`rounded-[20px] px-3 py-1 text-sm ${
+                selectedCategory === category
+                  ? 'bg-blue-100 text-blue-600'
+                  : 'bg-blue-50 text-slate-500 hover:bg-blue-100 hover:text-blue-500 hover:transition-colors'
+              }`}
+            >
+              {mapCS(category)}
+            </button>
+          ))}
+        </div>
+
+        {/* 로딩 및 데이터 렌더링 부분은 그대로 유지 */}
+        {(isLoading || (isFetchingNextPage && hasNextPage)) && (
+          <CSHistorySkeleton />
+        )}
+        {!isLoading && <CSHistory data={data} />}
+        <div ref={bottomRef} />
       </div>
-
-      {/* ✅ 처음 로딩 또는 다음 페이지 로딩 시 스켈레톤 조건부 렌더링 */}
-      {selectedCategory === null && (isLoading || isFetchingNextPage) && (
-        <CSHistorySkeleton />
-      )}
-
-      {/* ✅ 실제 데이터 렌더링 */}
-      {!isLoading && <CSHistory data={data} />}
-
-      <div ref={bottomRef} />
     </main>
   )
 }

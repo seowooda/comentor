@@ -18,6 +18,28 @@ const Page = () => {
     }
   }, [folder, folderId])
 
+  useEffect(() => {
+    // 폴더 데이터가 있고, 현재 폴더 ID가 선택된 상태일 때만 실행
+    if (folder?.result && folderId) {
+      // 현재 선택된 폴더 ID가 새로운 폴더 목록에 여전히 존재하는지 확인
+      const isSelectedFolderStillPresent = folder.result.some(
+        (f) => f.folderId === folderId,
+      )
+
+      // 만약 선택된 폴더가 더 이상 존재하지 않는다면 (삭제되었다면)
+      if (!isSelectedFolderStillPresent) {
+        // 남은 폴더가 있는지 확인
+        if (folder.result.length > 0) {
+          // 남은 폴더 중 가장 첫 번째 폴더를 자동으로 선택
+          setFolderId(folder.result[0].folderId)
+        } else {
+          // 남은 폴더가 없다면 선택 해제
+          setFolderId(null)
+        }
+      }
+    }
+  }, [folder, folderId]) // folder 목록이 바뀔 때마다 이 효과를 실행
+
   const selectedFolder = folder?.result.find((f) => f.folderId === folderId)
   const fileName = selectedFolder?.fileName || 'default'
 

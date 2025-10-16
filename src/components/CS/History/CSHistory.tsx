@@ -48,10 +48,12 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
                   key={item.csQuestionId}
                   className="flex flex-col gap-4 border-b border-slate-300 py-4"
                 >
-                  <div className="flex flex-col gap-5 px-5">
+                  <div className="flex flex-col gap-5 px-2 sm:px-5">
                     <div className="flex items-center justify-between">
                       <div className="flex gap-4">
-                        <p className="text-lg font-semibold">{item.stack}</p>
+                        <p className="text-base font-semibold sm:text-lg">
+                          {item.stack}
+                        </p>
                         <p className="rounded-2xl bg-blue-100 px-2 py-1 text-sm font-light text-blue-600">
                           {mapCS(item.csCategory)}
                         </p>
@@ -89,7 +91,9 @@ export const CSHistory = ({ data }: CSHistoryProps) => {
                         />
                       </button>
                     </div>
-                    <p className="pr-4 text-lg font-medium">{item.question}</p>
+                    <p className="pr-2 text-base font-medium sm:text-lg">
+                      {item.question}
+                    </p>
                   </div>
                   <div className="flex justify-end">
                     <Button

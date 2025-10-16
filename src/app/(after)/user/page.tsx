@@ -3,15 +3,12 @@
 import { useState } from 'react'
 import { Bell, LogOut, Settings, type LucideIcon } from 'lucide-react'
 import { UserResponse } from '@/api'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { cn } from '@/lib/utils'
 import { NotificationSettings } from './components/NotificationSettings'
 import { UserSettings } from './components/UserSettings'
 
-interface SettingsPageProps {
-  user: UserResponse['result']
-}
 type ActiveTab = 'settings' | 'notifications'
 
 // --- 재사용 컴포넌트
@@ -68,11 +65,16 @@ const SideNav = ({
   </nav>
 )
 
-// --- Main Page Component ---
-export default function SettingsPage({ user }: SettingsPageProps) {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('settings')
+export default function SettingsPage() {
   const router = useRouter()
   const { clearAuth } = useAuthStore()
+
+  const searchParams = useSearchParams()
+  const tabFromUrl = searchParams.get('tab')
+
+  const [activeTab, setActiveTab] = useState<ActiveTab>(
+    tabFromUrl === 'notifications' ? 'notifications' : 'settings',
+  )
 
   const handleLogout = () => {
     clearAuth()
