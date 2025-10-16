@@ -64,7 +64,7 @@ const Header = () => {
           </div>
           <button
             aria-label="마이페이지"
-            onClick={() => router.push('/user')}
+            onClick={() => router.push('/setting')}
             className="flex h-8 w-8 flex-shrink-0 items-center justify-center"
           >
             <UserCircle className="h-5 w-5 cursor-pointer text-slate-800" />

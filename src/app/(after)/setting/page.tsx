@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Bell, LogOut, Settings, type LucideIcon } from 'lucide-react'
-import { UserResponse } from '@/api'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { cn } from '@/lib/utils'
