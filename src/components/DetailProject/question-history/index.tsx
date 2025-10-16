@@ -136,7 +136,7 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
     <div className="rounded-lg bg-white">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1">
-          <h3 className="mb-4 font-semibold text-slate-800">
+          <h3 className="mb-2 font-semibold text-slate-800">
             질문 이력 ({sortedDates.length}일)
           </h3>
           <HistoryList
@@ -161,11 +161,6 @@ const QuestionHistoryTab: React.FC<QuestionHistoryTabProps> = ({
           ) : (
             <QuestionDetail
               question={currentQuestion}
-              isBookmarked={
-                currentQuestion
-                  ? bookmarkedQuestions.includes(currentQuestion.id)
-                  : false
-              }
               onBookmark={(id) => handleBookmark(id, onBookmarkQuestion)}
               onAnswer={handleAnswerSubmit}
               activeCSQuestionIds={activeCSQuestionIds}

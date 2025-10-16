@@ -4,7 +4,7 @@ import { CSCategory, QuestionStatus } from '@/api/types/common'
 export const mapCS = (category: CSCategory): string => {
   switch (category) {
     case CSCategory.DATA_STRUCTURES_ALGORITHMS:
-      return '자료구조/알고리즘'
+      return '자료구조 및\n알고리즘'
     case CSCategory.OPERATING_SYSTEMS:
       return '운영체제'
     case CSCategory.NETWORKING:
@@ -14,7 +14,7 @@ export const mapCS = (category: CSCategory): string => {
     case CSCategory.SECURITY:
       return '보안'
     case CSCategory.LANGUAGE_AND_DEVELOPMENT_PRINCIPLES:
-      return '언어 및 개발 원리'
+      return '언어 및\n개발 원리'
     case CSCategory.ETC:
       return '기타'
     default:

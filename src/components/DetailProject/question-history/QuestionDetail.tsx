@@ -1,15 +1,16 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { UIQuestionHistoryItem } from '../types'
 import { FileCode, MessageSquareText, Loader2, AlertCircle } from 'lucide-react'
 import { Code } from 'lucide-react'
+import { MarkdownRenderer } from '@/components/ui/MarkdownRenderer'
+import { useBookmarkHandler } from '@/hooks/useBookmarkHandler'
 
 interface QuestionDetailProps {
   question: UIQuestionHistoryItem | null
-  isBookmarked: boolean
   onBookmark: (questionId: number) => void
   onAnswer?: (
     question: UIQuestionHistoryItem,
@@ -23,7 +24,6 @@ interface QuestionDetailProps {
  */
 const QuestionDetail: React.FC<QuestionDetailProps> = ({
   question,
-  isBookmarked,
   onBookmark,
   onAnswer,
   activeCSQuestionIds = [], // 기본값은 빈 배열
@@ -31,25 +31,25 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
   const [userAnswer, setUserAnswer] = useState('')
   const [feedback, setFeedback] = useState<string | null>(null)
   const [isAnswering, setIsAnswering] = useState(false)
-  const [isAnswered, setIsAnswered] = useState(false)
+  const [isSubmissionComplete, setIsSubmissionComplete] = useState(false)
 
-  // 현재 질문이 CS 질문 탭에서 답변 중인지 확인
-  const isActiveCSQuestion =
-    question && activeCSQuestionIds.includes(question.id)
+  const isBookmarked = !!question?.fileName
+  const [localBookmarkState, setLocalBookmarkState] = useState(isBookmarked)
 
-  // 질문이 변경될 때마다 상태 초기화 및 이미 답변된 질문인지 확인
+  const { handleBookmarkClick } = useBookmarkHandler()
+
   useEffect(() => {
-    if (question) {
-      setUserAnswer('') // 사용자 답변 초기화
-      setFeedback(null) // 피드백 초기화
-      setIsAnswering(false) // 답변 중 상태 초기화
+    setLocalBookmarkState(isBookmarked)
+  }, [isBookmarked])
 
-      // 이미 답변된 질문인지 확인
-      const hasAnswer = !!question.answer && question.answer.trim() !== ''
-      const isDone = question.status === 'DONE' || question.answered === true
-      setIsAnswered(hasAnswer || isDone)
-    }
-  }, [question?.id, question?.answer, question?.status, question?.answered])
+  // 질문이 변경될 때마다 컴포넌트 내부 상태 초기화
+  useEffect(() => {
+    setUserAnswer('')
+    setFeedback(null)
+    setIsAnswering(false)
+    // 질문이 바뀌면 제출 완료 상태도 초기화
+    setIsSubmissionComplete(false)
+  }, [question?.id])
 
   if (!question) {
     return (
@@ -59,11 +59,16 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
     )
   }
 
-  // 안전하게 status 확인 (undefined 또는 다른 타입일 수 있음)
-  const isTodo =
-    (!question.answer || question.answer === '') &&
-    question.status !== 'DONE' &&
-    question.answered !== true
+  const isActiveCSQuestion = activeCSQuestionIds.includes(question.id)
+  const isAlreadyAnswered =
+    !!question.answer ||
+    question.status === 'DONE' ||
+    question.answered === true ||
+    isSubmissionComplete
+  const canShowAnswerForm =
+    onAnswer && !isAlreadyAnswered && !isActiveCSQuestion
+
+  const feedbackToDisplay = feedback || question.feedback
 
   const handleAnswerSubmit = async () => {
     if (!onAnswer || !userAnswer.trim() || !question) return
@@ -72,7 +77,7 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
     try {
       const result = await onAnswer(question, userAnswer)
       setFeedback(result || '답변이 제출되었습니다.')
-      setIsAnswered(true) // 답변 제출 성공 시 상태 업데이트
+      setIsSubmissionComplete(true)
     } catch (error) {
       console.error('답변 제출 중 오류 발생:', error)
       setFeedback('답변 제출 중 오류가 발생했습니다.')
@@ -96,10 +101,22 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
               variant="outline"
               size="sm"
               className="text-xs"
-              onClick={() => onBookmark(question.id)}
-              disabled={isBookmarked}
+              style={{ cursor: 'pointer' }}
+              onClick={() =>
+                handleBookmarkClick({
+                  questionId: question.id,
+                  isBookmarked: localBookmarkState,
+                  fileName: question.fileName || `question_${question.id}`,
+                  refetchKeys: [
+                    ['questionHistory', question.id?.toString() || ''],
+                  ],
+                  onLocalToggle: (newState) => {
+                    setLocalBookmarkState(newState)
+                  },
+                })
+              }
             >
-              {isBookmarked ? '북마크됨' : '북마크 추가'}
+              {localBookmarkState ? '북마크됨' : '북마크 추가'}
             </Button>
           </div>
         )}
@@ -127,7 +144,7 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
           </div>
         )}
 
-        {isTodo && onAnswer && !isActiveCSQuestion ? (
+        {canShowAnswerForm ? (
           <div className="space-y-2">
             <h4 className="flex items-center text-sm font-medium">
               내 답변{' '}
@@ -138,12 +155,14 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
               onChange={(e) => setUserAnswer(e.target.value)}
               placeholder="답변을 작성해 주세요..."
               className="min-h-[150px] resize-none"
-              disabled={isAnswering || isAnswered}
+              disabled={isAnswering || isAlreadyAnswered}
             />
             <div className="flex justify-end">
               <Button
                 onClick={handleAnswerSubmit}
-                disabled={isAnswering || !userAnswer.trim() || isAnswered}
+                disabled={
+                  isAnswering || !userAnswer.trim() || isAlreadyAnswered
+                }
                 className="flex items-center gap-2"
               >
                 {isAnswering ? (
@@ -161,29 +180,19 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
           <div className="rounded-md bg-slate-50 p-3">
             <h4 className="mb-2 text-sm font-medium">내 답변</h4>
             <div className="text-sm whitespace-pre-line text-slate-700">
-              {question.answer || '답변이 없습니다.'}
+              {question.answer ||
+                (isSubmissionComplete ? userAnswer : '답변이 없습니다.')}
             </div>
           </div>
         )}
 
-        {feedback ? (
+        {feedbackToDisplay && (
           <div className="rounded-md bg-green-50 p-3">
             <h4 className="mb-2 text-sm font-medium text-green-700">피드백</h4>
-            <div className="text-sm whitespace-pre-line text-green-600">
-              {feedback}
+            <div className="text-sm">
+              <MarkdownRenderer content={feedbackToDisplay} />
             </div>
           </div>
-        ) : (
-          question.feedback && (
-            <div className="rounded-md bg-green-50 p-3">
-              <h4 className="mb-2 text-sm font-medium text-green-700">
-                피드백
-              </h4>
-              <div className="text-sm whitespace-pre-line text-green-600">
-                {question.feedback}
-              </div>
-            </div>
-          )
         )}
       </div>
     </div>

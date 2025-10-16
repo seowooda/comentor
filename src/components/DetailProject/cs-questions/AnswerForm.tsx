@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Loader2, BookmarkIcon, CheckCircle, Code } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useQueryClient } from '@tanstack/react-query'
+import { MarkdownRenderer } from '@/components/ui/MarkdownRenderer'
 
 interface AnswerFormProps {
   question: string
@@ -22,7 +24,7 @@ interface AnswerFormProps {
   onSave?: () => Promise<boolean | undefined>
 }
 
-export const AnswerForm = ({
+export default function AnswerForm({
   question,
   relatedCode = '',
   questionIndex = 1,
@@ -35,13 +37,23 @@ export const AnswerForm = ({
   onAnswerChange,
   onSubmit,
   onSave,
-}: AnswerFormProps) => {
+}: AnswerFormProps) {
+  const queryClient = useQueryClient()
+
   if (!question) {
     return (
       <div className="bg-muted/20 text-muted-foreground flex h-40 items-center justify-center rounded-md border p-6">
         질문을 선택해주세요.
       </div>
     )
+  }
+
+  const handleSubmit = async () => {
+    await onSubmit()
+
+    // ✅ 차트 데이터 쿼리 무효화 → 자동 refetch 유도
+    queryClient.invalidateQueries({ queryKey: ['category-question-count'] })
+    queryClient.invalidateQueries({ queryKey: ['category-correct-stats'] })
   }
 
   return (
@@ -105,15 +117,14 @@ export const AnswerForm = ({
         <Textarea
           value={answer}
           onChange={(e) => onAnswerChange(e.target.value)}
-          placeholder="질문에 대한
-답변을 작성해 주세요..."
+          placeholder="질문에 대한 답변을 작성해 주세요..."
           className="min-h-[150px] resize-none"
           disabled={isLoading || isAnswered}
         />
 
         <div className="flex justify-end">
           <Button
-            onClick={onSubmit}
+            onClick={handleSubmit}
             disabled={isLoading || !answer.trim() || isAnswered}
             className="flex items-center gap-2"
           >
@@ -132,13 +143,11 @@ export const AnswerForm = ({
       {feedback && (
         <div className="rounded-lg border bg-green-50 p-4">
           <h3 className="mb-2 font-medium text-green-800">피드백</h3>
-          <div className="text-sm whitespace-pre-line text-green-700">
-            {feedback}
+          <div className="text-sm">
+            <MarkdownRenderer content={feedback} />
           </div>
         </div>
       )}
     </div>
   )
 }
-
-export default AnswerForm

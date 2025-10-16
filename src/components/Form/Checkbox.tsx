@@ -11,7 +11,7 @@ import { Control, FieldValues, Path } from 'react-hook-form'
 interface CheckboxGroupProps<T extends FieldValues> {
   control: Control<T>
   name: Path<T>
-  label: string
+  label?: string
   description?: string
   options: { id: string; label: string }[]
 }
@@ -29,7 +29,7 @@ export const CheckboxGroup = <T extends FieldValues>({
       name={name}
       render={() => (
         <FormItem className="w-full gap-[3px]">
-          <FormLabel className="text-base">{label}</FormLabel>
+          {label && <FormLabel className="text-base">{label}</FormLabel>}
           {description && <FormDescription>{description}</FormDescription>}
           <div className="flex justify-between px-[10px] py-[14px]">
             {options.map((item) => (

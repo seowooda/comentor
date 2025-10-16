@@ -23,10 +23,12 @@ export const FolderList = ({
   )
 
   return (
-    <section className="flex min-w-64 flex-col gap-3 text-slate-800">
-      <h2 className="text-xl font-semibold">폴더 관리</h2>
-      <div className="flex flex-col gap-5">
-        <h3 className="pb-3 text-[18px] leading-5 font-medium">폴더 목록</h3>
+    <section className="w-full flex-col gap-3 text-slate-800 lg:w-64 lg:flex-shrink-0">
+      <h2 className="text-lg font-semibold md:text-xl">폴더 관리</h2>
+      <div className="mt-5 flex flex-col gap-5">
+        <h3 className="border-b pb-3 text-base font-medium md:text-lg">
+          폴더 목록
+        </h3>
         <div className="flex flex-col gap-2">
           {folders.map((folder) => (
             <FolderItem
