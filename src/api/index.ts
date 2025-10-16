@@ -7,6 +7,7 @@
 // 타입
 export type { User, UserResponse } from '@/api/services/user/model'
 export {
+  useUserInfo,
   useUserJoin,
   useUserEdit,
   useUserActivity,

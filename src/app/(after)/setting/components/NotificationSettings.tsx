@@ -29,7 +29,6 @@ const SettingsCard = ({
   </div>
 )
 
-// --- Main Notification Settings Component ---
 export const NotificationSettings = () => {
   const { setPermission } = useNotificationStore.getState()
 
